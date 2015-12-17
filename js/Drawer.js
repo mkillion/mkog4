@@ -235,7 +235,7 @@ function (
             // toggle
             this.toggle(add).always(lang.hitch(this, function(){
                 // remove forced open
-                this._checkDrawerStatus(); 
+                this._checkDrawerStatus();
             }));
         },
         _checkDrawerStatus: function () {
