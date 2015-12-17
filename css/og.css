@@ -1,0 +1,95 @@
+
+.toc-link {
+	font-size: 12px;
+	text-decoration: none;
+}
+
+/* stuff above here may not be needed anymore (20151008) */
+
+.pu-data {
+	color: #000;
+	font: normal normal bold 12px arial;
+}
+
+.pu-label {
+	color: #2f4f4f;
+	font: normal normal normal 12px arial;
+	white-space: nowrap;
+}
+
+.toc-item {
+	background-color: #e4e6e4;
+    border-bottom-color: #777;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    padding: 12px 8px;
+}
+
+.toc-item:first-of-type {
+	border-top-color: #777;
+    border-top-style: solid;
+    border-top-width: 1px;
+}
+
+input[type=checkbox] {
+	margin-right: 8px;
+}
+
+#kgs-brand {
+	font-size: 10px;
+	font-style: italic;
+	margin-left: 13px;
+}
+
+/* Override calcite theme colors: */
+@media screen and (max-width: 480px) {
+	.icon-search-1 {
+		color: #000;
+	}
+}
+
+.drawer-menu-buttons {
+	background-color: #b0c4de;
+	/*background-color: #e4e6e4;*/
+}
+
+.drawer-menu-buttons .item {
+	color: #000;
+}
+
+.drawer-menu-buttons .item .title {
+	border-left: 1px solid #000;
+}
+
+.drawer-menu-buttons .item-first .title {
+    border-left: 0;
+}
+
+.hamburger-button {
+	color: #000;
+}
+
+#title {
+	color: #000;
+	font-weight: bold;
+}
+
+.toggle-grey:active,
+.toggle-grey-on:active {
+    color: #000;
+}
+
+.toggle-grey:hover,
+.toggle-grey-on:hover {
+	color: #000;
+}
+
+.top-bar {
+	/*background-color: #4682b4;*/
+	/*background-color: #a6bddb*/
+	background-color: #e4e6e4;
+	border-bottom-color: #777;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+/* End theme override. */
