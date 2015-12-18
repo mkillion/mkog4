@@ -43,7 +43,7 @@ function(
             content += '</div>';
 
             menuObj = {
-                title: "FooBar",
+                title: "Foo",
                 label: '<div class="icon-zoom-in"></div><div class="icon-text">Zoom To</div>',
                 content: content
             };
@@ -51,6 +51,31 @@ function(
             /*if(this.config.defaultPanel === 'zoomto'){
                 this.drawerMenus.splice(0,0,menuObj);
             }
+            else{*/
+                this.drawerMenus.push(menuObj);
+            //}
+        //}
+
+
+        // Tools panel:
+        //if (this.config.enableToolsPanel) {
+            content = '';
+
+            content += '<div class="panel-container">';
+            content += '<div class="panel-header">Tools</div>';
+            content += '<div class="panel-padding">';
+            content += '</div>';
+            content += '</div>';
+
+            menuObj = {
+                title: "Bar",
+                label: '<div class="icon-wrench"></div><div class="icon-text">Tools</div>',
+                content: content
+            };
+
+            //if(this.config.defaultPanel === 'tools'){
+                //this.drawerMenus.splice(0,0,menuObj);
+            /*}
             else{*/
                 this.drawerMenus.push(menuObj);
             //}
