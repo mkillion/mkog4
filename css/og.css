@@ -41,6 +41,10 @@ input[type=checkbox] {
 	margin-left: 13px;
 }
 
+.mk-close-drawer {
+	width: 0!important;
+}
+
 /* Override calcite theme colors: */
 @media screen and (max-width: 480px) {
 	.icon-search-1 {

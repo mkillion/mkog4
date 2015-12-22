@@ -26,6 +26,13 @@ function(
     }));
     drawer.startup();
 
+    // Broke some drawer behavior when paring down the code, so rolling my own here:
+    // TODO - test at different screen sizes, modify css accordingly.
+    $("#hamburger_button").click(function(e) {
+        e.preventDefault();
+        $("#cp_outer_left").toggleClass("mk-close-drawer");
+    } );
+
     createMenus();
 
     function createMenus() {
