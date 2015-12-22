@@ -45,7 +45,11 @@ input[type=checkbox] {
 	width: 0!important;
 }
 
-/* Override calcite theme colors: */
+.mk-open-drawer {
+	width: 280px!important;
+}
+
+/* Override default colors: */
 @media screen and (max-width: 480px) {
 	.icon-search-1 {
 		color: #000;

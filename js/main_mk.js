@@ -2,6 +2,7 @@ require([
 	"dojo/_base/lang",
 	"dojo/on",
 	"dojo/dom",
+    "dojo/window",
 	"application/Drawer",
     "application/DrawerMenu"
 ],
@@ -9,29 +10,36 @@ function(
 	lang,
 	on,
 	dom,
+    win,
 	Drawer,
 	DrawerMenu
 ) {
+    var showDrawerSize = 850;
+
 	var drawer = new Drawer({
-        showDrawerSize: 850,
+        showDrawerSize: showDrawerSize,
         borderContainer: 'bc_outer',
         contentPaneCenter: 'cp_outer_center',
         contentPaneSide: 'cp_outer_left',
         toggleButton: 'hamburger_button'
     });
 
+    // Broke the template drawer open/close behavior when paring down the code, so...
+    $("#hamburger_button").click(function(e) {
+        e.preventDefault();
+        var vs = win.getBox();
+        if (vs.w < showDrawerSize) {
+            $("#cp_outer_left").toggleClass("mk-open-drawer");
+        } else {
+            $("#cp_outer_left").toggleClass("mk-close-drawer");
+        }
+    } );
+
     on(drawer, 'resize', lang.hitch(this, function () {
         // check mobile button status
         //this._checkMobileGeocoderVisibility();
     }));
     drawer.startup();
-
-    // Broke some drawer behavior when paring down the code, so rolling my own here:
-    // TODO - test at different screen sizes, modify css accordingly.
-    $("#hamburger_button").click(function(e) {
-        e.preventDefault();
-        $("#cp_outer_left").toggleClass("mk-close-drawer");
-    } );
 
     createMenus();
 
