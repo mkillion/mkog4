@@ -25,12 +25,12 @@ define([
     "dojo/Deferred",
     "dojo/promise/all",
     "esri/arcgis/utils",
-    "esri/urlUtils",
+    "esri/core/urlUtils",
     "esri/request",
     "esri/config",
     "esri/lang",
-    "esri/IdentityManager",
-    "esri/arcgis/Portal",
+    "esri/identity/IdentityManager",
+    "esri/portal/Portal",
     "esri/tasks/GeometryService",
     "config/defaults"//,
  //   "application/OAuthHelper"
@@ -48,7 +48,7 @@ define([
     esriRequest,
     esriConfig,
     esriLang,
-    IdentityManager,
+    esriId,
     esriPortal,
     GeometryService,
     defaults//,
@@ -148,7 +148,7 @@ define([
         _createPortal: function () {
             var deferred = new Deferred();
             if (this.templateConfig.queryForGroupInfo || this.templateConfig.queryForGroupItems) {
-                this.portal = new esriPortal.Portal(this.config.sharinghost);
+                this.portal = new Portal.Portal(this.config.sharinghost);
                 this.portal.on("load", function () {
                     deferred.resolve();
                 });
@@ -225,7 +225,7 @@ define([
             var deferred, signedIn;
             deferred = new Deferred();
             // check sign-in status
-            signedIn = IdentityManager.checkSignInStatus(this.config.sharinghost + "/sharing");
+            signedIn = esriId.checkSignInStatus(this.config.sharinghost + "/sharing");
             // resolve regardless of signed in or not.
             signedIn.promise.always(function () {
                 deferred.resolve();

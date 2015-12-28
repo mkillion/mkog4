@@ -28,6 +28,7 @@ function(
         contentPaneSide: 'cp_outer_left',
         toggleButton: 'hamburger_button'
     });
+    drawer.startup();
 
     // Broke the template drawer open/close behavior when paring down the code, so...
     $("#hamburger_button").click(function(e) {
@@ -42,8 +43,7 @@ function(
     on(drawer, 'resize', lang.hitch(this, function () {
         // check mobile button status
         //this._checkMobileGeocoderVisibility();
-    }));
-    drawer.startup();
+    } ) );
 
     createMenus();
 
