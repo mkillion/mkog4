@@ -7,6 +7,8 @@ require([
     "application/DrawerMenu",
     "esri/Map",
     "esri/views/MapView",
+    "esri/layers/ArcGISTiledLayer",
+    "esri/layers/ArcGISDynamicLayer",
     "dojo/domReady!"
 ],
 function(
@@ -17,7 +19,9 @@ function(
 	Drawer,
 	DrawerMenu,
     Map,
-    MapView
+    MapView,
+    ArcGISTiledLayer,
+    ArcGISDynamicLayer
 ) {
     var showDrawerSize = 850;
 
@@ -47,17 +51,21 @@ function(
 
     createMenus();
 
+    fieldsLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", title:"Oil and Gas Fields"} );
+    wellsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer", visibleLayers:[0], title:"Oil and Gas Wells"} );
+
     var map = new Map( {
-        basemap: "gray"
+        basemap: "gray",
+        layers: [fieldsLayer, wellsLayer]
     } );
 
-  var view = new MapView( {
-    map: map,
-    container: "mapDiv",
-    center: [-98, 38],
-    zoom: 7
-  } );
-  view.ui.components = ["zoom", "compass"];
+    var view = new MapView( {
+        map: map,
+        container: "mapDiv",
+        center: [-98, 38],
+        zoom: 7
+    } );
+    view.ui.components = ["zoom", "compass"];
 
     function createMenus() {
     	var drawerMenus = [];
