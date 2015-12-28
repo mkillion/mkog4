@@ -27,11 +27,10 @@ function(
     // Broke the template drawer open/close behavior when paring down the code, so...
     $("#hamburger_button").click(function(e) {
         e.preventDefault();
-        var vs = win.getBox();
-        if (vs.w < showDrawerSize) {
-            $("#cp_outer_left").toggleClass("mk-open-drawer");
+        if ($("#cp_outer_left").css("width") === "280px") {
+            $("#cp_outer_left").css("width", "0px");
         } else {
-            $("#cp_outer_left").toggleClass("mk-close-drawer");
+            $("#cp_outer_left").css("width", "280px");
         }
     } );
 
