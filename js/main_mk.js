@@ -4,7 +4,10 @@ require([
 	"dojo/dom",
     "dojo/window",
 	"application/Drawer",
-    "application/DrawerMenu"
+    "application/DrawerMenu",
+    "esri/Map",
+    "esri/views/MapView",
+    "dojo/domReady!"
 ],
 function(
 	lang,
@@ -12,7 +15,9 @@ function(
 	dom,
     win,
 	Drawer,
-	DrawerMenu
+	DrawerMenu,
+    Map,
+    MapView
 ) {
     var showDrawerSize = 850;
 
@@ -41,6 +46,18 @@ function(
     drawer.startup();
 
     createMenus();
+
+    var map = new Map( {
+        basemap: "gray"
+    } );
+
+  var view = new MapView( {
+    map: map,
+    container: "mapDiv",
+    center: [-98, 38],
+    zoom: 7
+  } );
+  view.ui.components = ["zoom", "compass"];
 
     function createMenus() {
     	var drawerMenus = [];

@@ -16,6 +16,11 @@ input[type=text]::-ms-clear {
     display: none;
 }
 
+#mapDiv {
+    height: 100%;
+    width: 100%;
+}
+
 .theSelects {
 	font-size:10px;
 	padding:1px;
