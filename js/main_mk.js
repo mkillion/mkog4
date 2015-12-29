@@ -60,7 +60,7 @@ function(
     createMenus();
     // end framework.
 
-    // Define layers, create map and view:
+    // Define layers, create map and map widgets:
     var basemapLayerURL = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer";
     var fieldsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer";
     var wellsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
@@ -98,6 +98,10 @@ function(
         } )
     }, "geocoderSearch");
       searchWidget.startup();
+
+    $("#mobileGeocoderIconContainer").click(function() {
+        $("#lb").toggleClass("small-search");
+    } );
     // end map.
 
     function createMenus() {

@@ -51,15 +51,32 @@ input[type=checkbox] {
 	top: 44px;
 }
 
-/* Override default colors: */
 @media screen and (max-width: 480px) {
-	/*.icon-search-1 {
+	.icon-search-1 {
 		color: #FFF;
-	}*/
+	}
 
-	.locate-box {
+	/*.locate-box {
         display: block!important;
+    }*/
+
+    .small-search {
+    	display: block!important;
+    	right: 50px;
+		position: absolute;
+		top: 53px;
+		width: 90%;
     }
+}
+
+@media screen and (max-width: 320px) {
+    .small-search {
+        display: none!important;
+    }
+
+    .icon-search-1 {
+		display: none!important;
+	}
 }
 
 .drawer-menu-buttons {
@@ -107,10 +124,13 @@ input[type=checkbox] {
     border-bottom-style: solid;
     border-bottom-width: 1px;
 }
-/* End theme override. */
 
 #geocoderSearch {
 	right: 5px;
 	position: absolute;
 	top: 6px;
+}
+
+#cp_outer_left {
+	border-right: 1px solid #000;
 }
