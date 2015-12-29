@@ -53,9 +53,13 @@ input[type=checkbox] {
 
 /* Override default colors: */
 @media screen and (max-width: 480px) {
-	.icon-search-1 {
-		color: #000;
-	}
+	/*.icon-search-1 {
+		color: #FFF;
+	}*/
+
+	.locate-box {
+        display: block!important;
+    }
 }
 
 .drawer-menu-buttons {
@@ -104,3 +108,9 @@ input[type=checkbox] {
     border-bottom-width: 1px;
 }
 /* End theme override. */
+
+#geocoderSearch {
+	right: 5px;
+	position: absolute;
+	top: 6px;
+}

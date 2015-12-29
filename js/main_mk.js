@@ -9,6 +9,8 @@ require([
     "esri/views/MapView",
     "esri/layers/ArcGISTiledLayer",
     "esri/layers/ArcGISDynamicLayer",
+    "esri/widgets/Search",
+      "esri/widgets/Search/SearchViewModel",
     "dojo/domReady!"
 ],
 function(
@@ -21,7 +23,9 @@ function(
     Map,
     MapView,
     ArcGISTiledLayer,
-    ArcGISDynamicLayer
+    ArcGISDynamicLayer,
+    Search,
+    SearchVM
 ) {
     // Set up basic framework:
     window.document.title = "FooBar";
@@ -57,15 +61,20 @@ function(
     // end framework.
 
     // Define layers, create map and view:
+    var basemapLayerURL = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer";
     var fieldsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer";
     var wellsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
+    var plssLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer";
 
+    var basemapLayer = new ArcGISTiledLayer( {url:basemapLayerURL, id:"Base Map"} );
     var fieldsLayer = new ArcGISTiledLayer( {url:fieldsLayerURL, id:"Oil and Gas Fields"} );
     var wellsLayer = new ArcGISDynamicLayer( {url:wellsLayerURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
+    var plssLayer = new ArcGISTiledLayer( {url:plssLayerURL, id:"Section-Township-Range"} );
 
     var map = new Map( {
-        basemap: "topo",
-        layers: [fieldsLayer, wellsLayer]
+        // Not defining basemap here for toc toggle reasons.
+        //basemap: "topo",
+        layers: [basemapLayer, fieldsLayer, plssLayer, wellsLayer]
     } );
     map.then(createTOC, mapErr);
 
@@ -80,6 +89,15 @@ function(
     function mapErr(err) {
         console.log("Map Error: " + err);
     }
+
+    var searchWidget = new Search( {
+        //Setting widget properties via viewModel is subject to
+        //change for the 4.0 final release
+        viewModel: new SearchVM( {
+          view: view
+        } )
+    }, "geocoderSearch");
+      searchWidget.startup();
     // end map.
 
     function createMenus() {
@@ -143,8 +161,11 @@ function(
         var chkd, tocContent = "";
 
         for (var j=lyrs.length - 1; j>-1; j--) {
-            chkd = map.getLayer(map.layers._items[j].id).visible ? "checked" : "";
-            tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + map.layers._items[j].id + "</label></div>";
+            chkd = map.getLayer(lyrs._items[j].id).visible ? "checked" : "";
+            if (lyrs._items[j].id.indexOf("151e") === -1) {
+                // TODO - not sure what this layer is, re-check that excluding "151e" keeps it out of the TOC.
+                tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + lyrs._items[j].id + "</label></div>";
+            }
         }
         $("#lyrs-toc").html(tocContent);
     }
