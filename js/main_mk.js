@@ -24,6 +24,7 @@ function(
     ArcGISDynamicLayer
 ) {
     // Set up basic framework:
+    window.document.title = "FooBar";
     $("#title").html("Kansas Oil and Gas<span id='kgs-brand'>Kansas Geological Survey</span>");
 
     var showDrawerSize = 850;
