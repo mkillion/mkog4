@@ -134,6 +134,20 @@ function(
         };
         drawerMenus.push(menuObj);
 
+        // Legend panel:
+        content = '';
+        content += '<div class="panel-container">';
+        content += '<div class="panel-header">Legend</div>';
+        content += '<div class="panel-padding">';
+        content += '</div>';
+        content += '</div>';
+
+        menuObj = {
+            label: '<div class="icon-list"></div><div class="icon-text">Legend</div>',
+            content: content
+        };
+        drawerMenus.push(menuObj);
+
         // Tools panel:
         content = '';
         content += '<div class="panel-container">';
