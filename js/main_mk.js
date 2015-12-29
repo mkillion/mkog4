@@ -23,6 +23,9 @@ function(
     ArcGISTiledLayer,
     ArcGISDynamicLayer
 ) {
+    // Set up basic framework:
+    $("#title").html("Kansas Oil and Gas<span id='kgs-brand'>Kansas Geological Survey</span>");
+
     var showDrawerSize = 850;
 
 	var drawer = new Drawer({
@@ -44,18 +47,23 @@ function(
         }
     } );
 
-    on(drawer, 'resize', lang.hitch(this, function () {
+    /*on(drawer, 'resize', lang.hitch(this, function () {
         // check mobile button status
         //this._checkMobileGeocoderVisibility();
-    } ) );
+    } ) );*/
 
     createMenus();
+    // end framework.
 
-    fieldsLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields"} );
-    wellsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer", visibleLayers:[0], id:"Oil and Gas Wells"} );
+    // Define layers, create map and view:
+    var fieldsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer";
+    var wellsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
+
+    var fieldsLayer = new ArcGISTiledLayer( {url:fieldsLayerURL, id:"Oil and Gas Fields"} );
+    var wellsLayer = new ArcGISDynamicLayer( {url:wellsLayerURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
 
     var map = new Map( {
-        basemap: "gray",
+        basemap: "topo",
         layers: [fieldsLayer, wellsLayer]
     } );
     map.then(createTOC, mapErr);
@@ -68,11 +76,10 @@ function(
     } );
     view.ui.components = ["zoom", "compass"];
 
-
     function mapErr(err) {
         console.log("Map Error: " + err);
     }
-
+    // end map.
 
     function createMenus() {
     	var drawerMenus = [];

@@ -16,11 +16,16 @@
 }
 /* stuff above here may not be needed anymore (20151228) */
 
+.panel-padding {
+	padding: 0px 0px 10px 0px;
+}
+
 .toc-item {
 	background-color: #e4e6e4;
     border-bottom-color: #777;
     border-bottom-style: solid;
     border-bottom-width: 1px;
+    color: #000;
     padding: 12px 8px;
 }
 
@@ -40,7 +45,7 @@ input[type=checkbox] {
 	margin-left: 13px;
 }
 
-/* Move zoom, etc. widgets down a bit: */
+/* Move zoom widgets down a bit: */
 .esri-ui-top-left {
 	position: relative;
 	top: 44px;
@@ -54,8 +59,8 @@ input[type=checkbox] {
 }
 
 .drawer-menu-buttons {
-	background-color: #b0c4de;
-	/*background-color: #e4e6e4;*/
+	/*background-color: #b0c4de;*/
+	background-color: #e4e6e4;
 }
 
 .drawer-menu-buttons .item {
@@ -71,28 +76,29 @@ input[type=checkbox] {
 }
 
 .hamburger-button {
-	color: #000;
+	color: #FFF;
 }
 
 #title {
-	color: #000;
+	color: #FFF;
 	font-weight: bold;
 }
 
 .toggle-grey:active,
 .toggle-grey-on:active {
-    color: #000;
+    color: #FFF;
 }
 
 .toggle-grey:hover,
 .toggle-grey-on:hover {
-	color: #000;
+	color: #FFF;
 }
 
 .top-bar {
 	/*background-color: #4682b4;*/
-	/*background-color: #a6bddb*/
-	background-color: #e4e6e4;
+	/*background-color: #a6bddb;*/
+	/*background-color: #e4e6e4;*/
+	background-color: #000;
 	border-bottom-color: #777;
     border-bottom-style: solid;
     border-bottom-width: 1px;
