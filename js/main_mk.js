@@ -10,7 +10,9 @@ require([
     "esri/layers/ArcGISTiledLayer",
     "esri/layers/ArcGISDynamicLayer",
     "esri/widgets/Search",
-      "esri/widgets/Search/SearchViewModel",
+    "esri/widgets/Search/SearchViewModel",
+    "esri/widgets/Home",
+    "esri/widgets/Home/HomeViewModel",
     "dojo/domReady!"
 ],
 function(
@@ -25,7 +27,9 @@ function(
     ArcGISTiledLayer,
     ArcGISDynamicLayer,
     Search,
-    SearchVM
+    SearchVM,
+    Home,
+    HomeVM
 ) {
     // Set up basic framework:
     window.document.title = "FooBar";
@@ -72,7 +76,7 @@ function(
     var plssLayer = new ArcGISTiledLayer( {url:plssLayerURL, id:"Section-Township-Range"} );
 
     var map = new Map( {
-        // Not defining basemap here for toc toggle reasons.
+        // Not defining basemap here for TOC toggle reasons.
         //basemap: "topo",
         layers: [basemapLayer, fieldsLayer, plssLayer, wellsLayer]
     } );
@@ -97,12 +101,21 @@ function(
           view: view
         } )
     }, "geocoderSearch");
-      searchWidget.startup();
+    searchWidget.startup();
 
     $("#mobileGeocoderIconContainer").click(function() {
         $("#lb").toggleClass("small-search");
     } );
-    // end map.
+
+    var homeBtn = new Home( {
+        //Setting widget properties via viewModel is subject to
+        //change for the 4.0 final release
+        viewModel: new HomeVM({
+          view: view
+        } )
+      }, "HomeButton");
+      homeBtn.startup();
+    // end map and map widgets.
 
     function createMenus() {
     	var drawerMenus = [];

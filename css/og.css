@@ -56,10 +56,6 @@ input[type=checkbox] {
 		color: #FFF;
 	}
 
-	/*.locate-box {
-        display: block!important;
-    }*/
-
     .small-search {
     	display: block!important;
     	right: 50px;
@@ -67,6 +63,10 @@ input[type=checkbox] {
 		top: 53px;
 		width: 90%;
     }
+
+    #HomeButton {
+    	display: none;
+	}
 }
 
 @media screen and (max-width: 320px) {
@@ -133,4 +133,12 @@ input[type=checkbox] {
 
 #cp_outer_left {
 	border-right: 1px solid #000;
+}
+
+#HomeButton {
+	left: -6px;
+	position: relative;
+	top: 37px;
+}
+
 }
