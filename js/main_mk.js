@@ -64,16 +64,14 @@ function(
     createMenus();
     // end framework.
 
-    // Define layers, create map and map widgets:
-    var basemapLayerURL = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer";
+    // Create map and map widgets:
     var fieldsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer";
     var wellsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
-    var plssLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer";
 
-    var basemapLayer = new ArcGISTiledLayer( {url:basemapLayerURL, id:"Base Map"} );
+    var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
     var fieldsLayer = new ArcGISTiledLayer( {url:fieldsLayerURL, id:"Oil and Gas Fields"} );
     var wellsLayer = new ArcGISDynamicLayer( {url:wellsLayerURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
-    var plssLayer = new ArcGISTiledLayer( {url:plssLayerURL, id:"Section-Township-Range"} );
+    var plssLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
 
     var map = new Map( {
         // Not defining basemap here for TOC toggle reasons.
