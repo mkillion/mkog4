@@ -138,7 +138,7 @@ function(
         content = '';
         content += '<div class="panel-container">';
         content += '<div class="panel-header">Layers</div>';
-        content += '<div class="panel-padding">';
+        content += '<div>';
         content += '<div id="lyrs-toc"></div>';
         content += '</div>';
         content += '</div>';
@@ -177,7 +177,6 @@ function(
         };
         drawerMenus.push(menuObj);
 
-        // Create menus:
         var drawerMenu = new DrawerMenu({
             menus: drawerMenus
         }, dom.byId("drawer_menus"));
@@ -191,8 +190,8 @@ function(
 
         for (var j=lyrs.length - 1; j>-1; j--) {
             chkd = map.getLayer(lyrs._items[j].id).visible ? "checked" : "";
-            if (lyrs._items[j].id.indexOf("151e") === -1) {
-                // TODO - not sure what this layer is, re-check that excluding "151e" keeps it out of the TOC.
+            if (lyrs._items[j].id.indexOf("-layer-") === -1) {
+                // Excludes default graphics layer from the TOC.
                 tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + lyrs._items[j].id + "</label></div>";
             }
         }

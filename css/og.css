@@ -1,24 +1,7 @@
 
-.toc-link {
-	font-size: 12px;
-	text-decoration: none;
-}
-
-.pu-data {
-	color: #000;
-	font: normal normal bold 12px arial;
-}
-
-.pu-label {
-	color: #2f4f4f;
-	font: normal normal normal 12px arial;
-	white-space: nowrap;
-}
-/* stuff above here may not be needed anymore (20151228) */
-
-.panel-padding {
+/*.panel-padding {
 	padding: 0px 0px 10px 0px;
-}
+}*/
 
 .toc-item {
 	background-color: #e4e6e4;
