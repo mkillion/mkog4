@@ -34,6 +34,20 @@ input[type=checkbox] {
 	top: 44px;
 }
 
+#HomeButton {
+	left: -6px;
+	position: absolute;
+	top: 2px;
+}
+
+@media screen and (max-width: 568px) {
+	#HomeButton {
+		left: -5px;
+		position: absolute;
+		top: 70px;
+	}
+}
+
 @media screen and (max-width: 480px) {
 	.icon-search-1 {
 		color: #FFF;
@@ -46,10 +60,6 @@ input[type=checkbox] {
 		top: 53px;
 		width: 78%;
     }
-
-    #HomeButton {
-    	display: none;
-	}
 }
 
 @media screen and (max-width: 319px) {
@@ -118,10 +128,3 @@ input[type=checkbox] {
 	border-right: 1px solid #000;
 }
 
-#HomeButton {
-	left: -6px;
-	position: relative;
-	top: 37px;
-}
-
-}
