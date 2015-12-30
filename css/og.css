@@ -35,20 +35,44 @@ input[type=checkbox] {
 }
 
 #HomeButton {
-	left: -6px;
+	left: -5px;
 	position: absolute;
-	top: 2px;
+	top: -4px;
+}
+
+#LocateButton {
+	left: -5px;
+	position: absolute;
+	top: 36px;
 }
 
 @media screen and (max-width: 568px) {
 	#HomeButton {
 		left: -5px;
 		position: absolute;
-		top: 70px;
+		top: 64px;
+	}
+
+	#LocateButton {
+		left: -5px;
+		position: absolute;
+		top: 102px;
+	}
+
+	.small-search {
+    	display: block!important;
+    	right: 38px;
+		position: absolute;
+		top: 53px;
+		width: 78%;
+    }
+
+    .icon-search-1 {
+		color: #FFF;
 	}
 }
 
-@media screen and (max-width: 480px) {
+/*@media screen and (max-width: 480px) {
 	.icon-search-1 {
 		color: #FFF;
 	}
@@ -60,7 +84,7 @@ input[type=checkbox] {
 		top: 53px;
 		width: 78%;
     }
-}
+}*/
 
 @media screen and (max-width: 319px) {
     .small-search {

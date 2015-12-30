@@ -13,6 +13,8 @@ require([
     "esri/widgets/Search/SearchViewModel",
     "esri/widgets/Home",
     "esri/widgets/Home/HomeViewModel",
+    "esri/widgets/Locate",
+    "esri/widgets/Locate/LocateViewModel",
     "dojo/domReady!"
 ],
 function(
@@ -29,7 +31,9 @@ function(
     Search,
     SearchVM,
     Home,
-    HomeVM
+    HomeVM,
+    Locate,
+    LocateVM
 ) {
     // Set up basic frame:
     window.document.title = "FooBar";
@@ -108,11 +112,21 @@ function(
     var homeBtn = new Home( {
         //Setting widget properties via viewModel is subject to
         //change for the 4.0 final release
-        viewModel: new HomeVM({
-          view: view
+        viewModel: new HomeVM( {
+            view: view
         } )
-      }, "HomeButton");
-      homeBtn.startup();
+    }, "HomeButton");
+    homeBtn.startup();
+
+    var locateBtn = new Locate({
+        //Setting widget properties via viewModel is subject to
+        //change for the 4.0 final release
+        viewModel: new LocateVM({
+            view: view/*,
+            graphicsLayer: gl*/
+        } )
+    }, "LocateButton");
+    locateBtn.startup();
     // End map and map widgets.
 
     function createMenus() {
