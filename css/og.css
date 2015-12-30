@@ -41,10 +41,10 @@ input[type=checkbox] {
 
     .small-search {
     	display: block!important;
-    	right: 50px;
+    	right: 38px;
 		position: absolute;
 		top: 53px;
-		width: 90%;
+		width: 78%;
     }
 
     #HomeButton {
@@ -52,7 +52,7 @@ input[type=checkbox] {
 	}
 }
 
-@media screen and (max-width: 320px) {
+@media screen and (max-width: 319px) {
     .small-search {
         display: none!important;
     }

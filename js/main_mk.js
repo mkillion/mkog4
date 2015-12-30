@@ -31,7 +31,7 @@ function(
     Home,
     HomeVM
 ) {
-    // Set up basic framework:
+    // Set up basic frame:
     window.document.title = "FooBar";
     $("#title").html("Kansas Oil and Gas<span id='kgs-brand'>Kansas Geological Survey</span>");
 
@@ -62,7 +62,7 @@ function(
     } ) );*/
 
     createMenus();
-    // end framework.
+    // End framework.
 
     // Create map and map widgets:
     var fieldsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer";
@@ -86,7 +86,7 @@ function(
         center: [-98, 38],
         zoom: 7
     } );
-    view.ui.components = ["zoom", "compass"];
+    view.ui.components = ["zoom"];
 
     function mapErr(err) {
         console.log("Map Error: " + err);
@@ -113,7 +113,7 @@ function(
         } )
       }, "HomeButton");
       homeBtn.startup();
-    // end map and map widgets.
+    // End map and map widgets.
 
     function createMenus() {
     	var drawerMenus = [];
@@ -201,7 +201,7 @@ function(
 
     toggleLayer = function(j) {
         var l = map.getLayer(map.layers._items[j].id);
-        l.visible = $( "#tcb-" + j ).is( ":checked" ) ? true : false;
+        l.visible = $("#tcb-" + j).is(":checked") ? true : false;
     }
 
 } );
