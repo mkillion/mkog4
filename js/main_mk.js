@@ -60,11 +60,6 @@ function(
         }
     } );
 
-    /*on(drawer, 'resize', lang.hitch(this, function () {
-        // check mobile button status
-        //this._checkMobileGeocoderVisibility();
-    } ) );*/
-
     createMenus();
     // End framework.
 
@@ -122,11 +117,16 @@ function(
         //Setting widget properties via viewModel is subject to
         //change for the 4.0 final release
         viewModel: new LocateVM({
-            view: view/*,
-            graphicsLayer: gl*/
+            view: view,
+            scale: 4000
         } )
     }, "LocateButton");
     locateBtn.startup();
+
+    // Don't display locate widget on larger devices:
+    /*if (win.getBox().w > 1280) {
+        locateBtn.set("visible", false);
+    }*/
     // End map and map widgets.
 
     function createMenus() {
