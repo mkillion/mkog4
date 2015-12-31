@@ -3,6 +3,7 @@ require([
 	"dojo/on",
 	"dojo/dom",
     "dojo/window",
+    "dojo/_base/array",
 	"application/Drawer",
     "application/DrawerMenu",
     "esri/Map",
@@ -26,6 +27,7 @@ function(
 	on,
 	dom,
     win,
+    arrayUtils,
 	Drawer,
 	DrawerMenu,
     Map,
@@ -237,7 +239,52 @@ function(
         params.mapExtent = view.extent;
         dom.byId("mapDiv").style.cursor = "wait";
 
+        identifyTask.execute(params).then(function(response) {
+            return arrayUtils.map(response, function(result) {
+                var feature = result.feature;
+                var layerName = result.layerName;
 
+                // TODO - following line was in sample code but doesn't seem necessary.
+                //feature.attributes.layerName = layerName;
+                // TODO - add "or RECENT_SPUDS" to ogwells block.
+                if (layerName === 'OG_WELLS') {
+                    var ogWellsTemplate = new PopupTemplate( {
+                        title: "",
+                        content: ""
+                    } );
+                    feature.popupTemplate = ogWellsTemplate;
+                }
+                else if (layerName === 'OG_FIELDS') {
+                    var ogFieldsTemplate = new PopupTemplate( {
+                        title: "Field Name: {FIELD_NAME}",
+                        content: junk("foo")
+                    } );
+                    feature.popupTemplate = ogFieldsTemplate;
+                }
+                else if (layerName === 'WWC5_WELLS') {
+                    var wwc5Template = new PopupTemplate( {
+                        title: "",
+                        content: ""
+                    } );
+                    feature.popupTemplate = wwc5Template;
+                }
+                return feature;
+          } );
+        } ).then(showPopup);
+
+        function showPopup(response) {
+            if (response.length > 0) {
+                view.popup.viewModel.features = response;
+                view.popup.viewModel.visible = true;
+                view.popup.viewModel.location = event.mapPoint;
+            }
+            dom.byId("mapDiv").style.cursor = "auto";
+        }
+
+        function junk(x) {
+            var j = x + "<b>BAR</b><br>kwanwah";
+            return j;
+        }
     }
 
 
