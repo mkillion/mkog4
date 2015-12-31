@@ -15,6 +15,10 @@ require([
     "esri/widgets/Home/HomeViewModel",
     "esri/widgets/Locate",
     "esri/widgets/Locate/LocateViewModel",
+    "esri/PopupTemplate",
+    "esri/widgets/Popup",
+    "esri/tasks/IdentifyTask",
+    "esri/tasks/support/IdentifyParameters",
     "dojo/domReady!"
 ],
 function(
@@ -33,11 +37,15 @@ function(
     Home,
     HomeVM,
     Locate,
-    LocateVM
+    LocateVM,
+    PopupTemplate,
+    Popup,
+    IdentifyTask,
+    IdentifyParameters
 ) {
     // Set up basic frame:
     window.document.title = "FooBar";
-    $("#title").html("Kansas Oil and Gas<span id='kgs-brand'>Kansas Geological Survey</span>");
+    $("#title").html("Kansas Oil and Gas<a id='kgs-brand' href='http://www.kgs.ku.edu'>Kansas Geological Survey</a>");
 
     var showDrawerSize = 850;
 
@@ -64,12 +72,12 @@ function(
     // End framework.
 
     // Create map and map widgets:
-    var fieldsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer";
-    var wellsLayerURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
+    var identifyTask, params;
+    var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
 
     var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
-    var fieldsLayer = new ArcGISTiledLayer( {url:fieldsLayerURL, id:"Oil and Gas Fields"} );
-    var wellsLayer = new ArcGISDynamicLayer( {url:wellsLayerURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
+    var fieldsLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields"} );
+    var wellsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
     var plssLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
 
     var map = new Map( {
@@ -86,6 +94,18 @@ function(
         zoom: 7
     } );
     view.ui.components = ["zoom"];
+
+    view.then(function() {
+        on(view, "click", executeIdTask);
+
+        identifyTask = new IdentifyTask(ogGeneralServiceURL);
+        params = new IdentifyParameters();
+        params.tolerance = 3;
+        params.layerIds = [12, 0, 8, 1];
+        params.layerOption = "all";
+        params.width = view.width;
+        params.height = view.height;
+    } );
 
     function mapErr(err) {
         console.log("Map Error: " + err);
@@ -210,6 +230,14 @@ function(
             }
         }
         $("#lyrs-toc").html(tocContent);
+    }
+
+    function executeIdTask(event) {
+        params.geometry = event.mapPoint;
+        params.mapExtent = view.extent;
+        dom.byId("mapDiv").style.cursor = "wait";
+
+
     }
 
 

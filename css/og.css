@@ -23,9 +23,11 @@ input[type=checkbox] {
 }
 
 #kgs-brand {
-	font-size: 11px;
+	color: #fff;
+	font-size: 12px;
 	font-style: italic;
 	margin-left: 13px;
+	text-decoration: none;
 }
 
 /* Move zoom widgets down a bit: */
