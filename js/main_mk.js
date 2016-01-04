@@ -249,22 +249,22 @@ function(
                 // TODO - add "or RECENT_SPUDS" to ogwells block.
                 if (layerName === 'OG_WELLS') {
                     var ogWellsTemplate = new PopupTemplate( {
-                        title: "",
-                        content: ""
+                        title: "Well: {LEASE_NAME} " + "{WELL_NAME}",
+                        content: getWellContent("{KID}")
                     } );
                     feature.popupTemplate = ogWellsTemplate;
                 }
                 else if (layerName === 'OG_FIELDS') {
                     var ogFieldsTemplate = new PopupTemplate( {
-                        title: "Field Name: {FIELD_NAME}",
-                        content: junk("foo")
+                        title: "Field: {FIELD_NAME}",
+                        content: getFieldContent("{FIELD_KID}")
                     } );
                     feature.popupTemplate = ogFieldsTemplate;
                 }
                 else if (layerName === 'WWC5_WELLS') {
                     var wwc5Template = new PopupTemplate( {
-                        title: "",
-                        content: ""
+                        title: "Water Well",
+                        content: getWWC5Content("{INPUT_SEQ_NUMBER}")
                     } );
                     feature.popupTemplate = wwc5Template;
                 }
@@ -281,9 +281,18 @@ function(
             dom.byId("mapDiv").style.cursor = "auto";
         }
 
-        function junk(x) {
-            var j = x + "<b>BAR</b><br>kwanwah";
-            return j;
+        function getFieldContent(kid) {
+            var content = "";
+            content += kid;
+            return content;
+        }
+
+        function getWellContent(kid) {
+            return kid;
+        }
+
+        function getWWC5Content(seqNum) {
+            return seqNum;
         }
     }
 
