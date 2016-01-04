@@ -149,6 +149,20 @@ function(
     /*if (win.getBox().w > 1280) {
         locateBtn.set("visible", false);
     }*/
+
+    // Define additional popup actions:
+    var fullInfoAction = {
+        title: "Full Info",
+        id: "full-info",
+        className: "icon-ui-table"
+    };
+    view.popup.viewModel.actions.push(fullInfoAction);
+    view.popup.viewModel.on("action-click", function(evt){
+        if(evt.action.id === "full-info"){
+            console.log("show full info");
+        } else {console.log("wah wah");}
+    } );
+
     // End map and map widgets.
 
     function createMenus() {
@@ -261,7 +275,7 @@ function(
                 }
                 else if (layerName === 'WWC5_WELLS') {
                     var wwc5Template = new PopupTemplate( {
-                        title: "Water Well",
+                        title: "Water Well:",
                         content: getWWC5Content("{INPUT_SEQ_NUMBER}")
                     } );
                     feature.popupTemplate = wwc5Template;
