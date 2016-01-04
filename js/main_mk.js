@@ -244,8 +244,6 @@ function(
                 var feature = result.feature;
                 var layerName = result.layerName;
 
-                // TODO - following line was in sample code but doesn't seem necessary.
-                //feature.attributes.layerName = layerName;
                 // TODO - add "or RECENT_SPUDS" to ogwells block.
                 if (layerName === 'OG_WELLS') {
                     var ogWellsTemplate = new PopupTemplate( {
@@ -257,7 +255,7 @@ function(
                 else if (layerName === 'OG_FIELDS') {
                     var ogFieldsTemplate = new PopupTemplate( {
                         title: "Field: {FIELD_NAME}",
-                        content: getFieldContent("{FIELD_KID}")
+                        content: getFieldContent(feature)
                     } );
                     feature.popupTemplate = ogFieldsTemplate;
                 }
@@ -281,9 +279,27 @@ function(
             dom.byId("mapDiv").style.cursor = "auto";
         }
 
-        function getFieldContent(kid) {
-            var content = "";
-            content += kid;
+        function getFieldContent(feature) {
+            var f = feature.attributes;
+            var ftyp = f.FIELD_TYPE !== "Null" ? f.FIELD_TYPE : "";
+            var sta = f.STATUS !== "Null" ? f.STATUS : "";
+            var po = f.PROD_OIL !== "Null" ? f.PROD_OIL : "";
+            var co = f.CUMM_OIL !== "Null" ? f.CUMM_OIL.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+            var pg = f.PROD_GAS !== "Null" ? f.PROD_GAS : "";
+            var cg = f.CUMM_GAS !== "Null" ? f.CUMM_GAS.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+            var ac = f.APPROXACRE !== "Null" ? f.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+            var kid = f.FIELD_KID !== "Null" ? f.FIELD_KID : "";
+
+            var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>" + ftyp + "</td></tr>";
+            content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
+            content += "<tr><td>Produces Oil: </td><td>" + po + "</td></tr>";
+            content += "<tr><td>Cumulative Oil (bbls): </td><td>" + co + "</td></tr>";
+            content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
+            content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
+            content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
+            content += "<tr><td colspan='2'><a href='http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + kid + "' target='_blank'>Production Information</a></td></tr>";
+            content += "</table>";
+
             return content;
         }
 
