@@ -154,14 +154,9 @@ function(
     var fullInfoAction = {
         title: "Full Info",
         id: "full-info",
-        className: "icon-ui-table"
+        className: "esri-icon-table"
     };
     view.popup.viewModel.actions.push(fullInfoAction);
-    view.popup.viewModel.on("action-click", function(evt){
-        if(evt.action.id === "full-info"){
-            console.log("show full info");
-        } else {console.log("wah wah");}
-    } );
 
     // End map and map widgets.
 
@@ -272,6 +267,12 @@ function(
                         content: getFieldContent(feature)
                     } );
                     feature.popupTemplate = ogFieldsTemplate;
+
+                    view.popup.viewModel.on("action-click", function(evt){
+                    if(evt.action.id === "full-info"){
+                        var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber="+feature.attributes.FIELD_KID, "_blank");
+                    }
+                } );
                 }
                 else if (layerName === 'WWC5_WELLS') {
                     var wwc5Template = new PopupTemplate( {
