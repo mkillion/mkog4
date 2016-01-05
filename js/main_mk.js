@@ -76,6 +76,7 @@ function(
     // Create map and map widgets:
     var identifyTask, params;
     var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
+    ///var fieldKID, wellKID, wwc5SeqNum;
 
     var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
     var fieldsLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields"} );
@@ -157,6 +158,11 @@ function(
         className: "esri-icon-table"
     };
     view.popup.viewModel.actions.push(fullInfoAction);
+    /*view.popup.viewModel.on("action-click", function(evt){
+        if(evt.action.id === "full-info"){
+            var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + fieldKID, "_blank");
+        }
+    } );*/
 
     // End map and map widgets.
 
@@ -267,12 +273,7 @@ function(
                         content: getFieldContent(feature)
                     } );
                     feature.popupTemplate = ogFieldsTemplate;
-
-                    view.popup.viewModel.on("action-click", function(evt){
-                    if(evt.action.id === "full-info"){
-                        var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber="+feature.attributes.FIELD_KID, "_blank");
-                    }
-                } );
+                    ///fieldKID = feature.attributes.FIELD_KID;
                 }
                 else if (layerName === 'WWC5_WELLS') {
                     var wwc5Template = new PopupTemplate( {
@@ -312,7 +313,6 @@ function(
             content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
             content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
             content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
-            content += "<tr><td colspan='2'><a href='http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + kid + "' target='_blank'>Production Information</a></td></tr>";
             content += "</table>";
 
             return content;
