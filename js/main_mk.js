@@ -241,6 +241,7 @@ function(
             var fieldKID = $("#field-kid").html();
             var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + fieldKID, "target='_blank'");
         } else if (popupTitle.indexOf("Well") > -1) {
+            var wellKID = $("#well-kid").html();
             var win = window.open("http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + wellKID, "target='_blank'");
         }
     }
@@ -289,7 +290,8 @@ function(
                                 "<tr><td>Plug Date: </td><td>{PLUG_DATE_TXT}</td></tr>" +
                                 "<tr><td>Total Depth (ft): </td><td>{ROTARY_TOTAL_DEPTH}</td></tr>" +
                                 "<tr><td>Elevation (KB, ft): </td><td>{ELEVATION_KB}</td></tr>" +
-                                "<tr><td>Producing Formation: </td><td>{PRODUCING_FORMATION}</td></tr></table>",
+                                "<tr><td>Producing Formation: </td><td>{PRODUCING_FORMATION}</td></tr>" +
+                                "<span id='well-kid' class='tracking'>{KID}</span></table>",
                     } );
                     feature.popupTemplate = ogWellsTemplate;
                 }
@@ -302,7 +304,8 @@ function(
                                 "<tr><td>Cumulative Oil (bbls): </td><td>{CUMM_OIL}</td></tr>" +
                                 "<tr><td>Produces Gas: </td><td>{PROD_GAS}</td></tr>" +
                                 "<tr><td>Cumulative Gas (mcf): </td><td>{CUMM_GAS}</td></tr>" +
-                                "<tr><td>Approximate Acres: </td><td>{APPROXACRE}</td></tr></table>",
+                                "<tr><td>Approximate Acres: </td><td>{APPROXACRE}</td></tr>" +
+                                "<span id='field-kid' class='tracking'>{FIELD_KID}</span></table>",
                         fieldInfos: [
                             {
                                 fieldName: "CUMM_OIL",

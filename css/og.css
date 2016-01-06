@@ -60,6 +60,10 @@ input[type=checkbox] {
 	white-space: nowrap;
 }
 
+.tracking {
+	display: none;
+}
+
 @media screen and (max-width: 568px) {
 	#HomeButton {
 		left: -5px;
