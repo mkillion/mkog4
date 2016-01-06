@@ -56,6 +56,10 @@ input[type=checkbox] {
 	font-size: 12px;
 }
 
+.esri-popup-renderer-description table tr td {
+	white-space: nowrap;
+}
+
 @media screen and (max-width: 568px) {
 	#HomeButton {
 		left: -5px;
