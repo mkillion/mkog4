@@ -272,9 +272,25 @@ function(
 
                 // TODO - add "or RECENT_SPUDS" to ogwells block.
                 if (layerName === 'OG_WELLS') {
-                    wellKID = feature.attributes.KID;
-                    ogWellsTemplate.title = "Well: {LEASE_NAME} " + "{WELL_NAME}";
-                    ogWellsTemplate.content = wellContent(feature);
+                    var ogWellsTemplate = new PopupTemplate( {
+                        title: "<span class='pu-title'>Well: {LEASE_NAME} {WELL_NAME} </span><span class='pu-note'>({API_NUMBER})</span>",
+                        content: "<table><tr><td>Current Operator: </td><td>{CURR_OPERATOR}</td></tr>" +
+                                "<tr><td>Well Type: </td><td>{STATUS_TXT}</td></tr>" +
+                                "<tr><td>Status: </td><td>{WELL_CLASS}</td></tr>" +
+                                "<tr><td>Lease: </td><td>{LEASE_NAME}</td></tr>" +
+                                "<tr><td>Well: </td><td>{WELL_NAME}</td></tr>" +
+                                "<tr><td>Field: </td><td>{FIELD_NAME}</td></tr>" +
+                                "<tr><td>Location: </td><td>T{TOWNSHIP}S R{RANGE}{RANGE_DIRECTION} Sec {SECTION}<br>{SPOT} {SUBDIVISION_4_SMALLEST} {SUBDIVISION_3} {SUBDIVISION_2} {SUBDIVISION_1_LARGEST}</td></tr>" +
+                                "<tr><td>Coordinates (NAD27): </td><td>{NAD27_LONGITUDE}, {NAD27_LATITUDE}</td></tr>" +
+                                "<tr><td>County: </td><td>{COUNTY}</td></tr>" +
+                                "<tr><td>Permit Date: </td><td>{PERMIT_DATE_TXT}</td></tr>" +
+                                "<tr><td>Spud Date: </td><td>{SPUD_DATE_TXT}</td></tr>" +
+                                "<tr><td>Completion Date: </td><td>{COMPLETION_DATE_TXT}</td></tr>" +
+                                "<tr><td>Plug Date: </td><td>{PLUG_DATE_TXT}</td></tr>" +
+                                "<tr><td>Total Depth (ft): </td><td>{ROTARY_TOTAL_DEPTH}</td></tr>" +
+                                "<tr><td>Elevation (KB, ft): </td><td>{ELEVATION_KB}</td></tr>" +
+                                "<tr><td>Producing Formation: </td><td>{PRODUCING_FORMATION}</td></tr></table>",
+                    } );
                     feature.popupTemplate = ogWellsTemplate;
                 }
                 else if (layerName === 'OG_FIELDS') {
@@ -322,91 +338,6 @@ function(
                 view.popup.viewModel.location = event.mapPoint;
             }
             dom.byId("mapDiv").style.cursor = "auto";
-        }
-
-        /*function fieldContent(feature) {
-            var fa = feature.attributes;
-            var junk = fa.FIELD_NAME;
-            var ftyp = fa.FIELD_TYPE !== "Null" ? fa.FIELD_TYPE : "";
-            var sta = fa.STATUS !== "Null" ? fa.STATUS : "";
-            var po = fa.PROD_OIL !== "Null" ? fa.PROD_OIL : "";
-            var co = fa.CUMM_OIL !== "Null" ? fa.CUMM_OIL.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var pg = fa.PROD_GAS !== "Null" ? fa.PROD_GAS : "";
-            var cg = fa.CUMM_GAS !== "Null" ? fa.CUMM_GAS.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var ac = fa.APPROXACRE !== "Null" ? fa.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var kid = fa.FIELD_KID !== "Null" ? fa.FIELD_KID : "";
-
-            var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>" + ftyp + "</td></tr>";
-            content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
-            content += "<tr><td>Produces Oil: </td><td>" + po + "</td></tr>";
-            content += "<tr><td>Cumulative Oil (bbls): </td><td>" + co + "</td></tr>";
-            content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
-            content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
-            content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
-            content += "<span id='field-kid' class='tracking'>" + junk + "</span>";
-            content += "</table>";
-
-            return content;
-        }*/
-
-        function wellContent(feature) {
-            var fa = feature.attributes;
-            var api = fa.API_NUMBER !== "Null" ? fa.API_NUMBER : "";
-            var currOp = fa.CURR_OPERATOR !== "Null" ? fa.CURR_OPERATOR : "";
-            var type = fa.STATUS_TXT !== "Null" ? fa.STATUS_TXT : "";
-            var stat = fa.WELL_CLASS !== "Null" ? fa.WELL_CLASS : "";
-            var lease = fa.LEASE_NAME !== "Null" ? fa.LEASE_NAME : "";
-            var well = fa.WELL_NAME !== "Null" ? fa.WELL_NAME : "";
-            var fld = fa.FIELD_NAME !== "Null" ? fa.FIELD_NAME : "";
-            var twp = fa.TOWNSHIP !== "Null" ? fa.TOWNSHIP : "";
-            var rng = fa.RANGE !== "Null" ? fa.RANGE : "";
-            var rngd = fa.RANGE_DIRECTION !== "Null" ? fa.RANGE_DIRECTION : "";
-            var sec = fa.SECTION !== "Null" ? fa.SECTION : "";
-            var spt = fa.SPOT !== "Null" ? fa.SPOT : "";
-            var sub4 = fa.SUBDIVISION_4_SMALLEST !== "Null" ? fa.SUBDIVISION_4_SMALLEST : "";
-            var sub3 = fa.SUBDIVISION_3 !== "Null" ? fa.SUBDIVISION_3 : "";
-            var sub2 = fa.SUBDIVISION_2 !== "Null" ? fa.SUBDIVISION_2 : "";
-            var sub1 = fa.SUBDIVISION_1_LARGEST !== "Null" ? fa.SUBDIVISION_1_LARGEST : "";
-            var lon = fa.NAD27_LONGITUDE !== "Null" ? fa.NAD27_LONGITUDE : "";
-            var lat = fa.NAD27_LATITUDE !== "Null" ? fa.NAD27_LATITUDE : "";
-            var co = fa.COUNTY !== "Null" ? fa.COUNTY : "";
-            var pdt = fa.PERMIT_DATE_TXT !== "Null" ? fa.PERMIT_DATE_TXT : "";
-            var sdt = fa.SPUD_DATE_TXT !== "Null" ? fa.SPUD_DATE_TXT : "";
-            var cdt = fa.COMPLETION_DATE_TXT !== "Null" ? fa.COMPLETION_DATE_TXT : "";
-            var pldt = fa.PLUG_DATE_TXT !== "Null" ? fa.PLUG_DATE_TXT : "";
-            var dpth = fa.ROTARY_TOTAL_DEPTH !== "Null" ? fa.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var elev = fa.ELEVATION_KB !== "Null" ? fa.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var frm = fa.PRODUCING_FORMATION !== "Null" ? fa.PRODUCING_FORMATION : "";
-            var kid = fa.KID !== "Null" ? fa.KID : "";
-
-            var content = "<table cellpadding='3'><tr><td>API: </td><td>" + api + "</td></tr>";
-            content += "<tr><td>Current Operator: </td><td>" + currOp + "</td></tr>"
-            content += "<tr><td>Well Type: </td><td>" + type + "</td></tr>";
-            content += "<tr><td>Status: </td><td>" + stat + "</td></tr>";
-            content += "<tr><td>Lease: </td><td>" + lease + "</td></tr>";
-            content += "<tr><td>Well: </td><td>" + well + "</td></tr>";
-            content += "<tr><td>Field: </td><td>" + fld + "</td></tr>";
-            content += "<tr><td>Location: </td><td>T" + twp + "S R" + rng + rngd + " Sec " + sec + "<br>" + spt + " " + sub4 + " " + sub3 + " " + sub2 + " " + sub1 + "</td></tr>";
-            content += "<tr><td>Coordinates (NAD27): </td><td>" + lon + ", " + lat + "</td></tr>";
-            content += "<tr><td>County: </td><td>" + co + "</td></tr>";
-            content += "<tr><td>Permit Date: </td><td>" + pdt + "</td></tr>";
-            content += "<tr><td>Spud Date: </td><td>" + sdt + "</td></tr>";
-            content += "<tr><td>Completion Date: </td><td>" + cdt + "</td></tr>";
-            content += "<tr><td>Plug Date: </td><td>" + pldt + "</td></tr>";
-            content += "<tr><td>Total Depth (ft): </td><td>" + dpth + "</td></tr>";
-            content += "<tr><td>Elevation (KB, ft): </td><td>" + elev + "</td></tr>";
-            content += "<tr><td>Producing Formation: </td><td>" + frm + "</td></tr>";
-            content += "<tr><td colspan='2'><a href='javascript: bufferFeature(" + kid + ");'>Buffer Well</a></td></tr>";
-            content += "<tr><td colspan='2'><a href='javascript: reportBadSpot(" + kid + ");'>Report Location Problem</a></td></tr>";
-            content += "</table>";
-
-            return content;
-        }
-
-        function wwc5Content(seqNum) {
-
-
-            return content;
         }
     }
 
