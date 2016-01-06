@@ -76,7 +76,9 @@ function(
     // Create map and map widgets:
     var identifyTask, params;
     var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
-    ///var fieldKID, wellKID, wwc5SeqNum;
+    var ogFieldsTemplate = new PopupTemplate();
+    var ogWellsTemplate = new PopupTemplate();
+    var fieldsKID, wellKID;
 
     var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
     var fieldsLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields"} );
@@ -105,7 +107,7 @@ function(
         params = new IdentifyParameters();
         params.tolerance = 3;
         params.layerIds = [12, 0, 8, 1];
-        params.layerOption = "all";
+        params.layerOption = "visible";
         params.width = view.width;
         params.height = view.height;
     } );
@@ -158,11 +160,11 @@ function(
         className: "esri-icon-table"
     };
     view.popup.viewModel.actions.push(fullInfoAction);
-    /*view.popup.viewModel.on("action-click", function(evt){
+    view.popup.viewModel.on("action-click", function(evt){
         if(evt.action.id === "full-info"){
-            var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + fieldKID, "_blank");
+            showFullInfo();
         }
-    } );*/
+    } );
 
     // End map and map widgets.
 
@@ -235,6 +237,17 @@ function(
     }
 
 
+    function showFullInfo() {
+        var popupTitle = $(".esri-title").html();
+
+        if (popupTitle.indexOf("Field") > -1) {
+            var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + fieldKID, "target='_blank'");
+        } else if (popupTitle.indexOf("Well") > -1) {
+            var win = window.open("http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + wellKID, "target='_blank'");
+        }
+    }
+
+
     function createTOC() {
         var lyrs = map.layers;
         var chkd, tocContent = "";
@@ -261,19 +274,16 @@ function(
 
                 // TODO - add "or RECENT_SPUDS" to ogwells block.
                 if (layerName === 'OG_WELLS') {
-                    var ogWellsTemplate = new PopupTemplate( {
-                        title: "Well: {LEASE_NAME} " + "{WELL_NAME}",
-                        content: wellContent(feature)
-                    } );
+                    wellKID = feature.attributes.KID;
+                    ogWellsTemplate.title = "Well: {LEASE_NAME} " + "{WELL_NAME}";
+                    ogWellsTemplate.content = wellContent(feature);
                     feature.popupTemplate = ogWellsTemplate;
                 }
                 else if (layerName === 'OG_FIELDS') {
-                    var ogFieldsTemplate = new PopupTemplate( {
-                        title: "Field: {FIELD_NAME}",
-                        content: fieldContent(feature)
-                    } );
+                    fieldKID = feature.attributes.FIELD_KID;
+                    ogFieldsTemplate.title = "Field: {FIELD_NAME}";
+                    ogFieldsTemplate.content = fieldContent(feature);
                     feature.popupTemplate = ogFieldsTemplate;
-                    ///fieldKID = feature.attributes.FIELD_KID;
                 }
                 else if (layerName === 'WWC5_WELLS') {
                     var wwc5Template = new PopupTemplate( {
@@ -319,8 +329,6 @@ function(
         }
 
         function wellContent(feature) {
-            console.log(feature.attributes.CURR_OPERATOR);
-            console.log(feature.attributes.curr_operator);
             var f = feature.attributes;
             var api = f.API_NUMBER !== "Null" ? f.API_NUMBER : "";
             var currOp = f.CURR_OPERATOR !== "Null" ? f.CURR_OPERATOR : "";
