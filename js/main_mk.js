@@ -76,9 +76,6 @@ function(
     // Create map and map widgets:
     var identifyTask, params;
     var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
-    var ogFieldsTemplate = new PopupTemplate();
-    var ogWellsTemplate = new PopupTemplate();
-    var fieldsKID, wellKID;
 
     var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
     var fieldsLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields"} );
@@ -241,6 +238,7 @@ function(
         var popupTitle = $(".esri-title").html();
 
         if (popupTitle.indexOf("Field") > -1) {
+            var fieldKID = $("#field-kid").html();
             var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + fieldKID, "target='_blank'");
         } else if (popupTitle.indexOf("Well") > -1) {
             var win = window.open("http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + wellKID, "target='_blank'");
@@ -280,14 +278,35 @@ function(
                     feature.popupTemplate = ogWellsTemplate;
                 }
                 else if (layerName === 'OG_FIELDS') {
-                    fieldKID = feature.attributes.FIELD_KID;
-                    ogFieldsTemplate.title = "Field: {FIELD_NAME}";
-                    ogFieldsTemplate.content = fieldContent(feature);
+                    var ogFieldsTemplate = new PopupTemplate( {
+                        title: "Field: {FIELD_NAME}",
+                        content: "<table><tr><td>Type of Field: </td><td>{FIELD_TYPE}</td></tr>" +
+                                "<tr><td>Status: </td><td>{STATUS}</td></tr>" +
+                                "<tr><td>Produces Oil: </td><td>{PROD_OIL}</td></tr>" +
+                                "<tr><td>Cumulative Oil (bbls): </td><td>{CUMM_OIL}</td></tr>" +
+                                "<tr><td>Produces Gas: </td><td>{PROD_GAS}</td></tr>" +
+                                "<tr><td>Cumulative Gas (mcf): </td><td>{CUMM_GAS}</td></tr>" +
+                                "<tr><td>Approximate Acres: </td><td>{APPROXACRE}</td></tr></table>",
+                        fieldInfos: [
+                            {
+                                fieldName: "CUMM_OIL",
+                                format: { digitSeparator: true, places: 0 }
+                            },
+                            {
+                                fieldName: "CUMM_GAS",
+                                format: { digitSeparator: true, places: 0 }
+                            },
+                            {
+                                fieldName: "APPROXACRE",
+                                format: { digitSeparator: true, places: 0 }
+                            }
+                        ]
+                    } );
                     feature.popupTemplate = ogFieldsTemplate;
                 }
                 else if (layerName === 'WWC5_WELLS') {
                     var wwc5Template = new PopupTemplate( {
-                        title: "Water Well:",
+                        title: "Water Well: ",
                         content: wwc5Content(feature)
                     } );
                     feature.popupTemplate = wwc5Template;
@@ -305,16 +324,17 @@ function(
             dom.byId("mapDiv").style.cursor = "auto";
         }
 
-        function fieldContent(feature) {
-            var f = feature.attributes;
-            var ftyp = f.FIELD_TYPE !== "Null" ? f.FIELD_TYPE : "";
-            var sta = f.STATUS !== "Null" ? f.STATUS : "";
-            var po = f.PROD_OIL !== "Null" ? f.PROD_OIL : "";
-            var co = f.CUMM_OIL !== "Null" ? f.CUMM_OIL.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var pg = f.PROD_GAS !== "Null" ? f.PROD_GAS : "";
-            var cg = f.CUMM_GAS !== "Null" ? f.CUMM_GAS.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var ac = f.APPROXACRE !== "Null" ? f.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var kid = f.FIELD_KID !== "Null" ? f.FIELD_KID : "";
+        /*function fieldContent(feature) {
+            var fa = feature.attributes;
+            var junk = fa.FIELD_NAME;
+            var ftyp = fa.FIELD_TYPE !== "Null" ? fa.FIELD_TYPE : "";
+            var sta = fa.STATUS !== "Null" ? fa.STATUS : "";
+            var po = fa.PROD_OIL !== "Null" ? fa.PROD_OIL : "";
+            var co = fa.CUMM_OIL !== "Null" ? fa.CUMM_OIL.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+            var pg = fa.PROD_GAS !== "Null" ? fa.PROD_GAS : "";
+            var cg = fa.CUMM_GAS !== "Null" ? fa.CUMM_GAS.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+            var ac = fa.APPROXACRE !== "Null" ? fa.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+            var kid = fa.FIELD_KID !== "Null" ? fa.FIELD_KID : "";
 
             var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>" + ftyp + "</td></tr>";
             content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
@@ -323,40 +343,41 @@ function(
             content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
             content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
             content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
+            content += "<span id='field-kid' class='tracking'>" + junk + "</span>";
             content += "</table>";
 
             return content;
-        }
+        }*/
 
         function wellContent(feature) {
-            var f = feature.attributes;
-            var api = f.API_NUMBER !== "Null" ? f.API_NUMBER : "";
-            var currOp = f.CURR_OPERATOR !== "Null" ? f.CURR_OPERATOR : "";
-            var type = f.STATUS_TXT !== "Null" ? f.STATUS_TXT : "";
-            var stat = f.WELL_CLASS !== "Null" ? f.WELL_CLASS : "";
-            var lease = f.LEASE_NAME !== "Null" ? f.LEASE_NAME : "";
-            var well = f.WELL_NAME !== "Null" ? f.WELL_NAME : "";
-            var fld = f.FIELD_NAME !== "Null" ? f.FIELD_NAME : "";
-            var twp = f.TOWNSHIP !== "Null" ? f.TOWNSHIP : "";
-            var rng = f.RANGE !== "Null" ? f.RANGE : "";
-            var rngd = f.RANGE_DIRECTION !== "Null" ? f.RANGE_DIRECTION : "";
-            var sec = f.SECTION !== "Null" ? f.SECTION : "";
-            var spt = f.SPOT !== "Null" ? f.SPOT : "";
-            var sub4 = f.SUBDIVISION_4_SMALLEST !== "Null" ? f.SUBDIVISION_4_SMALLEST : "";
-            var sub3 = f.SUBDIVISION_3 !== "Null" ? f.SUBDIVISION_3 : "";
-            var sub2 = f.SUBDIVISION_2 !== "Null" ? f.SUBDIVISION_2 : "";
-            var sub1 = f.SUBDIVISION_1_LARGEST !== "Null" ? f.SUBDIVISION_1_LARGEST : "";
-            var lon = f.NAD27_LONGITUDE !== "Null" ? f.NAD27_LONGITUDE : "";
-            var lat = f.NAD27_LATITUDE !== "Null" ? f.NAD27_LATITUDE : "";
-            var co = f.COUNTY !== "Null" ? f.COUNTY : "";
-            var pdt = f.PERMIT_DATE_TXT !== "Null" ? f.PERMIT_DATE_TXT : "";
-            var sdt = f.SPUD_DATE_TXT !== "Null" ? f.SPUD_DATE_TXT : "";
-            var cdt = f.COMPLETION_DATE_TXT !== "Null" ? f.COMPLETION_DATE_TXT : "";
-            var pldt = f.PLUG_DATE_TXT !== "Null" ? f.PLUG_DATE_TXT : "";
-            var dpth = f.ROTARY_TOTAL_DEPTH !== "Null" ? f.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-            var frm = f.PRODUCING_FORMATION !== "Null" ? f.PRODUCING_FORMATION : "";
-            var kid = f.KID !== "Null" ? f.KID : "";
+            var fa = feature.attributes;
+            var api = fa.API_NUMBER !== "Null" ? fa.API_NUMBER : "";
+            var currOp = fa.CURR_OPERATOR !== "Null" ? fa.CURR_OPERATOR : "";
+            var type = fa.STATUS_TXT !== "Null" ? fa.STATUS_TXT : "";
+            var stat = fa.WELL_CLASS !== "Null" ? fa.WELL_CLASS : "";
+            var lease = fa.LEASE_NAME !== "Null" ? fa.LEASE_NAME : "";
+            var well = fa.WELL_NAME !== "Null" ? fa.WELL_NAME : "";
+            var fld = fa.FIELD_NAME !== "Null" ? fa.FIELD_NAME : "";
+            var twp = fa.TOWNSHIP !== "Null" ? fa.TOWNSHIP : "";
+            var rng = fa.RANGE !== "Null" ? fa.RANGE : "";
+            var rngd = fa.RANGE_DIRECTION !== "Null" ? fa.RANGE_DIRECTION : "";
+            var sec = fa.SECTION !== "Null" ? fa.SECTION : "";
+            var spt = fa.SPOT !== "Null" ? fa.SPOT : "";
+            var sub4 = fa.SUBDIVISION_4_SMALLEST !== "Null" ? fa.SUBDIVISION_4_SMALLEST : "";
+            var sub3 = fa.SUBDIVISION_3 !== "Null" ? fa.SUBDIVISION_3 : "";
+            var sub2 = fa.SUBDIVISION_2 !== "Null" ? fa.SUBDIVISION_2 : "";
+            var sub1 = fa.SUBDIVISION_1_LARGEST !== "Null" ? fa.SUBDIVISION_1_LARGEST : "";
+            var lon = fa.NAD27_LONGITUDE !== "Null" ? fa.NAD27_LONGITUDE : "";
+            var lat = fa.NAD27_LATITUDE !== "Null" ? fa.NAD27_LATITUDE : "";
+            var co = fa.COUNTY !== "Null" ? fa.COUNTY : "";
+            var pdt = fa.PERMIT_DATE_TXT !== "Null" ? fa.PERMIT_DATE_TXT : "";
+            var sdt = fa.SPUD_DATE_TXT !== "Null" ? fa.SPUD_DATE_TXT : "";
+            var cdt = fa.COMPLETION_DATE_TXT !== "Null" ? fa.COMPLETION_DATE_TXT : "";
+            var pldt = fa.PLUG_DATE_TXT !== "Null" ? fa.PLUG_DATE_TXT : "";
+            var dpth = fa.ROTARY_TOTAL_DEPTH !== "Null" ? fa.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+            var elev = fa.ELEVATION_KB !== "Null" ? fa.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+            var frm = fa.PRODUCING_FORMATION !== "Null" ? fa.PRODUCING_FORMATION : "";
+            var kid = fa.KID !== "Null" ? fa.KID : "";
 
             var content = "<table cellpadding='3'><tr><td>API: </td><td>" + api + "</td></tr>";
             content += "<tr><td>Current Operator: </td><td>" + currOp + "</td></tr>"
