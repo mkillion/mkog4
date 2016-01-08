@@ -298,29 +298,8 @@ function(
                 else if (layerName === 'OG_FIELDS') {
                     var ogFieldsTemplate = new PopupTemplate( {
                         title: "Field: {FIELD_NAME}",
-                        content: "<table><tr><td>Type of Field: </td><td>{FIELD_TYPE}</td></tr>" +
-                                "<tr><td>Status: </td><td>{STATUS}</td></tr>" +
-                                "<tr><td>Produces Oil: </td><td>{PROD_OIL}</td></tr>" +
-                                "<tr><td>Cumulative Oil (bbls): </td><td>{CUMM_OIL}</td></tr>" +
-                                "<tr><td>Produces Gas: </td><td>{PROD_GAS}</td></tr>" +
-                                "<tr><td>Cumulative Gas (mcf): </td><td>{CUMM_GAS}</td></tr>" +
-                                "<tr><td>Approximate Acres: </td><td>{APPROXACRE}</td></tr>" +
-                                "<span id='field-kid' class='no-display'>{FIELD_KID}</span></table>",
-                        fieldInfos: [
-                            {
-                                fieldName: "CUMM_OIL",
-                                format: { digitSeparator: true, places: 0 }
-                            },
-                            {
-                                fieldName: "CUMM_GAS",
-                                format: { digitSeparator: true, places: 0 }
-                            },
-                            {
-                                fieldName: "APPROXACRE",
-                                format: { digitSeparator: true, places: 0 }
-                            }
-                        ]
-                    } );
+                        content: getFieldContent()
+                        } );
                     feature.popupTemplate = ogFieldsTemplate;
                 }
                 else if (layerName === 'WWC5_WELLS') {
@@ -330,6 +309,30 @@ function(
                     } );
                     feature.popupTemplate = wwc5Template;
                 }
+
+                function getFieldContent() {
+                    var f = feature.attributes;
+                    var ftyp = f.FIELD_TYPE !== "Null" ? f.FIELD_TYPE : "";
+                    var sta = f.STATUS !== "Null" ? f.STATUS : "";
+                    var po = f.PROD_OIL !== "Null" ? f.PROD_OIL : "";
+                    var co = f.CUMM_OIL !== "Null" ? f.CUMM_OIL.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+                    var pg = f.PROD_GAS !== "Null" ? f.PROD_GAS : "";
+                    var cg = f.CUMM_GAS !== "Null" ? f.CUMM_GAS.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+                    var ac = f.APPROXACRE !== "Null" ? f.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+                    var kid = f.FIELD_KID !== "Null" ? f.FIELD_KID : "";
+
+                    var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>" + ftyp + "</td></tr>";
+                    content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
+                    content += "<tr><td>Produces Oil: </td><td>" + po + "</td></tr>";
+                    content += "<tr><td>Cumulative Oil (bbls): </td><td>" + co + "</td></tr>";
+                    content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
+                    content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
+                    content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
+                    content += "<span id='field-kid' class='no-display'>{FIELD_KID}</span></table>";
+
+                    return content;
+                }
+
                 return feature;
           } );
         } ).then(showPopup);
