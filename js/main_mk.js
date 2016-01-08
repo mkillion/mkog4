@@ -275,42 +275,78 @@ function(
                 if (layerName === 'OG_WELLS') {
                     var ogWellsTemplate = new PopupTemplate( {
                         title: "<span class='pu-title'>Well: {LEASE_NAME} {WELL_NAME} </span><span class='pu-note'>({API_NUMBER})</span>",
-                        content: "<table><tr><td>Current Operator: </td><td>{CURR_OPERATOR}</td></tr>" +
-                                "<tr><td>Well Type: </td><td>{STATUS_TXT}</td></tr>" +
-                                "<tr><td>Status: </td><td>{WELL_CLASS}</td></tr>" +
-                                "<tr><td>Lease: </td><td>{LEASE_NAME}</td></tr>" +
-                                "<tr><td>Well: </td><td>{WELL_NAME}</td></tr>" +
-                                "<tr><td>Field: </td><td>{FIELD_NAME}</td></tr>" +
-                                "<tr><td>Location: </td><td>T{TOWNSHIP}S R{RANGE}{RANGE_DIRECTION} Sec {SECTION}<br>{SPOT} {SUBDIVISION_4_SMALLEST} {SUBDIVISION_3} {SUBDIVISION_2} {SUBDIVISION_1_LARGEST}</td></tr>" +
-                                "<tr><td>Coordinates (NAD27): </td><td>{NAD27_LONGITUDE}, {NAD27_LATITUDE}</td></tr>" +
-                                "<tr><td>County: </td><td>{COUNTY}</td></tr>" +
-                                "<tr><td>Permit Date: </td><td>{PERMIT_DATE_TXT}</td></tr>" +
-                                "<tr><td>Spud Date: </td><td>{SPUD_DATE_TXT}</td></tr>" +
-                                "<tr><td>Completion Date: </td><td>{COMPLETION_DATE_TXT}</td></tr>" +
-                                "<tr><td>Plug Date: </td><td>{PLUG_DATE_TXT}</td></tr>" +
-                                "<tr><td>Total Depth (ft): </td><td>{ROTARY_TOTAL_DEPTH}</td></tr>" +
-                                "<tr><td>Elevation (KB, ft): </td><td>{ELEVATION_KB}</td></tr>" +
-                                "<tr><td>Producing Formation: </td><td>{PRODUCING_FORMATION}</td></tr>" +
-                                "<span id='well-kid' class='no-display'>{KID}</span></table>",
+                        content: wellContent()
                     } );
                     feature.popupTemplate = ogWellsTemplate;
                 }
                 else if (layerName === 'OG_FIELDS') {
                     var ogFieldsTemplate = new PopupTemplate( {
                         title: "Field: {FIELD_NAME}",
-                        content: getFieldContent()
+                        content: fieldContent()
                         } );
                     feature.popupTemplate = ogFieldsTemplate;
                 }
                 else if (layerName === 'WWC5_WELLS') {
                     var wwc5Template = new PopupTemplate( {
                         title: "Water Well: ",
-                        content: wwc5Content(feature)
+                        content: wwc5Content()
                     } );
                     feature.popupTemplate = wwc5Template;
                 }
 
-                function getFieldContent() {
+                function wellContent() {
+                    var f = feature.attributes;
+                    var api = f.API_NUMBER !== "Null" ? f.API_NUMBER : "";
+                    var currOp = f.CURR_OPERATOR !== "null" ? f.CURR_OPERATOR : "";
+                    var type = f.STATUS_TXT !== "Null" ? f.STATUS_TXT : "";
+                    var stat = f.WELL_CLASS !== "Null" ? f.WELL_CLASS : "";
+                    var lease = f.LEASE_NAME !== "Null" ? f.LEASE_NAME : "";
+                    var well = f.WELL_NAME !== "Null" ? f.WELL_NAME : "";
+                    var fld = f.FIELD_NAME !== "Null" ? f.FIELD_NAME : "";
+                    var twp = f.TOWNSHIP !== "Null" ? f.TOWNSHIP : "";
+                    var rng = f.RANGE !== "Null" ? f.RANGE : "";
+                    var rngd = f.RANGE_DIRECTION !== "Null" ? f.RANGE_DIRECTION : "";
+                    var sec = f.SECTION !== "Null" ? f.SECTION : "";
+                    var spt = f.SPOT !== "Null" ? f.SPOT : "";
+                    var sub4 = f.SUBDIVISION_4_SMALLEST !== "Null" ? f.SUBDIVISION_4_SMALLEST : "";
+                    var sub3 = f.SUBDIVISION_3 !== "Null" ? f.SUBDIVISION_3 : "";
+                    var sub2 = f.SUBDIVISION_2 !== "Null" ? f.SUBDIVISION_2 : "";
+                    var sub1 = f.SUBDIVISION_1_LARGEST !== "Null" ? f.SUBDIVISION_1_LARGEST : "";
+                    var lon = f.NAD27_LONGITUDE !== "Null" ? f.NAD27_LONGITUDE : "";
+                    var lat = f.NAD27_LATITUDE !== "Null" ? f.NAD27_LATITUDE : "";
+                    var co = f.COUNTY !== "Null" ? f.COUNTY : "";
+                    var pdt = f.PERMIT_DATE_TXT !== "Null" ? f.PERMIT_DATE_TXT : "";
+                    var sdt = f.SPUD_DATE_TXT !== "Null" ? f.SPUD_DATE_TXT : "";
+                    var cdt = f.COMPLETION_DATE_TXT !== "Null" ? f.COMPLETION_DATE_TXT : "";
+                    var pldt = f.PLUG_DATE_TXT !== "Null" ? f.PLUG_DATE_TXT : "";
+                    var dpth = f.ROTARY_TOTAL_DEPTH !== "Null" ? f.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+                    var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+                    var frm = f.PRODUCING_FORMATION !== "Null" ? f.PRODUCING_FORMATION : "";
+                    var kid = f.KID !== "Null" ? f.KID : "";
+
+                    var content = "<table cellpadding='3'><tr><td>API: </td><td>" + api + "</td></tr>";
+                    content += "<tr><td>Current Operator: </td><td>" + currOp + "</td></tr>"
+                    content += "<tr><td>Well Type: </td><td>" + type + "</td></tr>";
+                    content += "<tr><td>Status: </td><td>" + stat + "</td></tr>";
+                    content += "<tr><td>Lease: </td><td>" + lease + "</td></tr>";
+                    content += "<tr><td>Well: </td><td>" + well + "</td></tr>";
+                    content += "<tr><td>Field: </td><td>" + fld + "</td></tr>";
+                    content += "<tr><td>Location: </td><td>T" + twp + "S R" + rng + rngd + " Sec " + sec + "<br>" + spt + " " + sub4 + " " + sub3 + " " + sub2 + " " + sub1 + "</td></tr>";
+                    content += "<tr><td>Coordinates (NAD27): </td><td>" + lon + ", " + lat + "</td></tr>";
+                    content += "<tr><td>County: </td><td>" + co + "</td></tr>";
+                    content += "<tr><td>Permit Date: </td><td>" + pdt + "</td></tr>";
+                    content += "<tr><td>Spud Date: </td><td>" + sdt + "</td></tr>";
+                    content += "<tr><td>Completion Date: </td><td>" + cdt + "</td></tr>";
+                    content += "<tr><td>Plug Date: </td><td>" + pldt + "</td></tr>";
+                    content += "<tr><td>Total Depth (ft): </td><td>" + dpth + "</td></tr>";
+                    content += "<tr><td>Elevation (KB, ft): </td><td>" + elev + "</td></tr>";
+                    content += "<tr><td>Producing Formation: </td><td>" + frm + "</td></tr>";
+                    content += "<span id='well-kid' class='no-display'>{KID}</span></table>";
+
+                    return content;
+                }
+
+                function fieldContent() {
                     var f = feature.attributes;
                     var ftyp = f.FIELD_TYPE !== "Null" ? f.FIELD_TYPE : "";
                     var sta = f.STATUS !== "Null" ? f.STATUS : "";
