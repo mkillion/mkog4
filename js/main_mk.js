@@ -107,6 +107,19 @@ function(
         params.layerOption = "visible";
         params.width = view.width;
         params.height = view.height;
+
+        // Define additional popup actions:
+        var fullInfoAction = {
+            title: "Full Info",
+            id: "full-info",
+            className: "esri-icon-table"
+        };
+        view.popup.viewModel.actions.push(fullInfoAction);
+        view.popup.viewModel.on("action-click", function(evt){
+            if(evt.action.id === "full-info"){
+                showFullInfo();
+            }
+        } );
     } );
 
     function mapErr(err) {
@@ -149,19 +162,6 @@ function(
     /*if (win.getBox().w > 1280) {
         locateBtn.set("visible", false);
     }*/
-
-    // Define additional popup actions:
-    var fullInfoAction = {
-        title: "Full Info",
-        id: "full-info",
-        className: "esri-icon-table"
-    };
-    view.popup.viewModel.actions.push(fullInfoAction);
-    view.popup.viewModel.on("action-click", function(evt){
-        if(evt.action.id === "full-info"){
-            showFullInfo();
-        }
-    } );
 
     // End map and map widgets.
 
@@ -237,10 +237,10 @@ function(
     function showFullInfo() {
         var popupTitle = $(".esri-title").html();
 
-        if (popupTitle.indexOf("Field") > -1) {
+        if (popupTitle.indexOf("Field:") > -1) {
             var fieldKID = $("#field-kid").html();
             var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + fieldKID, "target='_blank'");
-        } else if (popupTitle.indexOf("Well") > -1) {
+        } else if (popupTitle.indexOf("Well:") > -1) {
             var wellKID = $("#well-kid").html();
             var win = window.open("http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + wellKID, "target='_blank'");
         }
@@ -291,7 +291,7 @@ function(
                                 "<tr><td>Total Depth (ft): </td><td>{ROTARY_TOTAL_DEPTH}</td></tr>" +
                                 "<tr><td>Elevation (KB, ft): </td><td>{ELEVATION_KB}</td></tr>" +
                                 "<tr><td>Producing Formation: </td><td>{PRODUCING_FORMATION}</td></tr>" +
-                                "<span id='well-kid' class='tracking'>{KID}</span></table>",
+                                "<span id='well-kid' class='no-display'>{KID}</span></table>",
                     } );
                     feature.popupTemplate = ogWellsTemplate;
                 }
@@ -305,7 +305,7 @@ function(
                                 "<tr><td>Produces Gas: </td><td>{PROD_GAS}</td></tr>" +
                                 "<tr><td>Cumulative Gas (mcf): </td><td>{CUMM_GAS}</td></tr>" +
                                 "<tr><td>Approximate Acres: </td><td>{APPROXACRE}</td></tr>" +
-                                "<span id='field-kid' class='tracking'>{FIELD_KID}</span></table>",
+                                "<span id='field-kid' class='no-display'>{FIELD_KID}</span></table>",
                         fieldInfos: [
                             {
                                 fieldName: "CUMM_OIL",

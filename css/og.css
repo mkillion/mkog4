@@ -60,7 +60,7 @@ input[type=checkbox] {
 	white-space: nowrap;
 }
 
-.tracking {
+.no-display {
 	display: none;
 }
 
