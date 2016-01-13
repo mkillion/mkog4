@@ -71,6 +71,13 @@ function(
     } );
 
     createMenus();
+    createTools();
+    // TODO - next is only for testing opening a popup from a link:
+    $("#junktest").click(function() {
+        var kid = $("#junktest").html();
+
+
+    } );
     // End framework.
 
     // Create map and map widgets:
@@ -93,9 +100,9 @@ function(
         map: map,
         container: "mapDiv",
         center: [-98, 38],
-        zoom: 7
+        zoom: 7,
+        ui: { components: ["zoom"] }
     } );
-    view.ui.components = ["zoom"];
 
     view.then(function() {
         on(view, "click", executeIdTask);
@@ -121,6 +128,7 @@ function(
             }
         } );
     } );
+
 
     function mapErr(err) {
         console.log("Map Error: " + err);
@@ -174,7 +182,7 @@ function(
         content += '<div class="panel-container">';
         content += '<div class="panel-header">Zoom To</div>';
         content += '<div class="panel-padding">';
-        content += '<table width="90%" style="font-size:10px;">';
+        content += '<div id="zoom-content"></div>';
         content += '</div>';
         content += '</div>';
 
@@ -188,9 +196,7 @@ function(
         content = '';
         content += '<div class="panel-container">';
         content += '<div class="panel-header">Layers</div>';
-        content += '<div>';
         content += '<div id="lyrs-toc"></div>';
-        content += '</div>';
         content += '</div>';
 
         menuObj = {
@@ -204,6 +210,7 @@ function(
         content += '<div class="panel-container">';
         content += '<div class="panel-header">Legend</div>';
         content += '<div class="panel-padding">';
+        content += '<div id="legend-content"></div>';
         content += '</div>';
         content += '</div>';
 
@@ -218,6 +225,7 @@ function(
         content += '<div class="panel-container">';
         content += '<div class="panel-header">Tools</div>';
         content += '<div class="panel-padding">';
+        content += '<div id="tools-content"></div>';
         content += '</div>';
         content += '</div>';
 
@@ -261,6 +269,14 @@ function(
         $("#lyrs-toc").html(tocContent);
     }
 
+
+    function createTools() {
+        var cont = "";
+        cont += '<span id="junktest">1006116441</span>';
+        $("#tools-content").html(cont);
+    }
+
+
     function executeIdTask(event) {
         params.geometry = event.mapPoint;
         params.mapExtent = view.extent;
@@ -274,7 +290,7 @@ function(
                 // TODO - add "or RECENT_SPUDS" to ogwells block.
                 if (layerName === 'OG_WELLS') {
                     var ogWellsTemplate = new PopupTemplate( {
-                        title: "<span class='pu-title'>Well: {LEASE_NAME} {WELL_NAME} </span><span class='pu-note'>({API_NUMBER})</span>",
+                        title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>({API_NUMBER})</span>",
                         content: wellContent()
                     } );
                     feature.popupTemplate = ogWellsTemplate;
