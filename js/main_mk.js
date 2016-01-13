@@ -75,9 +75,11 @@ function(
     // TODO - following click function is only for testing opening a popup from a link:
     $("#junktest").click(function() {
         var kid = $("#junktest").html();
-        // use kid to return a graphic/response
+        // use kid to return a graphic/response (find task?)
+            // OR, should this be an ajax request to just get attribute info?
         // set a popup template for the graphic/response
         // open a popup at the feature's location
+        // would be nice to reuse popup content-generation functions (currently would have scope problems)
 
         /*view.popup.viewModel.features = response;
         view.popup.viewModel.visible = true;
