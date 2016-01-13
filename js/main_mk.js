@@ -72,11 +72,16 @@ function(
 
     createMenus();
     createTools();
-    // TODO - next is only for testing opening a popup from a link:
+    // TODO - following click function is only for testing opening a popup from a link:
     $("#junktest").click(function() {
         var kid = $("#junktest").html();
+        // use kid to return a graphic/response
+        // set a popup template for the graphic/response
+        // open a popup at the feature's location
 
-
+        /*view.popup.viewModel.features = response;
+        view.popup.viewModel.visible = true;
+        view.popup.viewModel.location = event.mapPoint;*/
     } );
     // End framework.
 
@@ -394,6 +399,7 @@ function(
                 view.popup.viewModel.features = response;
                 view.popup.viewModel.visible = true;
                 view.popup.viewModel.location = event.mapPoint;
+                //view.popup.viewModel.docked = true;
             }
             dom.byId("mapDiv").style.cursor = "auto";
         }
