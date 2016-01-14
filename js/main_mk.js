@@ -214,14 +214,16 @@ function(
 
 
     function openPopup(feature) {
-        var pt = new Point( {
+        // Uncomment if undocking popup:
+        /*var pt = new Point( {
             x: feature[0].geometry.x,
             y: feature[0].geometry.y
         } );
+        view.popup.viewModel.location = pt;*/
         view.popup.viewModel.features = feature;
-        //view.popup.viewModel.location = pt;
         view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
+        dom.byId("mapDiv").style.cursor = "auto";
     }
 
 
@@ -433,17 +435,7 @@ function(
 
                 return feature;
           } );
-        } ).then(showPopup);
-
-        function showPopup(response) {
-            if (response.length > 0) {
-                view.popup.viewModel.features = response;
-                view.popup.viewModel.visible = true;
-                //view.popup.viewModel.location = event.mapPoint;
-                view.popup.viewModel.docked = true;
-            }
-            dom.byId("mapDiv").style.cursor = "auto";
-        }
+        } ).then(openPopup);
     }
 
 
