@@ -252,12 +252,22 @@ function(
             .then(function(response) {
                 return arrayUtils.map(response, function(result) {
                     var feature = result.feature;
-                        // TODO: add for field too.
-                        var t = new PopupTemplate( {
-                            title: "<span class='pu-title'>Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME + "  </span><span class='pu-note'>(" + feature.attributes.API_NUMBER + ")</span>",
+                    var layerName = result.layerName;
+
+                    if (layerName === 'OG_WELLS') {
+                        var ogWellsTemplate = new PopupTemplate( {
+                            title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>({API_NUMBER})</span>",
                             content: wellContent(feature)
                         } );
-                        feature.popupTemplate = t;
+                        feature.popupTemplate = ogWellsTemplate;
+                    }
+                    else if (layerName === 'OG_FIELDS') {
+                        var ogFieldsTemplate = new PopupTemplate( {
+                            title: "Field: {FIELD_NAME}",
+                            content: fieldContent(feature)
+                            } );
+                        feature.popupTemplate = ogFieldsTemplate;
+                    }
 
                     return feature;
               } );
@@ -285,13 +295,11 @@ function(
                 view.scale = 8000;
                 break;
             case "polygon":
-                // TODO: complete for field polys.
-                var ext = feature.geometry.getExtent();
-                theMap.setExtent(ext, true);
+                var ext = feature[0].geometry.extent;
+                view.extent = ext;
                 break;
         }
         // TODO: highlight feature.
-
         openPopup(feature);
     }
 
