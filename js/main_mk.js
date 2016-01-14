@@ -20,6 +20,9 @@ require([
     "esri/widgets/Popup",
     "esri/tasks/IdentifyTask",
     "esri/tasks/support/IdentifyParameters",
+    "esri/tasks/FindTask",
+    "esri/tasks/support/FindParameters",
+    "esri/geometry/Point",
     "dojo/domReady!"
 ],
 function(
@@ -43,8 +46,13 @@ function(
     PopupTemplate,
     Popup,
     IdentifyTask,
-    IdentifyParameters
+    IdentifyParameters,
+    FindTask,
+    FindParameters,
+    Point
 ) {
+    // TODO - review all comments.
+
     // Set up basic frame:
     window.document.title = "FooBar";
     $("#title").html("Kansas Oil and Gas<a id='kgs-brand' href='http://www.kgs.ku.edu'>Kansas Geological Survey</a>");
@@ -73,23 +81,10 @@ function(
     createMenus();
     createTools();
 
-    // TODO - following click function is only for testing opening a popup from a link:
-    $("#junktest").click(function() {
-        var kid = $("#junktest").html();
-        // use kid to return a graphic/response (find task?)
-            // OR, should this be an ajax request to just get attribute info?
-        // set a popup template for the graphic/response
-        // open a popup at the feature's location
-        // would be nice to reuse popup content-generation functions (currently would have scope problems)
-
-        /*view.popup.viewModel.features = response;
-        view.popup.viewModel.visible = true;
-        view.popup.viewModel.location = event.mapPoint;*/
-    } );
     // End framework.
 
     // Create map and map widgets:
-    var identifyTask, params;
+    var identifyTask, identifyParams, findTask, findParams;
     var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
 
     var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
@@ -116,12 +111,15 @@ function(
         on(view, "click", executeIdTask);
 
         identifyTask = new IdentifyTask(ogGeneralServiceURL);
-        params = new IdentifyParameters();
-        params.tolerance = 3;
-        params.layerIds = [12, 0, 8, 1];
-        params.layerOption = "visible";
-        params.width = view.width;
-        params.height = view.height;
+        identifyParams = new IdentifyParameters();
+        identifyParams.tolerance = 3;
+        identifyParams.layerIds = [12, 0, 8, 1];
+        identifyParams.layerOption = "visible";
+        identifyParams.width = view.width;
+        identifyParams.height = view.height;
+
+        findTask = new FindTask(ogGeneralServiceURL);
+        findParams = new FindParameters();
 
         // Define additional popup actions:
         var fullInfoAction = {
@@ -180,6 +178,61 @@ function(
     }*/
 
     // End map and map widgets.
+
+    // TODO - following click function is only for testing opening a popup from a link. In future versions link would be a value in a table cell.
+    $("#junktest").click(function() {
+        var kid = $("#junktest").html();
+        // use kid to return a graphic/response
+        findParams.layerIds = [0];
+        findParams.searchFields = ["KID"];
+        findParams.searchText = kid;
+        findParams.returnGeometry = true;
+        findTask.execute(findParams)
+            .then(function(response) {
+                return arrayUtils.map(response, function(result) {
+                    var feature = result.feature;
+                        var t = new PopupTemplate( {
+                            title: "KwanWah",
+                            content: "foowah" //wellContent(feature)
+                        } );
+                        feature.popupTemplate = t;
+
+                    return feature;
+              } );
+            } )
+            .then(function(feature) {
+                var pt = new Point( {
+                    x: feature[0].geometry.x,
+                    y: feature[0].geometry.y
+                } );
+                view.popup.viewModel.features = feature;
+                view.popup.viewModel.location = pt;
+                view.popup.viewModel.visible = true;
+            } );
+    } );
+
+
+    function openPopup(findResult) {
+        // set a popup template for the graphic/response (move templates from executeId task so they can be used?)
+        // open a popup at the feature's location
+        console.log(findResult.feature);
+        var pt = new Point( {
+            x: findResult[0].feature.geometry.x,
+            y: findResult[0].feature.geometry.y
+        } );
+
+        /*var tmplt = new PopupTemplate( {
+            //title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>({API_NUMBER})</span>",
+            //content: wellContent(findResult[0].feature)
+            title: "foobar",
+            content: "kwanwah"
+        } );
+        findResult[0].feature.popupTemplate = tmplt;*/
+
+        view.popup.viewModel.features = findResult[0];
+        view.popup.viewModel.location = pt;
+        view.popup.viewModel.visible = true;
+    }
 
     function createMenus() {
     	var drawerMenus = [];
@@ -279,18 +332,18 @@ function(
 
 
     function createTools() {
-        var cont = "";
-        cont += '<span id="junktest">1006116441</span>';
-        $("#tools-content").html(cont);
+        var content = "";
+        content += '<span id="junktest">1006116441</span>';
+        $("#tools-content").html(content);
     }
 
 
     function executeIdTask(event) {
-        params.geometry = event.mapPoint;
-        params.mapExtent = view.extent;
+        identifyParams.geometry = event.mapPoint;
+        identifyParams.mapExtent = view.extent;
         dom.byId("mapDiv").style.cursor = "wait";
 
-        identifyTask.execute(params).then(function(response) {
+        identifyTask.execute(identifyParams).then(function(response) {
             return arrayUtils.map(response, function(result) {
                 var feature = result.feature;
                 var layerName = result.layerName;
@@ -361,7 +414,7 @@ function(
     function wellContent(feature) {
         var f = feature.attributes;
         var api = f.API_NUMBER !== "Null" ? f.API_NUMBER : "";
-        var currOp = f.CURR_OPERATOR !== "null" ? f.CURR_OPERATOR : "";
+        var currOp = f.CURR_OPERATOR !== "Null" ? f.CURR_OPERATOR : "";
         var type = f.STATUS_TXT !== "Null" ? f.STATUS_TXT : "";
         var stat = f.WELL_CLASS !== "Null" ? f.WELL_CLASS : "";
         var lease = f.LEASE_NAME !== "Null" ? f.LEASE_NAME : "";
