@@ -199,7 +199,7 @@ function(
                 return arrayUtils.map(response, function(result) {
                     var feature = result.feature;
                         var t = new PopupTemplate( {
-                            title: "Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME,
+                            title: "<span class='pu-title'>Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME + "  </span><span class='pu-note'>(" + feature.attributes.API_NUMBER + ")</span>",
                             content: wellContent(feature)
                         } );
                         feature.popupTemplate = t;
@@ -252,7 +252,7 @@ function(
                     var feature = result.feature;
                         // TODO: add for field too.
                         var t = new PopupTemplate( {
-                            title: "Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME,
+                            title: "<span class='pu-title'>Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME + "  </span><span class='pu-note'>(" + feature.attributes.API_NUMBER + ")</span>",
                             content: wellContent(feature)
                         } );
                         feature.popupTemplate = t;
