@@ -24,6 +24,10 @@ require([
     "esri/tasks/support/FindParameters",
     "esri/geometry/Point",
     "esri/geometry/SpatialReference",
+    "esri/symbols/SimpleMarkerSymbol",
+    "esri/layers/GraphicsLayer",
+    "esri/symbols/SimpleLineSymbol",
+    "esri/Graphic",
     "dojo/domReady!"
 ],
 function(
@@ -51,7 +55,11 @@ function(
     FindTask,
     FindParameters,
     Point,
-    SpatialReference
+    SpatialReference,
+    SimpleMarkerSymbol,
+    GraphicsLayer,
+    SimpleLineSymbol,
+    Graphic
 ) {
     // TODO: review all comments.
 
@@ -102,6 +110,9 @@ function(
         layers: [basemapLayer, fieldsLayer, plssLayer, wellsLayer]
     } );
     map.then(createTOC, mapErr);
+
+    var graphicsLayer = new GraphicsLayer();
+    map.add(graphicsLayer);
 
     var view = new MapView( {
         map: map,
@@ -209,6 +220,7 @@ function(
             } )
             .then(function(feature) {
                 openPopup(feature);
+                zoomToFeature(feature);
             } );
     }
 
@@ -273,6 +285,7 @@ function(
               } );
             } )
             .then(function(feature) {
+                openPopup(feature);
                 zoomToFeature(feature);
             } );
 
@@ -289,18 +302,47 @@ function(
             case "point":
                 var x = f.geometry.x;
                 var y = f.geometry.y;
-
                 var point = new Point(x, y, new SpatialReference( { wkid: 3857 } ) );
                 view.center = point;
-                view.scale = 8000;
+                view.scale = 24000;
+                highlightFeature(feature);
                 break;
             case "polygon":
                 var ext = feature[0].geometry.extent;
                 view.extent = ext;
                 break;
         }
-        // TODO: highlight feature.
-        openPopup(feature);
+    }
+
+
+    function highlightFeature(feature) {
+        var f = feature[0];
+        switch (f.geometry.type) {
+            case "point":
+                var x = f.geometry.x;
+                var y = f.geometry.y;
+                var point = new Point(x, y, new SpatialReference( { wkid: 3857 } ) );
+                markerSymbol = new SimpleMarkerSymbol( {
+                    color: [255, 255, 0, 0],
+                    size: 20,
+                    outline: new SimpleLineSymbol( {
+                        color: "yellow",
+                        width: 8
+                    } )
+                  } );
+
+                var pointGraphic = new Graphic( {
+                    geometry: point,
+                    symbol: markerSymbol
+                } );
+
+                graphicsLayer.add(pointGraphic);
+                break;
+            case "polygon":
+                var ext = feature[0].geometry.extent;
+                view.extent = ext;
+                break;
+        }
     }
 
 
@@ -443,7 +485,10 @@ function(
 
                 return feature;
           } );
-        } ).then(openPopup);
+        } ).then(function(feature) {
+            openPopup(feature);
+            highlightFeature(feature);
+        });
     }
 
 
