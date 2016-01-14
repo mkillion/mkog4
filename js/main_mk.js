@@ -23,6 +23,7 @@ require([
     "esri/tasks/FindTask",
     "esri/tasks/support/FindParameters",
     "esri/geometry/Point",
+    "esri/geometry/SpatialReference",
     "dojo/domReady!"
 ],
 function(
@@ -49,9 +50,10 @@ function(
     IdentifyParameters,
     FindTask,
     FindParameters,
-    Point
+    Point,
+    SpatialReference
 ) {
-    // TODO - review all comments.
+    // TODO: review all comments.
 
     // Set up basic frame:
     window.document.title = "FooBar";
@@ -84,8 +86,10 @@ function(
     // End framework.
 
     // Create map and map widgets:
-    var identifyTask, identifyParams, findTask, findParams;
     var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
+    var identifyTask, identifyParams;
+    var findTask = new FindTask(ogGeneralServiceURL);
+    var findParams = new FindParameters();
 
     var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
     var fieldsLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields"} );
@@ -117,9 +121,6 @@ function(
         identifyParams.layerOption = "visible";
         identifyParams.width = view.width;
         identifyParams.height = view.height;
-
-        findTask = new FindTask(ogGeneralServiceURL);
-        findParams = new FindParameters();
 
         // Define additional popup actions:
         var fullInfoAction = {
@@ -179,9 +180,9 @@ function(
 
     // End map and map widgets.
 
-    // TODO - following click function is only for testing opening a popup from a link.
-    // In future versions link would be a value in a table cell.
-    // rework this block so it can also be used when zooming to a feature from the URL.
+    urlZoom(location.search.substr(1));
+
+    // TODO: following click function is only for testing opening a popup from a link; in future versions link would be a value in a table cell.
     $("#junktest").click(function() {
         var kid = $("#junktest").html();
         findWell(kid);
@@ -221,6 +222,75 @@ function(
         //view.popup.viewModel.location = pt;
         view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
+    }
+
+
+    function urlZoom(urlParams) {
+        var items = urlParams.split("&");
+        if (items.length > 1) {
+            var extType = items[0].substring(11);
+            var extValue = items[1].substring(12);
+
+            findParams.returnGeometry = true;
+            findParams.contains = false;
+
+            switch (extType) {
+                case "well":
+                    findParams.layerIds = [0];
+                    findParams.searchFields = ["kid"];
+                    break;
+                case "field":
+                    findParams.layerIds = [1];
+                    findParams.searchFields = ["field_kid"];
+                    break;
+            }
+
+            findParams.searchText = extValue;
+            findTask.execute(findParams)
+            .then(function(response) {
+                return arrayUtils.map(response, function(result) {
+                    var feature = result.feature;
+                        // TODO: add for field too.
+                        var t = new PopupTemplate( {
+                            title: "Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME,
+                            content: wellContent(feature)
+                        } );
+                        feature.popupTemplate = t;
+
+                    return feature;
+              } );
+            } )
+            .then(function(feature) {
+                zoomToFeature(feature);
+            } );
+
+            // TODO: tie last location to the Home button? Put here or in zoomToFeature function.
+            //lastLocType = extType;
+            //lastLocValue = extValue;
+        }
+    }
+
+
+    function zoomToFeature(feature) {
+        var f = feature[0];
+        switch (f.geometry.type) {
+            case "point":
+                var x = f.geometry.x;
+                var y = f.geometry.y;
+
+                var point = new Point(x, y, new SpatialReference( { wkid: 3857 } ) );
+                view.center = point;
+                view.scale = 8000;
+                break;
+            case "polygon":
+                // TODO: complete for field polys.
+                var ext = feature.geometry.getExtent();
+                theMap.setExtent(ext, true);
+                break;
+        }
+        // TODO: highlight feature.
+
+        openPopup(feature);
     }
 
 
