@@ -181,9 +181,14 @@ function(
 
     // TODO - following click function is only for testing opening a popup from a link.
     // In future versions link would be a value in a table cell.
-    // can this block also be used when zooming to a feature from the URL.
+    // rework this block so it can also be used when zooming to a feature from the URL.
     $("#junktest").click(function() {
         var kid = $("#junktest").html();
+        findWell(kid);
+    } );
+
+
+    function findWell(kid) {
         findParams.layerIds = [0];
         findParams.searchFields = ["KID"];
         findParams.searchText = kid;
@@ -204,7 +209,7 @@ function(
             .then(function(feature) {
                 openPopup(feature);
             } );
-    } );
+    }
 
 
     function openPopup(feature) {
