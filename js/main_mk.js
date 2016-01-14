@@ -179,10 +179,11 @@ function(
 
     // End map and map widgets.
 
-    // TODO - following click function is only for testing opening a popup from a link. In future versions link would be a value in a table cell.
+    // TODO - following click function is only for testing opening a popup from a link.
+    // In future versions link would be a value in a table cell.
+    // can this block also be used when zooming to a feature from the URL.
     $("#junktest").click(function() {
         var kid = $("#junktest").html();
-        // use kid to return a graphic/response
         findParams.layerIds = [0];
         findParams.searchFields = ["KID"];
         findParams.searchText = kid;
@@ -192,8 +193,8 @@ function(
                 return arrayUtils.map(response, function(result) {
                     var feature = result.feature;
                         var t = new PopupTemplate( {
-                            title: "KwanWah",
-                            content: "foowah" //wellContent(feature)
+                            title: "Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME,
+                            content: wellContent(feature)
                         } );
                         feature.popupTemplate = t;
 
@@ -201,38 +202,22 @@ function(
               } );
             } )
             .then(function(feature) {
-                var pt = new Point( {
-                    x: feature[0].geometry.x,
-                    y: feature[0].geometry.y
-                } );
-                view.popup.viewModel.features = feature;
-                view.popup.viewModel.location = pt;
-                view.popup.viewModel.visible = true;
+                openPopup(feature);
             } );
     } );
 
 
-    function openPopup(findResult) {
-        // set a popup template for the graphic/response (move templates from executeId task so they can be used?)
-        // open a popup at the feature's location
-        console.log(findResult.feature);
+    function openPopup(feature) {
         var pt = new Point( {
-            x: findResult[0].feature.geometry.x,
-            y: findResult[0].feature.geometry.y
+            x: feature[0].geometry.x,
+            y: feature[0].geometry.y
         } );
-
-        /*var tmplt = new PopupTemplate( {
-            //title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>({API_NUMBER})</span>",
-            //content: wellContent(findResult[0].feature)
-            title: "foobar",
-            content: "kwanwah"
-        } );
-        findResult[0].feature.popupTemplate = tmplt;*/
-
-        view.popup.viewModel.features = findResult[0];
-        view.popup.viewModel.location = pt;
+        view.popup.viewModel.features = feature;
+        //view.popup.viewModel.location = pt;
+        view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
     }
+
 
     function createMenus() {
     	var drawerMenus = [];
