@@ -64,6 +64,13 @@ input[type=checkbox] {
 	display: none;
 }
 
+.esri-icon-radio-checked,
+.esri-icon-notice-triangle,
+.esri-icon-table,
+.esri-icon-zoom-in-magnifying-glass {
+	font-size: 20px;
+}
+
 @media screen and (max-width: 568px) {
 	#HomeButton {
 		left: -5px;

@@ -140,9 +140,30 @@ function(
             className: "esri-icon-table"
         };
         view.popup.viewModel.actions.push(fullInfoAction);
+
+        var bufferFeatureAction = {
+            title: "Buffer Feature",
+            id: "buffer-feature",
+            className: "esri-icon-radio-checked"
+        };
+        view.popup.viewModel.actions.push(bufferFeatureAction);
+
+        var reportErrorAction = {
+            title: "Report Error",
+            id: "report-error",
+            className: "esri-icon-notice-triangle"
+        };
+        view.popup.viewModel.actions.push(reportErrorAction);
+
         view.popup.viewModel.on("action-click", function(evt){
-            if(evt.action.id === "full-info"){
+            if(evt.action.id === "full-info") {
                 showFullInfo();
+            } else if (evt.action.id === "buffer-feature") {
+                // TODO:
+                console.log("buffer feature action clicked");
+            } else if (evt.action.id === "report-error") {
+                // TODO:
+                console.log("report error action clicked");
             }
         } );
     } );
@@ -197,6 +218,7 @@ function(
     $("#junktest").click(function() {
         var kid = $("#junktest").html();
         findWell(kid);
+        // TODO: zoom to feature from side-panel link.
     } );
 
 
