@@ -327,7 +327,7 @@ function(
                 var point = new Point(x, y, new SpatialReference( { wkid: 3857 } ) );
                 view.center = point;
                 view.scale = 24000;
-                highlightFeature(feature);
+                //highlightFeature(feature);
                 break;
             case "polygon":
                 var ext = feature[0].geometry.extent;
@@ -509,7 +509,7 @@ function(
           } );
         } ).then(function(feature) {
             openPopup(feature);
-            highlightFeature(feature);
+            //highlightFeature(feature);
         });
     }
 
@@ -525,6 +525,13 @@ function(
         var ac = f.APPROXACRE !== "Null" ? f.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var kid = f.FIELD_KID !== "Null" ? f.FIELD_KID : "";
 
+        var frm = f.FORMATIONS.split(",");
+        var pf = "";
+        for (i=0; i<frm.length; i++) {
+            console.log(frm[i]);
+            pf += frm[i] + "<br>";
+        }
+
         var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>" + ftyp + "</td></tr>";
         content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
         content += "<tr><td>Produces Oil: </td><td>" + po + "</td></tr>";
@@ -532,6 +539,7 @@ function(
         content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
         content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
         content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
+        content += "<tr><td>Producing Formations: </td><td>" + pf + "</td></tr>";
         content += "<span id='field-kid' class='no-display'>{FIELD_KID}</span></table>";
 
         return content;
