@@ -81,10 +81,10 @@ function(
     // Broke the template drawer open/close behavior when paring down the code, so...
     $("#hamburger_button").click(function(e) {
         e.preventDefault();
-        if ($("#cp_outer_left").css("width") === "280px") {
+        if ($("#cp_outer_left").css("width") === "300px") {
             $("#cp_outer_left").css("width", "0px");
         } else {
-            $("#cp_outer_left").css("width", "280px");
+            $("#cp_outer_left").css("width", "300px");
         }
     } );
 
@@ -179,7 +179,7 @@ function(
         viewModel: new SearchVM( {
           view: view
         } )
-    }, "geocoderSearch");
+    }, "srch");
     searchWidget.startup();
 
     $("#mobileGeocoderIconContainer").click(function() {
@@ -248,12 +248,6 @@ function(
 
 
     function openPopup(feature) {
-        // Uncomment if undocking popup:
-        /*var pt = new Point( {
-            x: feature[0].geometry.x,
-            y: feature[0].geometry.y
-        } );
-        view.popup.viewModel.location = pt;*/
         view.popup.viewModel.features = feature;
         view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
@@ -372,17 +366,21 @@ function(
     	var drawerMenus = [];
         var content, menuObj;
 
-        // Zoom-to panel:
+        // Find panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Zoom To</div>';
+        content += '<div class="panel-header">Find By:</div>';
         content += '<div class="panel-padding">';
-        content += '<div id="zoom-content"></div>';
+        content += '<div id="find-content">';
+
+        content += '<div id="srch"></div>';
+
+        content += '</div>';
         content += '</div>';
         content += '</div>';
 
         menuObj = {
-            label: '<div class="icon-zoom-in"></div><div class="icon-text">Zoom To</div>',
+            label: '<div class="icon-zoom-in"></div><div class="icon-text">Find</div>',
             content: content
         };
         drawerMenus.push(menuObj);
