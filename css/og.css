@@ -71,6 +71,22 @@ input[type=checkbox] {
 	font-size: 20px;
 }
 
+.find-header {
+	background-color: #ccc;
+	color: #000;
+	font: normal normal normal 14px arial;
+	margin-top: 10px;
+	padding: 3px;
+}
+
+.show-div {
+	display: block;
+}
+
+.hide-div {
+	display: none;
+}
+
 @media screen and (max-width: 568px) {
 	#HomeButton {
 		left: -5px;

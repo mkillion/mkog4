@@ -214,11 +214,23 @@ function(
 
     urlZoom(location.search.substr(1));
 
+    // Side-panel click handlers:
     // TODO: following click function is only for testing opening a popup from a link; in future versions link would be a value in a table cell.
     $("#junktest").click(function() {
         var kid = $("#junktest").html();
         findWell(kid);
         // TODO: zoom to feature from side-panel link.
+    } );
+
+    $(".find-header").click(function() {
+        switch ( $(this).attr("id") ) {
+            case "plss":
+                console.log("plss");
+                break;
+            case "api":
+                console.log("api");
+                break;
+        }
     } );
 
 
@@ -371,11 +383,13 @@ function(
         content += '<div class="panel-container">';
         content += '<div class="panel-header">Find By:</div>';
         content += '<div class="panel-padding">';
-        content += '<div id="find-content">';
 
         content += '<div id="srch"></div>';
+        content += '<div class="find-header" id="plss">Section-Township-Range</div>';
+        content += '<div class="find-body hide-div" id="find-plss">FooBar</div>';
+        content += '<div class="find-header" id="api">Well API</div>';
+        content += '<div class="find-body hide-div" id="find-api">KwanWah</div>';
 
-        content += '</div>';
         content += '</div>';
         content += '</div>';
 
