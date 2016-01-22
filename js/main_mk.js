@@ -225,12 +225,12 @@ function(
     $(".find-header").click(function() {
         // $(this).attr("id")
         switch ( $(this).attr("id") ) {
-            case "plss":
-                console.log("plss");
+            case "plss-hdr":
+                console.log($(this).attr("id"));
                 // close all divs by class, open this one by id. try to abstract this.
                 break;
-            case "api":
-                console.log("api");
+            case "api-hdr":
+                console.log($(this).attr("id"));
                 break;
         }
     } );
@@ -387,10 +387,10 @@ function(
         content += '<div class="panel-padding">';
 
         content += '<div id="srch"></div>';
-        content += '<div class="find-header" id="plss">Section-Township-Range</div>';
-        content += '<div class="find-body hide-div" id="find-plss">FooBar</div>';
-        content += '<div class="find-header" id="api">Well API</div>';
-        content += '<div class="find-body hide-div" id="find-api">KwanWah</div>';
+        content += '<div class="find-header" id="plss-hdr">Section-Township-Range</div>';
+        content += '<div class="find-body hide" id="find-plss">FooBar</div>';
+        content += '<div class="find-header" id="api-hdr">Well API</div>';
+        content += '<div class="find-body hide" id="find-api">KwanWah</div>';
 
         content += '</div>';
         content += '</div>';
@@ -553,7 +553,7 @@ function(
         content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
         content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
         content += "<tr><td>Producing Formations: </td><td>" + pf + "</td></tr>";
-        content += "<span id='field-kid' class='no-display'>{FIELD_KID}</span></table>";
+        content += "<span id='field-kid' class='hide'>{FIELD_KID}</span></table>";
 
         return content;
     }
@@ -606,7 +606,7 @@ function(
         content += "<tr><td>Total Depth (ft): </td><td>" + dpth + "</td></tr>";
         content += "<tr><td>Elevation (KB, ft): </td><td>" + elev + "</td></tr>";
         content += "<tr><td>Producing Formation: </td><td>" + frm + "</td></tr>";
-        content += "<span id='well-kid' class='no-display'>{KID}</span></table>";
+        content += "<span id='well-kid' class='hide'>{KID}</span></table>";
 
         return content;
     }

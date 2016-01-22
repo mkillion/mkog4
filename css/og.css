@@ -60,10 +60,6 @@ input[type=checkbox] {
 	white-space: nowrap;
 }
 
-.no-display {
-	display: none;
-}
-
 .esri-icon-radio-checked,
 .esri-icon-contact,
 .esri-icon-documentation,
@@ -79,11 +75,11 @@ input[type=checkbox] {
 	padding: 3px;
 }
 
-.show-div {
+.show{
 	display: block;
 }
 
-.hide-div {
+.hide {
 	display: none;
 }
 
