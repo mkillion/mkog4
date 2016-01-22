@@ -135,9 +135,9 @@ function(
 
         // Define additional popup actions:
         var fullInfoAction = {
-            title: "Full Info",
-            id: "full-info",
-            className: "esri-icon-table"
+            title: "Full Report",
+            id: "full-report",
+            className: "esri-icon-documentation"
         };
         view.popup.viewModel.actions.push(fullInfoAction);
 
@@ -149,14 +149,14 @@ function(
         view.popup.viewModel.actions.push(bufferFeatureAction);
 
         var reportErrorAction = {
-            title: "Report Error",
+            title: "Report a Location or Data Error",
             id: "report-error",
-            className: "esri-icon-notice-triangle"
+            className: "esri-icon-contact"
         };
         view.popup.viewModel.actions.push(reportErrorAction);
 
         view.popup.viewModel.on("action-click", function(evt){
-            if(evt.action.id === "full-info") {
+            if(evt.action.id === "full-report") {
                 showFullInfo();
             } else if (evt.action.id === "buffer-feature") {
                 // TODO:
@@ -223,9 +223,11 @@ function(
     } );
 
     $(".find-header").click(function() {
+        // $(this).attr("id")
         switch ( $(this).attr("id") ) {
             case "plss":
                 console.log("plss");
+                // close all divs by class, open this one by id. try to abstract this.
                 break;
             case "api":
                 console.log("api");

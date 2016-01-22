@@ -65,8 +65,8 @@ input[type=checkbox] {
 }
 
 .esri-icon-radio-checked,
-.esri-icon-notice-triangle,
-.esri-icon-table,
+.esri-icon-contact,
+.esri-icon-documentation,
 .esri-icon-zoom-in-magnifying-glass {
 	font-size: 20px;
 }
