@@ -384,8 +384,18 @@ function(
     }
 
 
-    findIt = function() {
-        console.log("foobar");
+    findIt = function(what) {
+        findParams.returnGeometry = true;
+
+        switch (what) {
+            case "plss":
+
+                break;
+            case "api":
+
+                break;
+        }
+        //findTask.execute(findParams).then
     }
 
 
@@ -418,7 +428,7 @@ function(
             content += '<option value="' + i + '"">' + i + '</option>';
         }
         content += '</select></td></tr>';
-        content += '<tr><td></td><td><button class="find-button" onclick="findIt()">Find</button></td></tr>';
+        content += '<tr><td></td><td><button class=find-button onclick=findIt("plss")>Find</button></td></tr>';
         content += '</table></div>';
 
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="api-hdr"> Well API</div>';
@@ -427,7 +437,8 @@ function(
         content += '<input type="text" id="api_state" size="2" onKeyUp="jumpFocus(api_county, 2, this.id)"/> - ';
         content += '<input type="text" id="api_county" size="3" onKeyUp="jumpFocus(api_number, 3, this.id)"/> - ';
         content += '<input type="text" id="api_number" size="5" onKeyUp="jumpFocus(api_extension, 5, this.id)"/> - ';
-        content += '<input type="text" id="api_extension" size="4"/> <button class="find-button" onclick="findIt()">Find</button>';
+        content += '<input type="text" id="api_extension" size="4"/>';
+        content += '<button class=find-button onclick=findIt("api")>Find</button>';
         content += '</div>';
 
         content += '</div>';
