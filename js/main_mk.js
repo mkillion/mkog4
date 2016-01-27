@@ -385,7 +385,7 @@ function(
         // Find panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Find By:</div>';
+        content += '<div class="panel-header">Find</div>';
         content += '<div class="panel-padding">';
 
         content += '<div id="srch"></div>';
