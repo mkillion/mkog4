@@ -20,6 +20,19 @@
     border-top-width: 1px;
 }
 
+.find-body {
+	color: #000;
+	padding: 10px 12px;
+}
+
+.find-label {
+	text-align: right;
+}
+
+.find-button {
+	font-size: 14px;
+}
+
 .esri-search {
 	margin-bottom: 10px;
 	padding-left: 5px;

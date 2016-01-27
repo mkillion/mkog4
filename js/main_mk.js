@@ -377,6 +377,11 @@ function(
     }
 
 
+    goFindIt = function() {
+        console.log("foobar");
+    }
+
+
     function createMenus() {
     	var drawerMenus = [];
         var content, menuObj;
@@ -390,8 +395,24 @@ function(
         content += '<div id="srch"></div>';
 
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss-hdr"> Section-Township-Range</div>';
-        content += '<div class="hide" id="find-plss">';
-        content += '';
+        content += '<div class="find-body hide" id="find-plss">';
+        content += '<table><tr><td class="find-label">Township:</td><td><select id="twn"><option value=""></option>';
+        for (var i=1; i<36; i++) {
+            content += '<option value="' + i + '"">' + i + '</option>';
+        }
+        content += '</select> South</td></tr>';
+        content += '<tr><td class="find-label">Range:</td><td><select id="rng"><option value=""></option>';
+        for (var i=1; i<44; i++) {
+            content += '<option value="' + i + '"">' + i + '</option>';
+        }
+        content += '</select> East: <input type="radio" name="rngdir" value="e"> West: <input type="radio" name="rngdir" value="w" checked></td></tr>';
+        content += '<tr><td class="find-label">Section:</td><td><select id="sec"><option value=""></option>';
+        for (var i=1; i<37; i++) {
+            content += '<option value="' + i + '"">' + i + '</option>';
+        }
+        content += '</select></td></tr>';
+        content += '<tr><td></td><td><button class="find-button" onclick="goFindIt()">Find</button></td></tr>';
+        content += '</table>';
         content += '</div>';
 
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="api-hdr"> Well API</div>';
