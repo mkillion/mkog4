@@ -377,7 +377,14 @@ function(
     }
 
 
-    goFindIt = function() {
+    jumpFocus = function(nextField,chars,currField) {
+        if (dom.byId(currField).value.length == chars) {
+            dom.byId(nextField).focus();
+        }
+    }
+
+
+    findIt = function() {
         console.log("foobar");
     }
 
@@ -411,12 +418,17 @@ function(
             content += '<option value="' + i + '"">' + i + '</option>';
         }
         content += '</select></td></tr>';
-        content += '<tr><td></td><td><button class="find-button" onclick="goFindIt()">Find</button></td></tr>';
-        content += '</table>';
-        content += '</div>';
+        content += '<tr><td></td><td><button class="find-button" onclick="findIt()">Find</button></td></tr>';
+        content += '</table></div>';
 
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="api-hdr"> Well API</div>';
-        content += '<div class="hide" id="find-api">API controls</div>';
+        content += '<div class="find-body hide" id="find-api">';
+        content += 'API Number (extension optional):<br>';
+        content += '<input type="text" id="api_state" size="2" onKeyUp="jumpFocus(api_county, 2, this.id)"/> - ';
+        content += '<input type="text" id="api_county" size="3" onKeyUp="jumpFocus(api_number, 3, this.id)"/> - ';
+        content += '<input type="text" id="api_number" size="5" onKeyUp="jumpFocus(api_extension, 5, this.id)"/> - ';
+        content += '<input type="text" id="api_extension" size="4"/> <button class="find-button" onclick="findIt()">Find</button>';
+        content += '</div>';
 
         content += '</div>';
         content += '</div>';

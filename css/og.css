@@ -31,6 +31,12 @@
 
 .find-button {
 	font-size: 14px;
+	margin-left: 3px;
+}
+
+td {
+	padding-bottom: 4px;
+	padding-top: 4px;
 }
 
 .esri-search {
