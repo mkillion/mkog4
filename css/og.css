@@ -3,7 +3,8 @@
 	padding: 0px 0px 10px 0px;
 }*/
 
-.toc-item {
+.toc-item,
+.find-header {
 	background-color: #e4e6e4;
     border-bottom-color: #777;
     border-bottom-style: solid;
@@ -65,14 +66,6 @@ input[type=checkbox] {
 .esri-icon-documentation,
 .esri-icon-zoom-in-magnifying-glass {
 	font-size: 20px;
-}
-
-.find-header {
-	background-color: #ccc;
-	color: #000;
-	font: normal normal normal 14px arial;
-	margin-top: 10px;
-	padding: 3px;
 }
 
 .show{

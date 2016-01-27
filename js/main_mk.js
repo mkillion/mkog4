@@ -224,12 +224,15 @@ function(
 
     $(".find-header").click(function() {
         $("[id^=find]").fadeOut("slow");
+        $(".find-header").removeClass("esri-icon-down-arrow");
         switch ( $(this).attr("id") ) {
             case "plss-hdr":
                 $("#find-plss").fadeIn("slow");
+                $(this).addClass("esri-icon-down-arrow");
                 break;
             case "api-hdr":
                 $("#find-api").fadeIn("slow");
+                $(this).addClass("esri-icon-down-arrow");
                 break;
         }
     } );
@@ -387,10 +390,10 @@ function(
 
         content += '<div id="srch"></div>';
 
-        content += '<div class="find-header" id="plss-hdr">Section-Township-Range</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss-hdr"> Section-Township-Range</div>';
         content += '<div class="hide" id="find-plss">PLSS controls</div>';
 
-        content += '<div class="find-header" id="api-hdr">Well API</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="api-hdr"> Well API</div>';
         content += '<div class="hide" id="find-api">API controls</div>';
 
         content += '</div>';
@@ -472,7 +475,7 @@ function(
         for (var j=lyrs.length - 1; j>-1; j--) {
             chkd = map.getLayer(lyrs._items[j].id).visible ? "checked" : "";
             if (lyrs._items[j].id.indexOf("-layer-") === -1) {
-                // Excludes default graphics layer from the TOC.
+                // ^ Excludes default graphics layer from the TOC.
                 tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + lyrs._items[j].id + "</label></div>";
             }
         }
