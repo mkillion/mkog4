@@ -13,7 +13,8 @@
     padding: 12px 8px;
 }
 
-.toc-item:first-of-type {
+.toc-item:first-of-type,
+#plss-hdr {
 	border-top-color: #777;
     border-top-style: solid;
     border-top-width: 1px;

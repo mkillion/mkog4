@@ -225,14 +225,13 @@ function(
     $(".find-header").click(function() {
         $("[id^=find]").fadeOut("slow");
         $(".find-header").removeClass("esri-icon-down-arrow");
+        $(this).addClass("esri-icon-down-arrow");
         switch ( $(this).attr("id") ) {
             case "plss-hdr":
                 $("#find-plss").fadeIn("slow");
-                $(this).addClass("esri-icon-down-arrow");
                 break;
             case "api-hdr":
                 $("#find-api").fadeIn("slow");
-                $(this).addClass("esri-icon-down-arrow");
                 break;
         }
     } );
@@ -391,7 +390,9 @@ function(
         content += '<div id="srch"></div>';
 
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss-hdr"> Section-Township-Range</div>';
-        content += '<div class="hide" id="find-plss">PLSS controls</div>';
+        content += '<div class="hide" id="find-plss">';
+        content += '';
+        content += '</div>';
 
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="api-hdr"> Well API</div>';
         content += '<div class="hide" id="find-api">API controls</div>';
