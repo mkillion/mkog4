@@ -182,10 +182,9 @@ function(
     }, "srch");
     searchWidget.startup();
 
-    $("#mobileGeocoderIconContainer").click(function() {
-        //$("#lb").toggleClass("small-search");
-        $("#junker").toggleClass("small-search");
-    } );
+    /*$("#mobileGeocoderIconContainer").click(function() {
+        $("#lb").toggleClass("small-search");
+    } );*/
 
     var homeBtn = new Home( {
         //Setting widget properties via viewModel is subject to
@@ -224,14 +223,13 @@ function(
     } );
 
     $(".find-header").click(function() {
-        // $(this).attr("id")
+        $("[id^=find]").fadeOut("slow");
         switch ( $(this).attr("id") ) {
             case "plss-hdr":
-                console.log($(this).attr("id"));
-                // close all divs by class, open this one by id. try to abstract this.
+                $("#find-plss").fadeIn("slow");
                 break;
             case "api-hdr":
-                console.log($(this).attr("id"));
+                $("#find-api").fadeIn("slow");
                 break;
         }
     } );
@@ -388,10 +386,12 @@ function(
         content += '<div class="panel-padding">';
 
         content += '<div id="srch"></div>';
+
         content += '<div class="find-header" id="plss-hdr">Section-Township-Range</div>';
-        content += '<div class="find-body hide" id="find-plss">FooBar</div>';
+        content += '<div class="hide" id="find-plss">PLSS controls</div>';
+
         content += '<div class="find-header" id="api-hdr">Well API</div>';
-        content += '<div class="find-body hide" id="find-api">KwanWah</div>';
+        content += '<div class="hide" id="find-api">API controls</div>';
 
         content += '</div>';
         content += '</div>';
