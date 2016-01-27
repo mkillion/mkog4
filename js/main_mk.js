@@ -81,10 +81,10 @@ function(
     // Broke the template drawer open/close behavior when paring down the code, so...
     $("#hamburger_button").click(function(e) {
         e.preventDefault();
-        if ($("#cp_outer_left").css("width") === "300px") {
+        if ($("#cp_outer_left").css("width") === "293px") {
             $("#cp_outer_left").css("width", "0px");
         } else {
-            $("#cp_outer_left").css("width", "300px");
+            $("#cp_outer_left").css("width", "293px");
         }
     } );
 
@@ -149,7 +149,7 @@ function(
         view.popup.viewModel.actions.push(bufferFeatureAction);
 
         var reportErrorAction = {
-            title: "Report a Location or Data Error",
+            title: "Report a Location or Data Problem",
             id: "report-error",
             className: "esri-icon-contact"
         };
@@ -183,7 +183,8 @@ function(
     searchWidget.startup();
 
     $("#mobileGeocoderIconContainer").click(function() {
-        $("#lb").toggleClass("small-search");
+        //$("#lb").toggleClass("small-search");
+        $("#junker").toggleClass("small-search");
     } );
 
     var homeBtn = new Home( {
