@@ -227,6 +227,9 @@ function(
         $(".find-header").removeClass("esri-icon-down-arrow");
         $(this).addClass("esri-icon-down-arrow");
         switch ( $(this).attr("id") ) {
+            case "address-hdr":
+                $("#find-address").fadeIn("slow");
+                break;
             case "plss-hdr":
                 $("#find-plss").fadeIn("slow");
                 break;
@@ -409,7 +412,11 @@ function(
         content += '<div class="panel-header">Find</div>';
         content += '<div class="panel-padding">';
 
+        //content += '<div id="srch"></div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="address-hdr"> Address</div>';
+        content += '<div class="find-body hide" id="find-address">';
         content += '<div id="srch"></div>';
+        content += '</div>';
 
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss-hdr"> Section-Township-Range</div>';
         content += '<div class="find-body hide" id="find-plss">';

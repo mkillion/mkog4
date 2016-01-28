@@ -14,7 +14,7 @@
 }
 
 .toc-item:first-of-type,
-#plss-hdr {
+#address-hdr {
 	border-top-color: #777;
     border-top-style: solid;
     border-top-width: 1px;
@@ -37,6 +37,10 @@
 td {
 	padding-bottom: 4px;
 	padding-top: 4px;
+}
+
+#find-address {
+	padding: 10px 0;
 }
 
 .esri-search {

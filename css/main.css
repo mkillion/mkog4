@@ -341,7 +341,7 @@ input[type=text]::-ms-clear {
 }
 .content-pane-left {
     width: 0px;
-    max-width: 295px;
+    max-width: 293px;
     height: 100%;
     padding: 0;
     margin: 0;
@@ -355,10 +355,10 @@ input[type=text]::-ms-clear {
     transition: width 250ms ease;
 }
 .app-loading .content-pane-left {
-    width: 295px;
+    width: 293px;
 }
 .drawer-open .content-pane-left {
-    width: 295px;
+    width: 293px;
     overflow: auto;
     overflow-x: hidden;
     border-right: 1px solid #ddd;
@@ -377,7 +377,7 @@ input[type=text]::-ms-clear {
     z-index: 450;
     top: 0;
     left: 0;
-    width: 295px;
+    width: 293px;
     height: 100%;
     content: '';
     display: block;
@@ -511,7 +511,7 @@ input[type=text]::-ms-clear {
 /* Drawer Menu */
 
 .drawer-menu-container {
-    width: 295px;
+    width: 293px;
 }
 .drawer-menu-panels .panel {
     display: none;
