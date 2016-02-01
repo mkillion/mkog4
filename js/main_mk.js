@@ -415,7 +415,15 @@ function(
                 findParams.searchText = plssText;
                 break;
             case "api":
+                var apiText = dom.byId('api_state').value + "-" + dom.byId('api_county').value + "-" + dom.byId('api_number').value;
 
+                if (dom.byId('api_extension').value != "") {
+                    apiText = apiText + "-" + dom.byId('api_extension').value;
+                }
+
+                findParams.layerIds = [0];
+                findParams.searchFields = ["api_number"];
+                findParams.searchText = apiText;
                 break;
         }
         findTask.execute(findParams).then(function(response) {
