@@ -232,24 +232,11 @@ function(
         $("[id^=find]").fadeOut("slow");
         $(".find-header").removeClass("esri-icon-down-arrow");
         $(this).addClass("esri-icon-down-arrow");
-        switch ( $(this).attr("id") ) {
-            case "address-hdr":
-                $("#find-address").fadeIn("slow");
-                break;
-            case "plss-hdr":
-                $("#find-plss").fadeIn("slow");
-                break;
-            case "api-hdr":
-                $("#find-api").fadeIn("slow");
-                break;
-            case "latlon-hdr":
-                $("#find-latlon").fadeIn("slow");
-                break;
-        }
+        var findBody = $(this).attr("id");
+        $("#find-"+findBody).fadeIn("slow");
     } );
 
     $("#clear-graphics").click(function() {
-        console.log("foo");
         graphicsLayer.clear();
     } );
 
@@ -504,12 +491,12 @@ function(
         content += '<div class="panel-header">Find <span id="clear-graphics" class="esri-icon-deny" title="Clear Highlight"></span></div>';
         content += '<div class="panel-padding">';
         // address:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="address-hdr"> Address</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"> Address</div>';
         content += '<div class="find-body hide" id="find-address">';
         content += '<div id="srch"></div>';
         content += '</div>';
         // plss:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss-hdr"> Section-Township-Range</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss"> Section-Township-Range</div>';
         content += '<div class="find-body hide" id="find-plss">';
         content += '<table><tr><td class="find-label">Township:</td><td><select id="twn"><option value=""></option>';
         for (var i=1; i<36; i++) {
@@ -529,7 +516,7 @@ function(
         content += '<tr><td></td><td><button class=find-button onclick=findIt("plss")>Find</button></td></tr>';
         content += '</table></div>';
         // api:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="api-hdr"> Well API</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="api"> Well API</div>';
         content += '<div class="find-body hide" id="find-api">';
         content += 'API Number (extension optional):<br>';
         content += '<input type="text" id="api_state" size="2" onKeyUp="jumpFocus(api_county, 2, this.id)"/> - ';
@@ -539,13 +526,16 @@ function(
         content += '<button class=find-button onclick=findIt("api")>Find</button>';
         content += '</div>';
         // lat-lon:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="latlon-hdr"> Latitude-Longitude</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="latlon"> Latitude-Longitude</div>';
         content += '<div class="find-body hide" id="find-latlon">';
         content += '<table><tr><td class="find-label">Latitude:</td><td><input type="text" id="lat" placeholder="e.g. 38.12345"></td></tr>';
         content += '<tr><td class="find-label">Longitude:</td><td><input type="text" id="lon" placeholder="e.g. -98.12345"></td></tr>';
         content += '<tr><td class="find-label">Datum:</td><td><select id="datum"><option value="nad27">NAD27</option><option value="wgs84">WGS84</option><td></td></tr>';
         content += '<tr><td></td><td><button class="label" onclick="zoomToLatLong();">Find</button></td></tr>';
         content += '</table></div>';
+        // field:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"> Field</div>';
+        content += '<div class="find-body hide" id="find-field">';
 
         content += '</div>';
         content += '</div>';
