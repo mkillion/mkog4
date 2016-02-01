@@ -28,6 +28,9 @@ require([
     "esri/layers/GraphicsLayer",
     "esri/symbols/SimpleLineSymbol",
     "esri/Graphic",
+    "esri/tasks/GeometryService",
+    "esri/tasks/support/ProjectParameters",
+    "esri/geometry/support/webMercatorUtils",
     "dojo/domReady!"
 ],
 function(
@@ -59,7 +62,10 @@ function(
     SimpleMarkerSymbol,
     GraphicsLayer,
     SimpleLineSymbol,
-    Graphic
+    Graphic,
+    GeometryService,
+    ProjectParameters,
+    webMercatorUtils
 ) {
     // TODO: review all comments.
 
@@ -236,7 +242,15 @@ function(
             case "api-hdr":
                 $("#find-api").fadeIn("slow");
                 break;
+            case "latlon-hdr":
+                $("#find-latlon").fadeIn("slow");
+                break;
         }
+    } );
+
+    $("#clear-graphics").click(function() {
+        console.log("foo");
+        graphicsLayer.clear();
     } );
 
 
@@ -434,6 +448,52 @@ function(
     }
 
 
+    zoomToLatLong = function() {
+        var lat = dom.byId("lat").value;
+        var lon = dom.byId("lon").value;
+        var datum = dom.byId("datum").value;
+
+        var gsvc = new GeometryService("http://services.kgs.ku.edu/arcgis2/rest/services/Utilities/Geometry/GeometryServer");
+        var params = new ProjectParameters();
+        var wgs84Sr = new SpatialReference( { wkid: 4326 } );
+
+        if (lon > 0) {
+            lon = 0 - lon;
+        }
+
+        var srId = (datum === "nad27") ? 4267 : 4326;
+
+        var p = new Point(lon, lat, new SpatialReference( { wkid: srId } ) );
+        params.geometries = [p];
+        params.outSR = wgs84Sr;
+
+        gsvc.project(params).then( function(features) {
+            var pt84 = new Point(features[0].x, features[0].y, wgs84Sr);
+            var wmPt = webMercatorUtils.geographicToWebMercator(pt84);
+
+            view.center = wmPt;
+            view.zoom = 16;
+
+            var ptSymbol = new SimpleMarkerSymbol( {
+                style: "x",
+                size: 22,
+                outline: new SimpleLineSymbol( {
+                  color: [255, 0, 0],
+                  width: 4
+                } )
+            } );
+
+            var pointGraphic = new Graphic( {
+                geometry: wmPt,
+                symbol: ptSymbol
+            } );
+
+            graphicsLayer.clear();
+            graphicsLayer.add(pointGraphic);
+        } );
+    }
+
+
     function createMenus() {
     	var drawerMenus = [];
         var content, menuObj;
@@ -441,14 +501,14 @@ function(
         // Find panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Find</div>';
+        content += '<div class="panel-header">Find <span id="clear-graphics" class="esri-icon-deny" title="Clear Highlight"></span></div>';
         content += '<div class="panel-padding">';
-
+        // address:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="address-hdr"> Address</div>';
         content += '<div class="find-body hide" id="find-address">';
         content += '<div id="srch"></div>';
         content += '</div>';
-
+        // plss:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss-hdr"> Section-Township-Range</div>';
         content += '<div class="find-body hide" id="find-plss">';
         content += '<table><tr><td class="find-label">Township:</td><td><select id="twn"><option value=""></option>';
@@ -468,7 +528,7 @@ function(
         content += '</select></td></tr>';
         content += '<tr><td></td><td><button class=find-button onclick=findIt("plss")>Find</button></td></tr>';
         content += '</table></div>';
-
+        // api:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="api-hdr"> Well API</div>';
         content += '<div class="find-body hide" id="find-api">';
         content += 'API Number (extension optional):<br>';
@@ -478,6 +538,14 @@ function(
         content += '<input type="text" id="api_extension" size="4"/>';
         content += '<button class=find-button onclick=findIt("api")>Find</button>';
         content += '</div>';
+        // lat-lon:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="latlon-hdr"> Latitude-Longitude</div>';
+        content += '<div class="find-body hide" id="find-latlon">';
+        content += '<table><tr><td class="find-label">Latitude:</td><td><input type="text" id="lat" placeholder="e.g. 38.12345"></td></tr>';
+        content += '<tr><td class="find-label">Longitude:</td><td><input type="text" id="lon" placeholder="e.g. -98.12345"></td></tr>';
+        content += '<tr><td class="find-label">Datum:</td><td><select id="datum"><option value="nad27">NAD27</option><option value="wgs84">WGS84</option><td></td></tr>';
+        content += '<tr><td></td><td><button class="label" onclick="zoomToLatLong();">Find</button></td></tr>';
+        content += '</table></div>';
 
         content += '</div>';
         content += '</div>';

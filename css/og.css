@@ -97,6 +97,13 @@ input[type=checkbox] {
 	font-size: 20px;
 }
 
+.esri-icon-deny {
+	color: "red";
+	cursor: pointer;
+	float: right;
+	text-decoration: none;
+}
+
 .show{
 	display: block;
 }
