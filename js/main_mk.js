@@ -392,13 +392,35 @@ function(
 
         switch (what) {
             case "plss":
+                var plssText;
 
+                if (dom.byId('rngdir-e').checked == true) {
+                    var dir = 'E';
+                }
+                else {
+                    var dir = 'W';
+                }
+
+                if (dom.byId('sec').value !== "") {
+                    plssText = 'S' + dom.byId('sec').value + '-T' + dom.byId('twn').value + 'S-R' + dom.byId('rng').value + dir;
+                    findParams.layerIds = [3];
+                    findParams.searchFields = ["s_r_t"];
+                }
+                else {
+                    plssText = 'T' + dom.byId('twn').value + 'S-R' + dom.byId('rng').value + dir;
+                    findParams.layerIds = [4];
+                    findParams.searchFields = ["t_r"];
+                }
+
+                findParams.searchText = plssText;
                 break;
             case "api":
 
                 break;
         }
-        //findTask.execute(findParams).then
+        findTask.execute(findParams).then(function(response) {
+            console.log(response[0].feature.attributes);
+        } );
     }
 
 
@@ -412,7 +434,6 @@ function(
         content += '<div class="panel-header">Find</div>';
         content += '<div class="panel-padding">';
 
-        //content += '<div id="srch"></div>';
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="address-hdr"> Address</div>';
         content += '<div class="find-body hide" id="find-address">';
         content += '<div id="srch"></div>';
@@ -429,7 +450,7 @@ function(
         for (var i=1; i<44; i++) {
             content += '<option value="' + i + '"">' + i + '</option>';
         }
-        content += '</select> East: <input type="radio" name="rngdir" value="e"> West: <input type="radio" name="rngdir" value="w" checked></td></tr>';
+        content += '</select> East: <input type="radio" name="rngdir" id="rngdir-e" value="e"> West: <input type="radio" name="rngdir" id="rngdir-w" value="w" checked></td></tr>';
         content += '<tr><td class="find-label">Section:</td><td><select id="sec"><option value=""></option>';
         for (var i=1; i<37; i++) {
             content += '<option value="' + i + '"">' + i + '</option>';
