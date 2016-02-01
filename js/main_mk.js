@@ -96,6 +96,7 @@ function(
 
     createMenus();
     createTools();
+    popCountyDropdown();
 
     // End framework.
 
@@ -239,6 +240,16 @@ function(
     $("#clear-graphics").click(function() {
         graphicsLayer.clear();
     } );
+
+
+    function popCountyDropdown() {
+        var cntyArr = new Array("Allen", "Anderson", "Atchison", "Barber", "Barton", "Bourbon", "Brown", "Butler", "Chase", "Chautauqua", "Cherokee", "Cheyenne", "Clark", "Clay", "Cloud", "Coffey", "Comanche", "Cowley", "Crawford", "Decatur", "Dickinson", "Doniphan", "Douglas", "Edwards", "Elk", "Ellis", "Ellsworth", "Finney", "Ford", "Franklin", "Geary", "Gove", "Graham", "Grant", "Gray", "Greeley", "Greenwood", "Hamilton", "Harper", "Harvey", "Haskell", "Hodgeman", "Jackson", "Jefferson", "Jewell", "Johnson", "Kearny", "Kingman", "Kiowa", "Labette", "Lane", "Leavenworth", "Lincoln", "Linn", "Logan", "Lyon", "McPherson", "Marion", "Marshall", "Meade", "Miami", "Mitchell", "Montgomery", "Morris", "Morton", "Nemaha", "Neosho", "Ness", "Norton", "Osage", "Osborne", "Ottawa", "Pawnee", "Phillips", "Pottawatomie", "Pratt", "Rawlins", "Reno", "Republic", "Rice", "Riley", "Rooks", "Rush", "Russell", "Saline", "Scott", "Sedgwick", "Seward", "Shawnee", "Sheridan", "Sherman", "Smith", "Stafford", "Stanton", "Stevens", "Sumner", "Thomas", "Trego", "Wabaunsee", "Wallace", "Washington", "Wichita", "Wilson", "Woodson", "Wyandotte");
+
+        for(var i=0; i<cntyArr.length; i++) {
+            theCnty = cntyArr[i];
+            $('#lstCounty').append('<option value="' + theCnty + '">' + theCnty + '</option>');
+        }
+    }
 
 
     function findWell(kid) {
@@ -428,6 +439,11 @@ function(
                 findParams.searchFields = ["api_number"];
                 findParams.searchText = apiText;
                 break;
+            case "county":
+                findParams.layerIds = [2];
+                findParams.searchFields = ["county"];
+                findParams.searchText = dom.byId("lstCounty").value;
+                break;
         }
         findTask.execute(findParams).then(function(response) {
             zoomToFeature(response[0].feature);
@@ -536,6 +552,18 @@ function(
         // field:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"> Field</div>';
         content += '<div class="find-body hide" id="find-field">';
+        // TODO: add auto-complete text input.
+        content += '</div>';
+        // town:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="town"> Town</div>';
+        content += '<div class="find-body hide" id="find-town">';
+        // TODO: add select box.
+        content += '</div>';
+        // county:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"> County</div>';
+        content += '<div class="find-body hide" id="find-county">';
+        content += '<table><tr><td class="find-label">County:</td><td><select id="lstCounty"></select></td><td><button class=find-button onclick=findIt("county")>Find</button></td></tr></table>';
+        content += '</div>';
 
         content += '</div>';
         content += '</div>';
