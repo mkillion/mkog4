@@ -330,8 +330,9 @@ function(
     }
 
 
-    function zoomToFeature(feature) {
-        var f = feature[0];
+    function zoomToFeature(features) {
+        var f = features[0] ? features[0] : features;
+
         switch (f.geometry.type) {
             case "point":
                 var x = f.geometry.x;
@@ -342,15 +343,16 @@ function(
                 //highlightFeature(feature);
                 break;
             case "polygon":
-                var ext = feature[0].geometry.extent;
+                var ext = f.geometry.extent;
                 view.extent = ext;
                 break;
         }
     }
 
 
-    function highlightFeature(feature) {
-        var f = feature[0];
+    function highlightFeature(features) {
+        var f = features[0] ? features[0] : features;
+
         switch (f.geometry.type) {
             case "point":
                 var x = f.geometry.x;
@@ -373,7 +375,7 @@ function(
                 graphicsLayer.add(pointGraphic);
                 break;
             case "polygon":
-                var ext = feature[0].geometry.extent;
+                var ext = features[0].geometry.extent;
                 view.extent = ext;
                 break;
         }
@@ -427,7 +429,7 @@ function(
                 break;
         }
         findTask.execute(findParams).then(function(response) {
-            console.log(response[0].feature.attributes);
+            zoomToFeature(response[0].feature);
         } );
     }
 
