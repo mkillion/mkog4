@@ -504,7 +504,7 @@ function(
         // Find panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Find <span id="clear-graphics" class="esri-icon-deny" title="Clear Highlight"></span></div>';
+        content += '<div class="panel-header">Find <span id="clear-graphics" class="esri-icon-erase" title="Clear Highlight"></span></div>';
         content += '<div class="panel-padding">';
         // address:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"> Address or Place</div>';
