@@ -507,7 +507,7 @@ function(
         content += '<div class="panel-header">Find <span id="clear-graphics" class="esri-icon-deny" title="Clear Highlight"></span></div>';
         content += '<div class="panel-padding">';
         // address:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"> Address</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"> Address or Place</div>';
         content += '<div class="find-body hide" id="find-address">';
         content += '<div id="srch"></div>';
         content += '</div>';
@@ -547,17 +547,12 @@ function(
         content += '<table><tr><td class="find-label">Latitude:</td><td><input type="text" id="lat" placeholder="e.g. 38.12345"></td></tr>';
         content += '<tr><td class="find-label">Longitude:</td><td><input type="text" id="lon" placeholder="e.g. -98.12345"></td></tr>';
         content += '<tr><td class="find-label">Datum:</td><td><select id="datum"><option value="nad27">NAD27</option><option value="wgs84">WGS84</option><td></td></tr>';
-        content += '<tr><td></td><td><button class="label" onclick="zoomToLatLong();">Find</button></td></tr>';
+        content += '<tr><td></td><td><button class="find-button" onclick="zoomToLatLong();">Find</button></td></tr>';
         content += '</table></div>';
         // field:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"> Field</div>';
         content += '<div class="find-body hide" id="find-field">';
         // TODO: add auto-complete text input.
-        content += '</div>';
-        // town:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="town"> Town</div>';
-        content += '<div class="find-body hide" id="find-town">';
-        // TODO: add select box.
         content += '</div>';
         // county:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"> County</div>';
