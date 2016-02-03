@@ -4,6 +4,8 @@ require([
 	"dojo/dom",
     "dojo/window",
     "dojo/_base/array",
+    "dojo/store/Memory",
+    "dijit/form/ComboBox",
 	"application/Drawer",
     "application/DrawerMenu",
     "esri/Map",
@@ -39,6 +41,8 @@ function(
 	dom,
     win,
     arrayUtils,
+    Memory,
+    ComboBox,
 	Drawer,
 	DrawerMenu,
     Map,
@@ -97,6 +101,21 @@ function(
     createMenus();
     createTools();
     popCountyDropdown();
+
+    // Combo box for og fields:
+    $.get("fields.txt", function(response) {
+        var fieldData = JSON.parse(response);
+        var fieldNames = fieldData.items;
+
+        var fieldStore = new Memory( {data: fieldNames} );
+        var comboBox = new ComboBox({
+            id: "fieldSelect",
+            name: "name",
+            value: "",
+            store: fieldStore,
+            searchAttr: "name"
+        }, "fieldSelect").startup();
+    } );
 
     // End framework.
 
@@ -504,7 +523,7 @@ function(
         // Find panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Find <span id="clear-graphics" class="esri-icon-erase" title="Clear Highlight"></span></div>';
+        content += '<div class="panel-header">Find <span id="clear-graphics" class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         // address:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"> Address or Place</div>';
@@ -552,7 +571,7 @@ function(
         // field:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"> Field</div>';
         content += '<div class="find-body hide" id="find-field">';
-        // TODO: add auto-complete text input.
+        content += '<input id="fieldSelect" placeholder="Enter field name...">';
         content += '</div>';
         // county:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"> County</div>';
