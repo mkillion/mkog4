@@ -110,8 +110,6 @@ function(
         var fieldStore = new Memory( {data: fieldNames} );
         var comboBox = new ComboBox({
             id: "fieldSelect",
-            name: "name",
-            value: "",
             store: fieldStore,
             searchAttr: "name"
         }, "fieldSelect").startup();
@@ -463,6 +461,10 @@ function(
                 findParams.searchFields = ["county"];
                 findParams.searchText = dom.byId("lstCounty").value;
                 break;
+            case "field":
+                findParams.layerIds = [1];
+                findParams.searchFields = ["field_name"];
+                findParams.searchText = dom.byId("fieldSelect").value;
         }
         findTask.execute(findParams).then(function(response) {
             zoomToFeature(response[0].feature);
@@ -571,7 +573,7 @@ function(
         // field:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"> Field</div>';
         content += '<div class="find-body hide" id="find-field">';
-        content += '<input id="fieldSelect" placeholder="Enter field name...">';
+        content += '<table><tr><td class="find-label">Name:</td><td><input id="fieldSelect"></td><td><button class=find-button onclick=findIt("field")>Find</button></td></tr></table>';
         content += '</div>';
         // county:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"> County</div>';
