@@ -665,10 +665,22 @@ function(
             chkd = map.getLayer(lyrs._items[j].id).visible ? "checked" : "";
             if (lyrs._items[j].id.indexOf("-layer-") === -1) {
                 // ^ Excludes default graphics layer from the TOC.
-                tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + lyrs._items[j].id + "</label></div>";
+                tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + lyrs._items[j].id + "</label>";
+
+                if (lyrs._items[j].id === "Oil and Gas Fields") {
+                    tocContent += "<span class='esri-icon-reverse' onclick='changeOpacity(&quot;" + lyrs._items[j].id + "&quot;,&quot;down&quot;);'></span><span class='esri-icon-forward' onclick='changeOpacity(&quot;" + lyrs._items[j].id + "&quot;,&quot;up&quot;);'></span>";
+                }
+                tocContent += "</div>";
             }
         }
         $("#lyrs-toc").html(tocContent);
+    }
+
+
+    changeOpacity = function(layer, dir) {
+        var lyr = map.getLayer(layer);
+        var incr = dir === "down" ? -0.2 : 0.2;
+        lyr.opacity = lyr.opacity + incr;
     }
 
 

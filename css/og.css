@@ -103,6 +103,16 @@ input[type=checkbox] {
 	text-decoration: none;
 }
 
+.esri-icon-forward,
+.esri-icon-reverse {
+	cursor: pointer;
+	font-size: 20px;
+	left: 75px;
+	padding: 3px;
+	position: relative;
+	top: 3px;
+}
+
 .show{
 	display: block;
 }
