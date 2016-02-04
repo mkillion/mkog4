@@ -663,14 +663,15 @@ function(
         var transparentLayers = ["Oil and Gas Fields"];
 
         for (var j=lyrs.length - 1; j>-1; j--) {
-            chkd = map.getLayer(lyrs._items[j].id).visible ? "checked" : "";
-            if (lyrs._items[j].id.indexOf("-layer-") === -1) {
+            var layerID = lyrs._items[j].id;
+            chkd = map.getLayer(layerID).visible ? "checked" : "";
+            if (layerID.indexOf("-layer-") === -1) {
                 // ^ Excludes default graphics layer from the TOC.
-                tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + lyrs._items[j].id + "</label>";
+                tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + layerID + "</label>";
 
-                if ($.inArray(lyrs._items[j].id, transparentLayers) !== -1) {
+                if ($.inArray(layerID, transparentLayers) !== -1) {
                     // Add transparency control buttons to specified layers.
-                    tocContent += "<span class='esri-icon-reverse' title='Make Layer Transparent' onclick='changeOpacity(&quot;" + lyrs._items[j].id + "&quot;,&quot;down&quot;);'></span><span class='esri-icon-forward' title='Make Layer Opaque' onclick='changeOpacity(&quot;" + lyrs._items[j].id + "&quot;,&quot;up&quot;);'></span>";
+                    tocContent += "<span class='esri-icon-reverse' title='Make Layer Transparent' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;down&quot;);'></span><span class='esri-icon-forward' title='Make Layer Opaque' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;up&quot;);'></span>";
                 }
                 tocContent += "</div>";
             }
@@ -679,8 +680,8 @@ function(
     }
 
 
-    changeOpacity = function(layer, dir) {
-        var lyr = map.getLayer(layer);
+    changeOpacity = function(id, dir) {
+        var lyr = map.getLayer(id);
         var incr = dir === "down" ? -0.2 : 0.2;
         lyr.opacity = lyr.opacity + incr;
     }
