@@ -103,12 +103,12 @@ function(
     popCountyDropdown();
 
     // Combo box for og fields:
-    $.get("fields.txt", function(response) {
+    $.get("fields_json.txt", function(response) {
         var fieldData = JSON.parse(response);
         var fieldNames = fieldData.items;
 
         var fieldStore = new Memory( {data: fieldNames} );
-        var comboBox = new ComboBox({
+        var comboBox = new ComboBox( {
             id: "fieldSelect",
             store: fieldStore,
             searchAttr: "name"
