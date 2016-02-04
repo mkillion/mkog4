@@ -514,6 +514,10 @@ function(
 
             graphicsLayer.clear();
             graphicsLayer.add(pointGraphic);
+            // TODO: There's a bug here. point graphic appears huge on the map at first but displays correctly after the map extent changes in some way.
+            // It works corrrectly on subsequent passes (after extent has been changed).
+            // Adding a new graphics layer every time makes it work correctly, but the layers pile up. either wait on 4.0 final release and test, or
+            // find a way to test for existence of second graphics layer and remove it.
         } );
     }
 
