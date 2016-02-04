@@ -670,7 +670,7 @@ function(
 
                 if ($.inArray(lyrs._items[j].id, transparentLayers) !== -1) {
                     // Add transparency control buttons to specified layers.
-                    tocContent += "<span class='esri-icon-reverse' onclick='changeOpacity(&quot;" + lyrs._items[j].id + "&quot;,&quot;down&quot;);'></span><span class='esri-icon-forward' onclick='changeOpacity(&quot;" + lyrs._items[j].id + "&quot;,&quot;up&quot;);'></span>";
+                    tocContent += "<span class='esri-icon-reverse' title='Make Layer Transparent' onclick='changeOpacity(&quot;" + lyrs._items[j].id + "&quot;,&quot;down&quot;);'></span><span class='esri-icon-forward' title='Make Layer Opaque' onclick='changeOpacity(&quot;" + lyrs._items[j].id + "&quot;,&quot;up&quot;);'></span>";
                 }
                 tocContent += "</div>";
             }
