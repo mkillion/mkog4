@@ -679,12 +679,19 @@ function(
         }
         $("#lyrs-toc").html(tocContent);
 
-        $("#Oil-and-Gas-Wells").append("<span class='esri-icon-filter' onclick='filterWells();' title='Filter Wells'></span>");
+        $("#Oil-and-Gas-Wells").append("<span class='esri-icon-labels' onclick='labelWells();'></span><span class='esri-icon-filter' onclick='filterWells();' title='Filter Wells'></span>");
     }
+
+
+    labelWells = function() {
+        // TODO:
+        console.log("label wells function");
+    }
+
 
     filterWells = function() {
         // TODO:
-        console.log("filter wells fuction");
+        console.log("filter wells function");
     }
 
 

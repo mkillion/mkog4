@@ -98,10 +98,13 @@ input[type=checkbox] {
 }
 
 .esri-icon-erase,
-.esri-icon-filter {
+.esri-icon-filter,
+.esri-icon-labels {
 	cursor: pointer;
 	float: right;
-	font-size: 18px;
+	font-size: 20px;
+	padding-left: 8px;
+	padding-right: 5px;
 }
 
 .esri-icon-forward,
