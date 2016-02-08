@@ -667,7 +667,8 @@ function(
             chkd = map.getLayer(layerID).visible ? "checked" : "";
             if (layerID.indexOf("-layer-") === -1) {
                 // ^ Excludes default graphics layer from the TOC.
-                tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + layerID + "</label>";
+                var htmlID = layerID.replace(/ /g, "-");
+                tocContent += "<div class='toc-item' id='" + htmlID + "'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + layerID + "</label>";
 
                 if ($.inArray(layerID, transparentLayers) !== -1) {
                     // Add transparency control buttons to specified layers.
@@ -677,12 +678,19 @@ function(
             }
         }
         $("#lyrs-toc").html(tocContent);
+
+        $("#Oil-and-Gas-Wells").append("<span class='esri-icon-filter' onclick='filterWells();' title='Filter Wells'></span>");
+    }
+
+    filterWells = function() {
+        // TODO:
+        console.log("filter wells fuction");
     }
 
 
     changeOpacity = function(id, dir) {
         var lyr = map.getLayer(id);
-        var incr = dir === "down" ? -0.2 : 0.2;
+        var incr = (dir === "down") ? -0.2 : 0.2;
         lyr.opacity = lyr.opacity + incr;
     }
 
