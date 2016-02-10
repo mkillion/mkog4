@@ -33,6 +33,7 @@ require([
     "esri/tasks/GeometryService",
     "esri/tasks/support/ProjectParameters",
     "esri/geometry/support/webMercatorUtils",
+    "esri/layers/ArcGISImageLayer",
     "dojo/domReady!"
 ],
 function(
@@ -69,7 +70,8 @@ function(
     Graphic,
     GeometryService,
     ProjectParameters,
-    webMercatorUtils
+    webMercatorUtils,
+    ArcGISImageLayer
 ) {
     // TODO: review all comments.
 
@@ -124,15 +126,21 @@ function(
     var findParams = new FindParameters();
 
     var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
-    var fieldsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields"} );
+    var fieldsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
     var wellsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
     var plssLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
-    var wwc5Layer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", visibleLayers:[8], id:"Water Wells (WWC5)"} );
+    var wwc5Layer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", visibleLayers:[8], id:"WWC5 Water Wells", visible:false} );
+    var usgsEventsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis1/rest/services/co2/seismic_1/MapServer", visibleLayers:[8], id:"Earthquakes", visible:false} );
+    var lepcLayer = new ArcGISDynamicLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
+    var topoLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", visibleLayers:[11], id:"Topography", visible:false } );
+    var naip2014Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/FSA_NAIP_2014_Color/ImageServer", id:"2014 Aerials", visible:false} );
+    var doqq2002Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_2002/ImageServer", id:"2002 Aerials", visible:false} );
+    var doqq1991Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_1991/ImageServer", id:"1991 Aerials", visible:false} );
 
     var map = new Map( {
         // Not defining basemap here for TOC toggle reasons.
         //basemap: "topo",
-        layers: [basemapLayer, fieldsLayer, plssLayer, wwc5Layer, wellsLayer]
+        layers: [basemapLayer, doqq1991Layer, doqq2002Layer, naip2014Layer, topoLayer, lepcLayer, fieldsLayer, plssLayer, usgsEventsLayer, wwc5Layer, wellsLayer]
     } );
     map.then(createTOC, mapErr);
 
@@ -661,7 +669,7 @@ function(
     function createTOC() {
         var lyrs = map.layers;
         var chkd, tocContent = "";
-        var transparentLayers = ["Oil and Gas Fields"];
+        var transparentLayers = ["Oil and Gas Fields","Topography","2014 Aerials","2002 Aerials","1991 Aerials"];
 
         for (var j=lyrs.length - 1; j>-1; j--) {
             var layerID = lyrs._items[j].id;
@@ -673,7 +681,7 @@ function(
 
                 if ($.inArray(layerID, transparentLayers) !== -1) {
                     // Add transparency control buttons to specified layers.
-                    tocContent += "<span class='esri-icon-reverse' title='Make Layer Transparent' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;down&quot;);'></span><span class='esri-icon-forward' title='Make Layer Opaque' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;up&quot;);'></span>";
+                    tocContent += "</span><span class='esri-icon-forward' title='Make Layer Opaque' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;up&quot;);'></span><span class='esri-icon-reverse' title='Make Layer Transparent' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;down&quot;);'>";
                 }
                 tocContent += "</div>";
             }
@@ -681,19 +689,28 @@ function(
         $("#lyrs-toc").html(tocContent);
 
         // Add addtional layer-specific controls (reference by hyphenated layer id):
-        $("#Oil-and-Gas-Wells").append("<span class='esri-icon-labels' onclick='labelWells();' title='Label Wells'></span><span class='esri-icon-filter' onclick='filterWells();' title='Filter Wells'></span>");
+        $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter' onclick='filterWells(&quot;og&quot;);' title='Filter Wells'></span><span class='esri-icon-labels' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
+        $("#WWC5-Water-Wells").append("<span class='esri-icon-filter' onclick='filterWells(&quot;wwc5&quot;);' title='Filter Wells'></span><span class='esri-icon-labels' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
+        $("#Earthquakes").append("<span class='esri-icon-filter' onclick='filterEvents();' title='Filter Earthquakes'></span>");
     }
 
 
-    labelWells = function() {
+    labelWells = function(type) {
         // TODO:
         console.log("label wells function");
     }
 
 
-    filterWells = function() {
+    filterWells = function(type) {
         // TODO:
         console.log("filter wells function");
+        console.log(type);
+    }
+
+
+    filterEvents = function() {
+        // TODO:
+        console.log("filter events function");
     }
 
 

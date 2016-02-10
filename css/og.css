@@ -93,28 +93,19 @@ input[type=checkbox] {
 .esri-icon-radio-checked,
 .esri-icon-contact,
 .esri-icon-documentation,
-.esri-icon-zoom-in-magnifying-glass {
+.esri-icon-zoom-in-magnifying-glass,
+.esri-icon-erase {
 	font-size: 20px;
 }
 
-.esri-icon-erase,
 .esri-icon-filter,
-.esri-icon-labels {
-	cursor: pointer;
-	float: right;
-	font-size: 20px;
-	padding-left: 8px;
-	padding-right: 5px;
-}
-
+.esri-icon-labels,
 .esri-icon-forward,
 .esri-icon-reverse {
 	cursor: pointer;
-	font-size: 20px;
-	left: 75px;
-	padding: 3px;
-	position: relative;
-	top: 3px;
+	float: right;
+	font-size: 18px;
+	padding-right: 6px;
 }
 
 .show{
