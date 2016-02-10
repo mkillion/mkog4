@@ -473,7 +473,13 @@ function(
             case "field":
                 findParams.layerIds = [1];
                 findParams.searchFields = ["field_name"];
+                findParams.contains = false;
                 findParams.searchText = dom.byId("fieldSelect").value;
+
+                if (!fieldsLayer.visible) {
+                    fieldsLayer.visible = true;
+                    $("#Oil-and-Gas-Fields input").prop("checked", true);
+                }
         }
         findTask.execute(findParams).then(function(response) {
             zoomToFeature(response[0].feature);
