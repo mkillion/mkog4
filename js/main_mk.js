@@ -127,11 +127,12 @@ function(
     var fieldsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields"} );
     var wellsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
     var plssLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
+    var wwc5Layer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", visibleLayers:[8], id:"Water Wells (WWC5)"} );
 
     var map = new Map( {
         // Not defining basemap here for TOC toggle reasons.
         //basemap: "topo",
-        layers: [basemapLayer, fieldsLayer, plssLayer, wellsLayer]
+        layers: [basemapLayer, fieldsLayer, plssLayer, wwc5Layer, wellsLayer]
     } );
     map.then(createTOC, mapErr);
 
@@ -254,7 +255,7 @@ function(
         $("#find-"+findBody).fadeIn("slow");
     } );
 
-    $("#clear-graphics").click(function() {
+    $(".esri-icon-erase").click(function() {
         graphicsLayer.clear();
     } );
 
@@ -529,7 +530,7 @@ function(
         // Find panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Find <span id="clear-graphics" class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-header">Find <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         // address:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"> Address or Place</div>';
@@ -597,7 +598,7 @@ function(
         // Layers panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Layers</div>';
+        content += '<div class="panel-header">Layers <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div id="lyrs-toc"></div>';
         content += '</div>';
 
@@ -610,7 +611,7 @@ function(
         // Legend panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Legend</div>';
+        content += '<div class="panel-header">Legend <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         content += '<div id="legend-content"></div>';
         content += '</div>';
@@ -625,7 +626,7 @@ function(
         // Tools panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Tools</div>';
+        content += '<div class="panel-header">Tools <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         content += '<div id="tools-content"></div>';
         content += '</div>';
@@ -679,7 +680,8 @@ function(
         }
         $("#lyrs-toc").html(tocContent);
 
-        $("#Oil-and-Gas-Wells").append("<span class='esri-icon-labels' onclick='labelWells();'></span><span class='esri-icon-filter' onclick='filterWells();' title='Filter Wells'></span>");
+        // Add addtional layer-specific controls (reference by hyphenated layer id):
+        $("#Oil-and-Gas-Wells").append("<span class='esri-icon-labels' onclick='labelWells();' title='Label Wells'></span><span class='esri-icon-filter' onclick='filterWells();' title='Filter Wells'></span>");
     }
 
 
