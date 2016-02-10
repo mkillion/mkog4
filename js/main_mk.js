@@ -691,7 +691,8 @@ function(
         // Add addtional layer-specific controls (reference by hyphenated layer id):
         $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter' onclick='filterWells(&quot;og&quot;);' title='Filter Wells'></span><span class='esri-icon-labels' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
         $("#WWC5-Water-Wells").append("<span class='esri-icon-filter' onclick='filterWells(&quot;wwc5&quot;);' title='Filter Wells'></span><span class='esri-icon-labels' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
-        $("#Earthquakes").append("<span class='esri-icon-filter' onclick='filterEvents();' title='Filter Earthquakes'></span>");
+        $("#Earthquakes").append("<span class='esri-icon-filter' onclick='filterEvents();' title='Filter Earthquakes'></span><span class='esri-icon-description' onclick='showDescription(&quot;events&quot;)'></span>");
+        $("#LEPC-Crucial-Habitat").append("<span class='esri-icon-description' onclick='showDescription(&quot;lepc&quot;)'></span>");
     }
 
 
@@ -711,6 +712,12 @@ function(
     filterEvents = function() {
         // TODO:
         console.log("filter events function");
+    }
+
+
+    showDescription = function(type) {
+        // TODO:
+        console.log("show descriptions " + type);
     }
 
 

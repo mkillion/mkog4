@@ -101,7 +101,9 @@ input[type=checkbox] {
 .esri-icon-filter,
 .esri-icon-labels,
 .esri-icon-forward,
-.esri-icon-reverse {
+.esri-icon-reverse,
+.esri-icon-description {
+	color: #696969;
 	cursor: pointer;
 	float: right;
 	font-size: 18px;
