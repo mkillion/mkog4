@@ -6,7 +6,6 @@ require([
     "dojo/_base/array",
     "dojo/store/Memory",
     "dijit/form/ComboBox",
-    "dijit/Dialog",
 	"application/Drawer",
     "application/DrawerMenu",
     "esri/Map",
@@ -45,7 +44,6 @@ function(
     arrayUtils,
     Memory,
     ComboBox,
-    Dialog,
 	Drawer,
 	DrawerMenu,
     Map,
@@ -268,12 +266,6 @@ function(
     $(".esri-icon-erase").click(function() {
         graphicsLayer.clear();
     } );
-
-    myDialog = new Dialog({
-        title: "Earthquake Data",
-        content: "Test content goes here.",
-        style: "width: 500px"
-    });
 
 
     function popCountyDropdown() {
@@ -705,8 +697,24 @@ function(
         // Add addtional layer-specific controls (reference by hyphenated layer id):
         $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;og&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
         $("#WWC5-Water-Wells").append("<span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;wwc5&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
-        $("#Earthquakes").append("<span class='esri-icon-filter toc-icon' onclick='filterEvents();' title='Filter Earthquakes'></span><span class='esri-icon-description toc-icon' onclick='myDialog.show();'></span>");
-        $("#LEPC-Crucial-Habitat").append("<span class='esri-icon-description toc-icon' onclick='showDescription(&quot;lepc&quot;)'></span>");
+
+        var eventDesc = "Data for all events occurring between 1/9/2013 and 3/7/2014 was provided by the Oklahoma Geological Survey - all other data is from the USGS.</p>";
+        eventDesc += "<p>Earthquake data for Oklahoma is incomplete and only extends back to 12/2/2014. Only events occurring in northern Oklahoma<br>(north of Medford) are included on the mapper.</p>";
+        $("#Earthquakes").append("<span class='esri-icon-filter toc-icon' onclick='filterEvents();' title='Filter Earthquakes'></span><span class='esri-icon-description toc-icon' id='event-desc-icon'></span><span class='tooltip hide' id='event-desc'>" + eventDesc + "</span>");
+        $("#event-desc-icon").click(function() {
+            $("#event-desc").toggleClass("show");
+        } );
+
+        var lepcDesc = "<p>The Lesser Prairie Chicken (LEPC) Crucial Habitat map layer is part of the Southern Great Plains Crucial Habitat Assessment Tool (SGP CHAT), produced and maintained";
+        lepcDesc += "by the Kansas Biological Survey. For more information, including inquiries, please visit the <a href='http://kars.ku.edu/geodata/maps/sgpchat' target='_blank'>project website</a>.</p>";
+        lepcDesc += "<p>SGP CHAT is intended to provide useful and non-regulatory information during the early planning stages of development projects, conservation opportunities, and environmental review.</p>";
+        lepcDesc += "<p>SGP CHAT is not intended to replace consultation with local, state, or federal agencies.</p>";
+        lepcDesc += "<p>The finest data resolution is one square mile hexagons, and use of this data layer at a more localized scale is not appropriate and may lead to inaccurate interpretations.";
+        lepcDesc += "The classification may or may not apply to the entire section. Consult with local biologists for more localized information.</p>";
+        $("#LEPC-Crucial-Habitat").append("<span class='esri-icon-description toc-icon' id='lepc-desc-icon'></span><span class='tooltip hide' id='lepc-desc'>" + lepcDesc + "</span>");
+        $("#lepc-desc-icon").click(function() {
+            $("#lepc-desc").toggleClass("show");
+        } );
     }
 
 
@@ -726,12 +734,6 @@ function(
     filterEvents = function() {
         // TODO:
         console.log("filter events function");
-    }
-
-
-    showDescription = function(type) {
-        // TODO:
-        console.log("show descriptions " + type);
     }
 
 
