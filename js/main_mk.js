@@ -130,7 +130,7 @@ function(
     var wellsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
     var plssLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
     var wwc5Layer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", visibleLayers:[8], id:"WWC5 Water Wells", visible:false} );
-    var usgsEventsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis1/rest/services/co2/seismic_1/MapServer", visibleLayers:[8], id:"Earthquakes", visible:false} );
+    var usgsEventsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[13], id:"Earthquakes", visible:false} );
     var lepcLayer = new ArcGISDynamicLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
     var topoLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", visibleLayers:[11], id:"Topography", visible:false } );
     var naip2014Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/FSA_NAIP_2014_Color/ImageServer", id:"2014 Aerials", visible:false} );
@@ -161,7 +161,7 @@ function(
         identifyTask = new IdentifyTask(ogGeneralServiceURL);
         identifyParams = new IdentifyParameters();
         identifyParams.tolerance = 3;
-        identifyParams.layerIds = [12, 0, 8, 1];
+        identifyParams.layerIds = [0, 13, 8, 1];
         identifyParams.layerOption = "visible";
         identifyParams.width = view.width;
         identifyParams.height = view.height;
@@ -694,7 +694,7 @@ function(
         }
         $("#lyrs-toc").html(tocContent);
 
-        // Add addtional layer-specific controls (reference by hyphenated layer id):
+        // Add addtional layer-specific controls and content (reference by hyphenated layer id):
         $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;og&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
         $("#WWC5-Water-Wells").append("<span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;wwc5&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
 
@@ -761,7 +761,6 @@ function(
                 var feature = result.feature;
                 var layerName = result.layerName;
 
-                // TODO - add "or RECENT_SPUDS" to ogwells block.
                 if (layerName === 'OG_WELLS') {
                     var ogWellsTemplate = new PopupTemplate( {
                         title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>({API_NUMBER})</span>",
@@ -783,13 +782,43 @@ function(
                     } );
                     feature.popupTemplate = wwc5Template;
                 }
+                else if (layerName === 'EARTHQUAKES') {
+                    var earthquakeTemplate = new PopupTemplate( {
+                        title: "Earthquake Event: ",
+                        content: earthquakeContent(feature)
+                    } );
+                    feature.popupTemplate = earthquakeTemplate;
+                }
 
                 return feature;
           } );
         } ).then(function(feature) {
             openPopup(feature);
             //highlightFeature(feature);
-        });
+        } );
+    }
+
+
+    function earthquakeContent(feature) {
+        var content = "FooBar";
+        return content;
+    }
+
+
+    function wwc5Content(feature) {
+        var f = feature.attributes;
+
+        /*var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>" + ftyp + "</td></tr>";
+        content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
+        content += "<tr><td>Produces Oil: </td><td>" + po + "</td></tr>";
+        content += "<tr><td>Cumulative Oil (bbls): </td><td>" + co + "</td></tr>";
+        content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
+        content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
+        content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
+        content += "<tr><td>Producing Formations: </td><td>" + pf + "</td></tr>";
+        content += "<span id='field-kid' class='hide'>{FIELD_KID}</span></table>";*/
+
+        return content;
     }
 
 
