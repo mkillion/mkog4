@@ -102,24 +102,29 @@ input[type=checkbox] {
 	float: right;
 }
 
-.esri-icon-filter,
-.esri-icon-labels,
-.esri-icon-forward,
-.esri-icon-reverse,
-.esri-icon-description {
-	color: #696969;
+.toc-icon {
+	/*color: #696969;*/
+	color: #7d7d7d;
 	cursor: pointer;
 	float: right;
-	font-size: 18px;
+	font-size: 16px;
 	padding-right: 6px;
 }
 
-.show{
+.show {
 	display: block;
 }
 
 .hide {
 	display: none;
+}
+
+@media screen and (max-width: 768px) {
+	.toc-icon {
+	font-size: 20px;
+	padding-left: 3px;
+	padding-right: 8px;
+}
 }
 
 @media screen and (max-width: 568px) {

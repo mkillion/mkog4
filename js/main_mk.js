@@ -6,6 +6,7 @@ require([
     "dojo/_base/array",
     "dojo/store/Memory",
     "dijit/form/ComboBox",
+    "dijit/Dialog",
 	"application/Drawer",
     "application/DrawerMenu",
     "esri/Map",
@@ -44,6 +45,7 @@ function(
     arrayUtils,
     Memory,
     ComboBox,
+    Dialog,
 	Drawer,
 	DrawerMenu,
     Map,
@@ -266,6 +268,12 @@ function(
     $(".esri-icon-erase").click(function() {
         graphicsLayer.clear();
     } );
+
+    myDialog = new Dialog({
+        title: "Earthquake Data",
+        content: "Test content goes here.",
+        style: "width: 500px"
+    });
 
 
     function popCountyDropdown() {
@@ -687,7 +695,7 @@ function(
 
                 if ($.inArray(layerID, transparentLayers) !== -1) {
                     // Add transparency control buttons to specified layers.
-                    tocContent += "</span><span class='esri-icon-forward' title='Make Layer Opaque' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;up&quot;);'></span><span class='esri-icon-reverse' title='Make Layer Transparent' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;down&quot;);'>";
+                    tocContent += "</span><span class='esri-icon-forward toc-icon' title='Make Layer Opaque' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;up&quot;);'></span><span class='esri-icon-reverse toc-icon' title='Make Layer Transparent' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;down&quot;);'>";
                 }
                 tocContent += "</div>";
             }
@@ -695,10 +703,10 @@ function(
         $("#lyrs-toc").html(tocContent);
 
         // Add addtional layer-specific controls (reference by hyphenated layer id):
-        $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter' onclick='filterWells(&quot;og&quot;);' title='Filter Wells'></span><span class='esri-icon-labels' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
-        $("#WWC5-Water-Wells").append("<span class='esri-icon-filter' onclick='filterWells(&quot;wwc5&quot;);' title='Filter Wells'></span><span class='esri-icon-labels' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
-        $("#Earthquakes").append("<span class='esri-icon-filter' onclick='filterEvents();' title='Filter Earthquakes'></span><span class='esri-icon-description' onclick='showDescription(&quot;events&quot;)'></span>");
-        $("#LEPC-Crucial-Habitat").append("<span class='esri-icon-description' onclick='showDescription(&quot;lepc&quot;)'></span>");
+        $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;og&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
+        $("#WWC5-Water-Wells").append("<span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;wwc5&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
+        $("#Earthquakes").append("<span class='esri-icon-filter toc-icon' onclick='filterEvents();' title='Filter Earthquakes'></span><span class='esri-icon-description toc-icon' onclick='myDialog.show();'></span>");
+        $("#LEPC-Crucial-Habitat").append("<span class='esri-icon-description toc-icon' onclick='showDescription(&quot;lepc&quot;)'></span>");
     }
 
 
