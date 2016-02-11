@@ -668,6 +668,9 @@ function(
         } else if (popupTitle.indexOf("Well:") > -1) {
             var wellKID = $("#well-kid").html();
             var win = window.open("http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + wellKID, "target='_blank'");
+        } else if (popupTitle.indexOf("Earthquake") > -1) {
+            var usgsID = $("#usgs-id").html();
+            var win = window.open("http://earthquake.usgs.gov/earthquakes/eventpage/" + usgsID, "target='_blank'");
         }
     }
 
@@ -800,7 +803,16 @@ function(
 
 
     function earthquakeContent(feature) {
-        var content = "FooBar";
+        var date = feature.attributes.CENTRAL_STANDARD_TIME !== "Null" ? feature.attributes.CENTRAL_STANDARD_TIME : "";
+        var content = "<table cellpadding='4'><tr><td>Magnitude: </td><td>{MAG}</td></tr>";
+        content += "<tr><td>Date/Time (CST): </td><td>" + date + "</td></tr>";
+        content += "<tr><td>Latitude: </td><td>{LATITUDE}</td></tr>";
+        content += "<tr><td>Longitude: </td><td>{LONGITUDE}</td></tr>";
+        content += "<tr><td>Depth: </td><td>{DEPTH} km</td></tr>";
+        content += "<tr><td>Magnitude Type: </td><td>{MAGTYPE}</td></tr>";
+        content += "<tr><td>Data Source: </td><td>{SOURCE}</td></tr>";
+        content += "<span id='usgs-id' class='hide'>{ID}</span></table>";
+
         return content;
     }
 
