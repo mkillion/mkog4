@@ -283,7 +283,8 @@ function(
 
     function createFilterDialogs() {
         // earthquakes:
-        var eqFilter = "<button onclick='filterEarthquakes();'>Apply</button>";
+        var eqFilter = "<p><button onclick='filterQuakesRecent();'>Show Last Event in Kansas</button></p>";
+        eqFilter += "<button onclick='filterEarthquakes();'>Apply</button>";
         var eqN = domConstruct.create("div", { id: "eq-filter", title: "Filter Earthquakes", innerHTML: eqFilter } );
         $("body").append(eqN);
         $( "#eq-filter" ).dialog( {
@@ -755,7 +756,7 @@ function(
 
 
     filterEarthquakes = function() {
-        console.log("earthquake filter button click");
+        // TODO:
     }
 
 
