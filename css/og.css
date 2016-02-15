@@ -43,6 +43,18 @@ td {
 	padding: 10px 0;
 }
 
+.dialog {
+	z-index: 2;
+}
+
+.dialog button{
+	font-size: 14px;
+}
+
+.ui-dialog-titlebar {
+	font-weight: normal;
+}
+
 .esri-search {
 	margin-bottom: 10px;
 	padding-left: 5px;

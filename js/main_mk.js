@@ -5,6 +5,7 @@ require([
     "dojo/window",
     "dojo/_base/array",
     "dojo/store/Memory",
+    "dojo/dom-construct",
     "dijit/form/ComboBox",
 	"application/Drawer",
     "application/DrawerMenu",
@@ -43,6 +44,7 @@ function(
     win,
     arrayUtils,
     Memory,
+    domConstruct,
     ComboBox,
 	Drawer,
 	DrawerMenu,
@@ -103,6 +105,7 @@ function(
     createMenus();
     createTools();
     popCountyDropdown();
+    createFilterDialogs();
 
     // Combo box for og fields:
     $.get("fields_json.txt", function(response) {
@@ -275,6 +278,23 @@ function(
             theCnty = cntyArr[i];
             $('#lstCounty').append('<option value="' + theCnty + '">' + theCnty + '</option>');
         }
+    }
+
+
+    function createFilterDialogs() {
+        // earthquakes:
+        var eqFilter = "<button onclick='filterEarthquakes();'>Apply</button>";
+        var eqN = domConstruct.create("div", { id: "eq-filter", title: "Filter Earthquakes", innerHTML: eqFilter } );
+        $("body").append(eqN);
+        $( "#eq-filter" ).dialog( {
+            autoOpen: false,
+            dialogClass: "dialog",
+        } );
+
+        // og wells:
+
+        // wwc5 wells:
+
     }
 
 
@@ -703,7 +723,7 @@ function(
 
         var eventDesc = "Data for all events occurring between 1/9/2013 and 3/7/2014 was provided by the Oklahoma Geological Survey - all other data is from the USGS.</p>";
         eventDesc += "<p>Earthquake data for Oklahoma is incomplete and only extends back to 12/2/2014. Only events occurring in northern Oklahoma<br>(north of Medford) are included on the mapper.</p>";
-        $("#Earthquakes").append("<span class='esri-icon-filter toc-icon' onclick='filterEvents();' title='Filter Earthquakes'></span><span class='esri-icon-description toc-icon' id='event-desc-icon'></span><span class='tooltip hide' id='event-desc'>" + eventDesc + "</span>");
+        $("#Earthquakes").append("<span class='esri-icon-filter toc-icon' onclick='$( &quot;#eq-filter&quot; ).dialog( &quot;open&quot; );' title='Filter Earthquakes'></span><span class='esri-icon-description toc-icon' id='event-desc-icon'></span><span class='tooltip hide' id='event-desc'>" + eventDesc + "</span>");
         $("#event-desc-icon").click(function() {
             $("#event-desc").toggleClass("show");
         } );
@@ -734,9 +754,8 @@ function(
     }
 
 
-    filterEvents = function() {
-        // TODO:
-        console.log("filter events function");
+    filterEarthquakes = function() {
+        console.log("earthquake filter button click");
     }
 
 
