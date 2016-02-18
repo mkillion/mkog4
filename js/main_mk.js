@@ -353,7 +353,6 @@ function(
                 }
             }
         }
-        console.log(def);
         usgsEventsLayer.layerDefinitions = def;
     }
 
@@ -361,10 +360,11 @@ function(
     clearQuakeFilter = function() {
         var def = [];
         usgsEventsLayer.layerDefinitions = def;
-        // TODO: reset input controls:
-        /*days.options[0].selected="selected";
-        mag.options[0].selected="selected";
-        year.options[0].selected="selected";*/
+        dom.byId("year").options[0].selected="selected";
+        dom.byId("year-mag").options[0].selected="selected";
+        dom.byId("day-mag").options[0].selected="selected";
+        dom.byId("from-date").value = "";
+        dom.byId("to-date").value = "";
     }
 
 
