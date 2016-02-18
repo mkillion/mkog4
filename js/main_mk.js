@@ -283,20 +283,23 @@ function(
 
     function createFilterDialogs() {
         // earthquakes:
-        /*var eqFilter = "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
+        var magOptions = "<option value='all'>All</option><option value='1'>1.0 to 1.9</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
+        var eqFilter = "By Day<br>";
+        eqFilter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='10' id='from-date' readonly></td></tr>";
+        eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' size='10' id='to-date' readonly></td></tr>";
+        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='mag' id='mag'>";
+        eqFilter += magOptions;
+        eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' onclick='filterQuakesDateMag();'>Go</button></td></tr></table><hr>";
+        eqFilter += "By Year<br>";
+        eqFilter += "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
         for (var y=2016; y>2012; y--) {
-            eqFilter += '<option value="' + y + '"">' + y + '</option>';
+            eqFilter += "<option value='" + y + "'>" + y + "</option>";
         }
         eqFilter += "</select></td></tr>";
-        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td>*/
-        var eqFilter = "<table><tr><td class='find-label'>From:</td><td><input type='text' id='from-date'></td></tr>";
-        eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' id='to-date'></td></tr>";
         eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='mag' id='mag'><option value='all'>All</option>";
-        eqFilter += "<option value='1'>1 to 1.9</option>";
-        eqFilter += "<option value='2'>2 to 2.9</option>";
-        eqFilter += "<option value='3'>3 to 3.9</option>";
-        eqFilter += "<option value='4'>4 +</option>";
-        eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' onclick='filterQuakesDateMag();'>Go</button></td></tr></table><hr>";
+        eqFilter += magOptions;
+        eqFilter += "</select></td></tr>";
+        eqFilter += "<tr><td></td><td><button class='find-button' onclick='filterQuakesDateMag();'>Go</button></td></tr></table><hr>";
         eqFilter += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
         eqFilter += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
 
@@ -306,10 +309,13 @@ function(
         $("#eq-filter").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
-            width: 350
+            width: 280
         } );
 
-        $( "#from-date" ).datepicker();
+        $( "#from-date" ).datepicker( {
+            minDate: new Date(2013, 1 - 1, 1)
+
+        } );
         $( "#to-date" ).datepicker();
 
         // og wells:
