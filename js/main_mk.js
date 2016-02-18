@@ -283,19 +283,71 @@ function(
 
     function createFilterDialogs() {
         // earthquakes:
-        var eqFilter = "<p><button onclick='filterQuakesRecent();'>Show Last Event in Kansas</button></p>";
-        eqFilter += "<button onclick='filterEarthquakes();'>Apply</button>";
+        var eqFilter = "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
+        for (var y=2016; y>2012; y--) {
+            eqFilter += '<option value="' + y + '"">' + y + '</option>';
+        }
+        eqFilter += "</select></td></tr>";
+        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='mag' id='mag'><option value='all'>All</option>";
+        eqFilter += "<option value='1'>1 to 1.9</option>";
+        eqFilter += "<option value='2'>2 to 2.9</option>";
+        eqFilter += "<option value='3'>3 to 3.9</option>";
+        eqFilter += "<option value='4'>4 +</option>";
+        eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' onclick='filterQuakesYearMag();'>Go</button></td></tr></table><hr>";
+
+        eqFilter += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
+        eqFilter += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
+
         var eqN = domConstruct.create("div", { id: "eq-filter", title: "Filter Earthquakes", innerHTML: eqFilter } );
         $("body").append(eqN);
-        $( "#eq-filter" ).dialog( {
+
+        $("#eq-filter").dialog( {
             autoOpen: false,
-            dialogClass: "dialog",
+            dialogClass: "dialog"
         } );
 
         // og wells:
 
         // wwc5 wells:
 
+    }
+
+
+    filterQuakesYearMag = function(year, mag) {
+        var nextYear = parseInt(year) + 1;
+        var def = [];
+
+        if (year !== "all") {
+            if (mag !== "all") {
+                def[8] = "the_date >= to_date('" + year + "-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and the_date < to_date('" + nextYear + "-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and net in ('us', ' ', 'US') and mag >=" + mag;
+            } else {
+                def[8] = "the_date >= to_date('" + year + "-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and the_date < to_date('" + nextYear + "-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and mag >= 2 and net in ('us', ' ', 'US')";
+            }
+        } else {
+            if (mag !== "all") {
+                def[8] = " mag >=" + mag;
+            } else {
+                def[8] = "";
+            }
+        }
+
+        earthquakesLayer.setLayerDefinitions(def);
+    }
+
+
+    clearQuakeFilter = function() {
+        var def = [];
+        usgsEventsLayer.layerDefinitions = def;
+        /*days.options[0].selected="selected";
+        mag.options[0].selected="selected";
+        year.options[0].selected="selected";*/
+    }
+
+
+    filterQuakesLast = function() {
+        var def = [];
+        def[13] = "state = 'KS' and net in ('us', ' ', 'US') and the_date = (select max(the_date) from earthquakes where state = 'KS' and net in ('us', ' ', 'US'))";
+        usgsEventsLayer.layerDefinitions = def;
     }
 
 

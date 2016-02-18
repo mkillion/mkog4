@@ -44,6 +44,7 @@ td {
 }
 
 .dialog {
+	border: 3px solid #000;
 	z-index: 2;
 }
 
