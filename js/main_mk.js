@@ -283,18 +283,20 @@ function(
 
     function createFilterDialogs() {
         // earthquakes:
-        var eqFilter = "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
+        /*var eqFilter = "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
         for (var y=2016; y>2012; y--) {
             eqFilter += '<option value="' + y + '"">' + y + '</option>';
         }
         eqFilter += "</select></td></tr>";
+        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td>*/
+        var eqFilter = "<table><tr><td class='find-label'>From:</td><td><input type='text' id='from-date'></td></tr>";
+        eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' id='to-date'></td></tr>";
         eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='mag' id='mag'><option value='all'>All</option>";
         eqFilter += "<option value='1'>1 to 1.9</option>";
         eqFilter += "<option value='2'>2 to 2.9</option>";
         eqFilter += "<option value='3'>3 to 3.9</option>";
         eqFilter += "<option value='4'>4 +</option>";
-        eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' onclick='filterQuakesYearMag();'>Go</button></td></tr></table><hr>";
-
+        eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' onclick='filterQuakesDateMag();'>Go</button></td></tr></table><hr>";
         eqFilter += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
         eqFilter += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
 
@@ -303,8 +305,12 @@ function(
 
         $("#eq-filter").dialog( {
             autoOpen: false,
-            dialogClass: "dialog"
+            dialogClass: "dialog",
+            width: 350
         } );
+
+        $( "#from-date" ).datepicker();
+        $( "#to-date" ).datepicker();
 
         // og wells:
 
@@ -313,8 +319,10 @@ function(
     }
 
 
-    filterQuakesYearMag = function(year, mag) {
-        var nextYear = parseInt(year) + 1;
+    filterQuakesDateMag = function(year, mag) {
+        var junk = dom.byId("from-date").value;
+        console.log(junk);
+        /*var nextYear = parseInt(year) + 1;
         var def = [];
 
         if (year !== "all") {
@@ -331,7 +339,7 @@ function(
             }
         }
 
-        earthquakesLayer.setLayerDefinitions(def);
+        earthquakesLayer.setLayerDefinitions(def);*/
     }
 
 
