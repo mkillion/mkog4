@@ -287,19 +287,19 @@ function(
         var eqFilter = "By Day<br>";
         eqFilter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='10' id='from-date' readonly></td></tr>";
         eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' size='10' id='to-date' readonly></td></tr>";
-        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='mag' id='mag'>";
+        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='day-mag' id='day-mag'>";
         eqFilter += magOptions;
-        eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' onclick='filterQuakesDateMag();'>Go</button></td></tr></table><hr>";
+        eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' id='day-btn' onclick='filterQuakes(this.id);'>Go</button></td></tr></table><hr>";
         eqFilter += "By Year<br>";
-        eqFilter += "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
+        eqFilter += "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'>";
         for (var y=2016; y>2012; y--) {
             eqFilter += "<option value='" + y + "'>" + y + "</option>";
         }
         eqFilter += "</select></td></tr>";
-        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='mag' id='mag'><option value='all'>All</option>";
+        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='year-mag' id='year-mag'>";
         eqFilter += magOptions;
         eqFilter += "</select></td></tr>";
-        eqFilter += "<tr><td></td><td><button class='find-button' onclick='filterQuakesDateMag();'>Go</button></td></tr></table><hr>";
+        eqFilter += "<tr><td></td><td><button class='find-button' id='year-btn' onclick='filterQuakes(this.id);'>Go</button></td></tr></table><hr>";
         eqFilter += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
         eqFilter += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
 
@@ -325,33 +325,43 @@ function(
     }
 
 
-    filterQuakesDateMag = function(year, mag) {
-        var junk = dom.byId("from-date").value;
-        console.log(junk);
-        /*var nextYear = parseInt(year) + 1;
+    filterQuakes = function(btn) {
         var def = [];
+        var lMag, uMag;
+        if (btn === "day-btn") {
+            var fromDate = dom.byId("from-date").value;
+            var toDate = dom.byId("to-date").value;
 
-        if (year !== "all") {
-            if (mag !== "all") {
-                def[8] = "the_date >= to_date('" + year + "-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and the_date < to_date('" + nextYear + "-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and net in ('us', ' ', 'US') and mag >=" + mag;
-            } else {
-                def[8] = "the_date >= to_date('" + year + "-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and the_date < to_date('" + nextYear + "-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and mag >= 2 and net in ('us', ' ', 'US')";
-            }
         } else {
-            if (mag !== "all") {
-                def[8] = " mag >=" + mag;
+            var year = dom.byId("year").value;
+            var nextYear = parseInt(year) + 1;
+            lMag = dom.byId("year-mag").value;
+            uMag = parseInt(lMag) + 0.99;
+            console.log(lMag);
+            console.log(uMag);
+            if (year !== "all") {
+                if (lMag !== "all") {
+                    def[13] = "central_standard_time >= to_date('01/01/" + year + "','mm/dd/yyyy') and central_standard_time < to_date('01/01/" + nextYear + "','mm/dd/yyyy') and net in ('us', ' ', 'US') and mag >= " + lMag + " and mag <= " + uMag;
+                } else {
+                    def[13] = "central_standard_time >= to_date('01/01/" + year + "','mm/dd/yyyy') and central_standard_time < to_date('01/01/" + nextYear + "','mm/dd/yyyy') and net in ('us', ' ', 'US')";
+                }
             } else {
-                def[8] = "";
+                if (mag !== "all") {
+                    def[13] = " mag >=" + mag;
+                } else {
+                    def[13] = "";
+                }
             }
         }
-
-        earthquakesLayer.setLayerDefinitions(def);*/
+        console.log(def);
+        usgsEventsLayer.layerDefinitions = def;
     }
 
 
     clearQuakeFilter = function() {
         var def = [];
         usgsEventsLayer.layerDefinitions = def;
+        // TODO: reset input controls:
         /*days.options[0].selected="selected";
         mag.options[0].selected="selected";
         year.options[0].selected="selected";*/
