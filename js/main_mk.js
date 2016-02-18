@@ -313,7 +313,7 @@ function(
         } );
 
         $( "#from-date" ).datepicker( {
-            minDate: new Date(2013, 1 - 1, 1)
+            minDate: new Date("01/01/2013")
 
         } );
         $( "#to-date" ).datepicker();
@@ -331,14 +331,20 @@ function(
         if (btn === "day-btn") {
             var fromDate = dom.byId("from-date").value;
             var toDate = dom.byId("to-date").value;
-
+            var toDateParts = toDate.split("/");
+            var nextDay = parseInt(toDateParts[1]) + 1;
+            lMag = dom.byId("day-mag").value;
+            uMag = parseInt(lMag) + 0.99;
+            if (lMag !== "all") {
+                    def[13] = "central_standard_time >= to_date('" + fromDate + "','mm/dd/yyyy') and central_standard_time < to_date('" + toDateParts[0] + "/" + nextDay + "/" + toDateParts[2] + "','mm/dd/yyyy') and net in ('us', ' ', 'US') and mag >= " + lMag + " and mag <= " + uMag;
+                } else {
+                    def[13] = "central_standard_time >= to_date('" + fromDate + "','mm/dd/yyyy') and central_standard_time < to_date('" + toDateParts[0] + "/" + nextDay + "/" + toDateParts[2] + "','mm/dd/yyyy') and net in ('us', ' ', 'US')";
+                }
         } else {
             var year = dom.byId("year").value;
             var nextYear = parseInt(year) + 1;
             lMag = dom.byId("year-mag").value;
             uMag = parseInt(lMag) + 0.99;
-            console.log(lMag);
-            console.log(uMag);
             if (year !== "all") {
                 if (lMag !== "all") {
                     def[13] = "central_standard_time >= to_date('01/01/" + year + "','mm/dd/yyyy') and central_standard_time < to_date('01/01/" + nextYear + "','mm/dd/yyyy') and net in ('us', ' ', 'US') and mag >= " + lMag + " and mag <= " + uMag;
