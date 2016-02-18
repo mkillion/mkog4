@@ -283,7 +283,7 @@ function(
 
     function createFilterDialogs() {
         // earthquakes:
-        var magOptions = "<option value='all'>All</option><option value='1'>1.0 to 1.9</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
+        var magOptions = "<option value='all'>All</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
         var eqFilter = "By Day<br>";
         eqFilter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='10' id='from-date' readonly></td></tr>";
         eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' size='10' id='to-date' readonly></td></tr>";
@@ -291,7 +291,7 @@ function(
         eqFilter += magOptions;
         eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' id='day-btn' onclick='filterQuakes(this.id);'>Go</button></td></tr></table><hr>";
         eqFilter += "By Year<br>";
-        eqFilter += "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'>";
+        eqFilter += "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
         for (var y=2016; y>2012; y--) {
             eqFilter += "<option value='" + y + "'>" + y + "</option>";
         }
@@ -346,8 +346,8 @@ function(
                     def[13] = "central_standard_time >= to_date('01/01/" + year + "','mm/dd/yyyy') and central_standard_time < to_date('01/01/" + nextYear + "','mm/dd/yyyy') and net in ('us', ' ', 'US')";
                 }
             } else {
-                if (mag !== "all") {
-                    def[13] = " mag >=" + mag;
+                if (lMag !== "all") {
+                    def[13] = " mag >= " + lMag + " and mag <= " + uMag;
                 } else {
                     def[13] = "";
                 }
