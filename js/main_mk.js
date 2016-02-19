@@ -303,7 +303,7 @@ function(
         eqFilter += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
         eqFilter += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
 
-        var eqN = domConstruct.create("div", { id: "eq-filter", title: "Filter Earthquakes", innerHTML: eqFilter } );
+        var eqN = domConstruct.create("div", { id: "eq-filter", class: "filter-dialog", title: "Filter Earthquakes", innerHTML: eqFilter } );
         $("body").append(eqN);
 
         $("#eq-filter").dialog( {
@@ -342,8 +342,10 @@ function(
         } else {
             var year = dom.byId("year").value;
             var nextYear = parseInt(year) + 1;
+
             lMag = dom.byId("year-mag").value;
             uMag = parseInt(lMag) + 0.99;
+
             if (year !== "all") {
                 if (lMag !== "all") {
                     def[13] = "central_standard_time >= to_date('01/01/" + year + "','mm/dd/yyyy') and central_standard_time < to_date('01/01/" + nextYear + "','mm/dd/yyyy') and net in ('us', ' ', 'US') and mag >= " + lMag + " and mag <= " + uMag;
