@@ -309,7 +309,7 @@ function(
         $("#eq-filter").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
-            width: 280
+            width: 260
         } );
 
         $( "#from-date" ).datepicker( {
