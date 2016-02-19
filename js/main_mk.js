@@ -108,13 +108,15 @@ function(
     createFilterDialogs();
 
     // Combo box for og fields:
+    var autocomplete =  (win.getBox().w < 1280) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
     $.get("fields_json.txt", function(response) {
         var fieldNames = JSON.parse(response).items;
         var fieldStore = new Memory( {data: fieldNames} );
         var comboBox = new ComboBox( {
             id: "field-select",
             store: fieldStore,
-            searchAttr: "name"
+            searchAttr: "name",
+            autoComplete: autocomplete
         }, "field-select").startup();
     } );
 
@@ -310,10 +312,10 @@ function(
             width: 260
         } );
 
-        $( "#from-date" ).datepicker( {
+        $("#from-date").datepicker( {
             minDate: new Date("01/01/2013")
         } );
-        $( "#to-date" ).datepicker();
+        $("#to-date").datepicker();
 
         // og wells:
 
