@@ -259,11 +259,11 @@ function(
     } );
 
     $(".find-header").click(function() {
-        $("[id^=find]").fadeOut("slow");
+        $("[id^=find]").fadeOut("medium");
         $(".find-header").removeClass("esri-icon-down-arrow");
         $(this).addClass("esri-icon-down-arrow");
         var findBody = $(this).attr("id");
-        $("#find-"+findBody).fadeIn("slow");
+        $("#find-"+findBody).fadeIn("medium");
     } );
 
     $(".esri-icon-erase").click(function() {
@@ -635,7 +635,7 @@ function(
             // TODO: There's a bug here. point graphic appears huge on the map at first but displays correctly after the map extent changes in some way.
             // It works corrrectly on subsequent passes (after extent has been changed).
             // Adding a new graphics layer every time makes it work correctly, but the layers pile up. either wait on 4.0 final release and test, or
-            // find a way to test for existence of second graphics layer and remove it.
+            // test for existence of second graphics layer and remove it.
         } );
     }
 
@@ -838,11 +838,6 @@ function(
     }
 
 
-    filterEarthquakes = function() {
-        // TODO:
-    }
-
-
     changeOpacity = function(id, dir) {
         var lyr = map.getLayer(id);
         var incr = (dir === "down") ? -0.2 : 0.2;
@@ -851,6 +846,7 @@ function(
 
 
     function createTools() {
+        // TODO: below is just a test.
         var content = "";
         content += '<span id="junktest">1006116441</span>';
         $("#tools-content").html(content);
@@ -922,16 +918,7 @@ function(
 
     function wwc5Content(feature) {
         var f = feature.attributes;
-
-        /*var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>" + ftyp + "</td></tr>";
-        content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
-        content += "<tr><td>Produces Oil: </td><td>" + po + "</td></tr>";
-        content += "<tr><td>Cumulative Oil (bbls): </td><td>" + co + "</td></tr>";
-        content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
-        content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
-        content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
-        content += "<tr><td>Producing Formations: </td><td>" + pf + "</td></tr>";
-        content += "<span id='field-kid' class='hide'>{FIELD_KID}</span></table>";*/
+        // TODO:
 
         return content;
     }
