@@ -365,8 +365,7 @@ function(
 
 
     clearQuakeFilter = function() {
-        var def = [];
-        usgsEventsLayer.layerDefinitions = def;
+        usgsEventsLayer.layerDefinitions = [];
         dom.byId("year").options[0].selected="selected";
         dom.byId("year-mag").options[0].selected="selected";
         dom.byId("day-mag").options[0].selected="selected";
@@ -716,7 +715,7 @@ function(
         // Layers panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Layers <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-header">Layers* <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div id="lyrs-toc"></div>';
         content += '</div>';
 
@@ -799,6 +798,7 @@ function(
                 tocContent += "</div>";
             }
         }
+        tocContent += "<span class='toc-note'>* Must zoom in to display some layers</span>";
         $("#lyrs-toc").html(tocContent);
 
         // Add addtional layer-specific controls and content (reference by hyphenated layer id):

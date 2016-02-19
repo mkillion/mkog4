@@ -20,6 +20,11 @@
     border-top-width: 1px;
 }
 
+.toc-note {
+	font-size: 14px;
+	padding: 8px;
+}
+
 .filter-dialog {
 	font-size: 16px;
 }
