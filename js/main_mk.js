@@ -109,15 +109,13 @@ function(
 
     // Combo box for og fields:
     $.get("fields_json.txt", function(response) {
-        var fieldData = JSON.parse(response);
-        var fieldNames = fieldData.items;
-
+        var fieldNames = JSON.parse(response).items;
         var fieldStore = new Memory( {data: fieldNames} );
         var comboBox = new ComboBox( {
-            id: "fieldSelect",
+            id: "field-select",
             store: fieldStore,
             searchAttr: "name"
-        }, "fieldSelect").startup();
+        }, "field-select").startup();
     } );
 
     // End framework.
@@ -578,7 +576,7 @@ function(
                 findParams.layerIds = [1];
                 findParams.searchFields = ["field_name"];
                 findParams.contains = false;
-                findParams.searchText = dom.byId("fieldSelect").value;
+                findParams.searchText = dom.byId("field-select").value;
 
                 if (!fieldsLayer.visible) {
                     fieldsLayer.visible = true;
@@ -696,7 +694,7 @@ function(
         // field:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"> Field</div>';
         content += '<div class="find-body hide" id="find-field">';
-        content += '<table><tr><td class="find-label">Name:</td><td><input id="fieldSelect"></td><td><button class=find-button onclick=findIt("field")>Find</button></td></tr></table>';
+        content += '<table><tr><td class="find-label">Name:</td><td><input id="field-select"></td><td><button class=find-button onclick=findIt("field")>Find</button></td></tr></table>';
         content += '</div>';
         // county:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"> County</div>';
