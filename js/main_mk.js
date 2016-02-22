@@ -77,6 +77,8 @@ function(
 ) {
     // TODO: review all comments.
 
+    var isMobile = WURFL.is_mobile;
+
     // Set up basic frame:
     window.document.title = "FooBar";
     $("#title").html("Kansas Oil and Gas<a id='kgs-brand' href='http://www.kgs.ku.edu'>Kansas Geological Survey</a>");
@@ -108,7 +110,7 @@ function(
     createFilterDialogs();
 
     // Combo box for og fields:
-    var autocomplete =  (win.getBox().w < 1280) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
+    var autocomplete =  (isMobile) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
     $.get("fields_json.txt", function(response) {
         var fieldNames = JSON.parse(response).items;
         var fieldStore = new Memory( {data: fieldNames} );
@@ -161,9 +163,10 @@ function(
     view.then(function() {
         on(view, "click", executeIdTask);
 
+        var tol = (isMobile) ? 9 : 3;
         identifyTask = new IdentifyTask(ogGeneralServiceURL);
         identifyParams = new IdentifyParameters();
-        identifyParams.tolerance = 3;
+        identifyParams.tolerance = tol;
         identifyParams.layerIds = [0, 13, 8, 1];
         identifyParams.layerOption = "visible";
         identifyParams.width = view.width;
@@ -240,11 +243,6 @@ function(
         } )
     }, "LocateButton");
     locateBtn.startup();
-
-    // Don't display locate widget on larger devices:
-    /*if (win.getBox().w > 1280) {
-        locateBtn.set("visible", false);
-    }*/
 
     // End map and map widgets.
 
@@ -798,7 +796,7 @@ function(
                 tocContent += "</div>";
             }
         }
-        tocContent += "<span class='toc-note'>* Must zoom in to display some layers</span>";
+        tocContent += "<span class='toc-note'>* Some layers only visible when zoomed in</span>";
         $("#lyrs-toc").html(tocContent);
 
         // Add addtional layer-specific controls and content (reference by hyphenated layer id):
