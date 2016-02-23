@@ -163,10 +163,9 @@ function(
     view.then(function() {
         on(view, "click", executeIdTask);
 
-        var tol = (isMobile) ? 9 : 3;
         identifyTask = new IdentifyTask(ogGeneralServiceURL);
         identifyParams = new IdentifyParameters();
-        identifyParams.tolerance = tol;
+        identifyParams.tolerance = (isMobile) ? 9 : 3;
         identifyParams.layerIds = [0, 13, 8, 1];
         identifyParams.layerOption = "visible";
         identifyParams.width = view.width;
@@ -552,7 +551,6 @@ function(
                     findParams.layerIds = [4];
                     findParams.searchFields = ["t_r"];
                 }
-
                 findParams.searchText = plssText;
                 break;
             case "api":
@@ -561,7 +559,6 @@ function(
                 if (dom.byId('api_extension').value != "") {
                     apiText = apiText + "-" + dom.byId('api_extension').value;
                 }
-
                 findParams.layerIds = [0];
                 findParams.searchFields = ["api_number"];
                 findParams.searchText = apiText;
@@ -576,7 +573,6 @@ function(
                 findParams.searchFields = ["field_name"];
                 findParams.contains = false;
                 findParams.searchText = dom.byId("field-select").value;
-
                 if (!fieldsLayer.visible) {
                     fieldsLayer.visible = true;
                     $("#Oil-and-Gas-Fields input").prop("checked", true);
@@ -772,6 +768,9 @@ function(
         } else if (popupTitle.indexOf("Earthquake") > -1) {
             var usgsID = $("#usgs-id").html();
             var win = window.open("http://earthquake.usgs.gov/earthquakes/eventpage/" + usgsID, "target='_blank'");
+        } else if (popupTitle.indexOf("(WWC5)") > -1) {
+            var wwc5ID = $("#seq-num").html();
+            var win = window.open("http://chasm.kgs.ku.edu/ords/wwc5.wwc5d2.well_details?well_id=" + wwc5ID, "target='_blank'");
         }
     }
 
@@ -877,7 +876,7 @@ function(
                 }
                 else if (layerName === 'WWC5_WELLS') {
                     var wwc5Template = new PopupTemplate( {
-                        title: "Water Well: ",
+                        title: "Water Well (WWC5): ",
                         content: wwc5Content(feature)
                     } );
                     feature.popupTemplate = wwc5Template;
@@ -915,8 +914,23 @@ function(
 
 
     function wwc5Content(feature) {
+        console.log(feature.attributes);
         var f = feature.attributes;
-        // TODO:
+        var content = "<table cellpadding='4'><tr><td>County: </td><td>{COUNTY}</td></tr>";
+        content += "<tr><td>Section: </td><td>T{TOWNSHIP}{TOWNSHIP_DIRECTION}&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}</td></tr>";
+        content += "<tr><td>Quarter Section: </td><td>{QUARTER_CALL_3}&nbsp;&nbsp;{QUARTER_CALL_2}&nbsp;&nbsp;{QUARTER_CALL_1_LARGEST}</td></tr>";
+        content += "<tr><td>Owner: </td><td>{OWNER_NAME}</td></tr>";
+        content += "<tr><td>Status: </td><td>{STATUS}</td></tr>";
+        content += "<tr><td>Depth (ft): </td><td>{DEPTH_OF_COMPLETED_WELL}</td></tr>";
+        content += "<tr><td>Elevation (ft): </td><td>{ELEVATION_OF_WELL}</td></tr>";
+        content += "<tr><td>Static Water Level (ft): </td><td>{STATIC_WATER_LEVEL}</td></tr>";
+        content += "<tr><td>Estimated Yield (gpm): </td><td>{ESTIMETED_YIELD}</td></tr>";
+        content += "<tr><td>Use: </td><td>{USE_DESC}</td></tr>";
+        content += "<tr><td>Completion Date: </td><td>{COMPLETION_DATE}</td></tr>";
+        content += "<tr><td>Driller: </td><td>{CONTRACTOR}</td></tr>";
+        content += "<tr><td>DWR Application Number: </td><td>{DWR_APPROPRIATION_NUMBER}</td></tr>";
+        content += "<tr><td>Other ID: </td><td>{MONITORING_NUMBER}</td></tr>";
+        content += "<tr><td>KGS Record Number: </td><td id='seq-num'>{INPUT_SEQ_NUMBER}</td></tr></table>";
 
         return content;
     }
@@ -984,7 +998,7 @@ function(
         var kid = f.KID !== "Null" ? f.KID : "";
 
         var content = "<table cellpadding='3'><tr><td>API: </td><td>" + api + "</td></tr>";
-        content += "<tr><td>Current Operator: </td><td>" + currOp + "</td></tr>"
+        content += "<tr><td>Current Operator: </td><td>" + currOp + "</td></tr>";
         content += "<tr><td>Well Type: </td><td>" + type + "</td></tr>";
         content += "<tr><td>Status: </td><td>" + stat + "</td></tr>";
         content += "<tr><td>Lease: </td><td>" + lease + "</td></tr>";
