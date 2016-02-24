@@ -1008,10 +1008,10 @@ function(
         var lon = f.NAD27_LONGITUDE !== "Null" ? f.NAD27_LONGITUDE : "";
         var lat = f.NAD27_LATITUDE !== "Null" ? f.NAD27_LATITUDE : "";
         var co = f.COUNTY !== "Null" ? f.COUNTY : "";
-        var pdt = f.PERMIT_DATE_TXT !== "Null" ? f.PERMIT_DATE_TXT : "";
-        var sdt = f.SPUD_DATE_TXT !== "Null" ? f.SPUD_DATE_TXT : "";
-        var cdt = f.COMPLETION_DATE_TXT !== "Null" ? f.COMPLETION_DATE_TXT : "";
-        var pldt = f.PLUG_DATE_TXT !== "Null" ? f.PLUG_DATE_TXT : "";
+        var pdt = f.PERMIT_DATE !== "Null" ? f.PERMIT_DATE : "";
+        var sdt = f.SPUD_DATE !== "Null" ? f.SPUD_DATE : "";
+        var cdt = f.COMPLETION_DATE !== "Null" ? f.COMPLETION_DATE : "";
+        var pldt = f.PLUG_DATE !== "Null" ? f.PLUG_DATE : "";
         var dpth = f.ROTARY_TOTAL_DEPTH !== "Null" ? f.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var frm = f.PRODUCING_FORMATION !== "Null" ? f.PRODUCING_FORMATION : "";
