@@ -75,8 +75,6 @@ function(
     webMercatorUtils,
     ArcGISImageLayer
 ) {
-    // TODO: review all comments.
-
     var isMobile = WURFL.is_mobile;
 
     // Set up basic frame:
@@ -85,13 +83,13 @@ function(
 
     var showDrawerSize = 850;
 
-	var drawer = new Drawer({
+	var drawer = new Drawer( {
         showDrawerSize: showDrawerSize,
         borderContainer: 'bc_outer',
         contentPaneCenter: 'cp_outer_center',
         contentPaneSide: 'cp_outer_left',
         toggleButton: 'hamburger_button'
-    });
+    } );
     drawer.startup();
 
     // Broke the template drawer open/close behavior when paring down the code, so...
@@ -282,8 +280,8 @@ function(
         // earthquakes:
         var magOptions = "<option value='all'>All</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
         var eqFilter = "By Day<br>";
-        eqFilter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='10' id='from-date' readonly></td></tr>";
-        eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' size='10' id='to-date' readonly></td></tr>";
+        eqFilter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='10' id='eq-from-date' readonly></td></tr>";
+        eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' size='10' id='eq-to-date' readonly></td></tr>";
         eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='day-mag' id='day-mag'>";
         eqFilter += magOptions;
         eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' id='day-btn' onclick='filterQuakes(this.id);'>Go</button></td></tr></table><hr>";
@@ -309,14 +307,26 @@ function(
             width: 260
         } );
 
-        $("#from-date").datepicker( {
+        $("#eq-from-date").datepicker( {
             minDate: new Date("01/01/2013")
         } );
-        $("#to-date").datepicker();
+        $("#eq-to-date").datepicker();
 
-        // og wells:
+        // TODO: wwc5 wells:
+        var wwc5Filter = "<table border='1'><tr><th>Use</th><th>Status</th><th>Completion Date</th></tr>";
 
-        // wwc5 wells:
+        wwc5Filter += "</table>";
+
+        var wwc5N = domConstruct.create("div", { id: "wwc5-filter", class: "filter-dialog", title: "Filter Water Wells", innerHTML: wwc5Filter } );
+        $("body").append(wwc5N);
+
+        $("#wwc5-filter").dialog( {
+            autoOpen: false,
+            dialogClass: "dialog",
+            width: 300
+        } );
+
+        // TODO: og wells:
 
     }
 
@@ -462,8 +472,6 @@ function(
             } );
 
             // TODO: tie last location to the Home button? Put here or in zoomToFeature function.
-            //lastLocType = extType;
-            //lastLocValue = extValue;
         }
     }
 
@@ -626,7 +634,7 @@ function(
 
             graphicsLayer.clear();
             graphicsLayer.add(pointGraphic);
-            // TODO: There's a bug here. point graphic appears huge on the map at first but displays correctly after the map extent changes in some way.
+            // FIXME: Think there's an api bug here. Point graphic appears huge on the map at first but displays correctly after the map extent changes in some way.
             // It works corrrectly on subsequent passes (after extent has been changed).
             // Adding a new graphics layer every time makes it work correctly, but the layers pile up. either wait on 4.0 final release and test, or
             // test for existence of second graphics layer and remove it.
@@ -800,7 +808,7 @@ function(
 
         // Add addtional layer-specific controls and content (reference by hyphenated layer id):
         $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;og&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
-        $("#WWC5-Water-Wells").append("<span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;wwc5&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
+        $("#WWC5-Water-Wells").append("<span class='esri-icon-filter toc-icon' onclick='$( &quot;#wwc5-filter&quot; ).dialog( &quot;open&quot; );' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
 
         var eventDesc = "Data for all events occurring between 1/9/2013 and 3/7/2014 was provided by the Oklahoma Geological Survey - all other data is from the USGS.</p>";
         eventDesc += "<p>Earthquake data for Oklahoma is incomplete and only extends back to 12/2/2014. Only events occurring in northern Oklahoma<br>(north of Medford) are included on the mapper.</p>";
@@ -945,7 +953,7 @@ function(
         content += "<tr><td>Elevation (ft): </td><td>" + el + "</td></tr>";
         content += "<tr><td>Static Water Level (ft): </td><td>" + swl + "</td></tr>";
         content += "<tr><td>Estimated Yield (gpm): </td><td>" + ey + "</td></tr>";
-        content += "<tr><td>Use: </td><td>" + ud + "</td></tr>";
+        content += "<tr><td>Use: </td><td style='white-space:normal'>" + ud + "</td></tr>";
         content += "<tr><td>Completion Date: </td><td>" + cd + "</td></tr>";
         content += "<tr><td>Driller: </td><td style='white-space:normal'>" + cont + "</td></tr>";
         content += "<tr><td>DWR Application Number: </td><td>" + dwr + "</td></tr>";
