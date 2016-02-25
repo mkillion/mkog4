@@ -922,43 +922,21 @@ function(
 
 
     function wwc5Content(feature) {
-        var f = feature.attributes;
-        var co = f.COUNTY !== "Null" ? f.COUNTY : "";
-        var twp = f.TOWNSHIP !== "Null" ? f.TOWNSHIP : "";
-        var rng = f.RANGE !== "Null" ? f.RANGE : "";
-        var rngd = f.RANGE_DIRECTION !== "Null" ? f.RANGE_DIRECTION : "";
-        var sec = f.SECTION !== "Null" ? f.SECTION : "";
-        var q3 = f.QUARTER_CALL_3 !== "Null" ? f.QUARTER_CALL_3 : "";
-        var q2 = f.QUARTER_CALL_2 !== "Null" ? f.QUARTER_CALL_2 : "";
-        var q1 = f.QUARTER_CALL_1_LARGEST !== "Null" ? f.QUARTER_CALL_1_LARGEST : "";
-        var own = f.OWNER_NAME !== "Null" ? f.OWNER_NAME : "";
-        var sta = f.STATUS !== "Null" ? f.STATUS : "";
-        var dep = f.DEPTH_OF_COMPLETED_WELL !== "Null" ? f.DEPTH_OF_COMPLETED_WELL : "";
-        var el = f.ELEVATION_OF_WELL !== "Null" ? f.ELEVATION_OF_WELL : "";
-        var swl = f.STATIC_WATER_LEVEL !== "Null" ? f.STATIC_WATER_LEVEL : "";
-        var ey = f.ESTIMETED_YIELD !== "Null" ? f.ESTIMETED_YIELD : "";
-        var ud = f.USE_DESC !== "Null" ? f.USE_DESC : "";
-        var cd = f.COMPLETION_DATE !== "Null" ? f.COMPLETION_DATE : "";
-        var cont = f.CONTRACTOR !== "Null" ? f.CONTRACTOR : "";
-        var dwr = f.DWR_APPROPRIATION_NUMBER !== "Null" ? f.DWR_APPROPRIATION_NUMBER : "";
-        var mn = f.MONITORING_NUMBER !== "Null" ? f.MONITORING_NUMBER : "";
-        var seq = f.INPUT_SEQ_NUMBER !== "Null" ? f.INPUT_SEQ_NUMBER : "";
-
-        var content = "<table cellpadding='4'><tr><td>County: </td><td>" + co + "</td></tr>";
-        content += "<tr><td>Section: </td><td>T" + twp + "S&nbsp;&nbsp;R" + rng + rngd + "&nbsp;&nbsp;Sec " + sec + "</td></tr>";
-        content += "<tr><td>Quarter Section: </td><td>" + q3 + "&nbsp;&nbsp;" + q2 + "&nbsp;&nbsp;" + q1 + "</td></tr>";
-        content += "<tr><td>Owner: </td><td>" + own + "</td></tr>";
-        content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
-        content += "<tr><td>Depth (ft): </td><td>" + dep + "</td></tr>";
-        content += "<tr><td>Elevation (ft): </td><td>" + el + "</td></tr>";
-        content += "<tr><td>Static Water Level (ft): </td><td>" + swl + "</td></tr>";
-        content += "<tr><td>Estimated Yield (gpm): </td><td>" + ey + "</td></tr>";
-        content += "<tr><td>Use: </td><td style='white-space:normal'>" + ud + "</td></tr>";
-        content += "<tr><td>Completion Date: </td><td>" + cd + "</td></tr>";
-        content += "<tr><td>Driller: </td><td style='white-space:normal'>" + cont + "</td></tr>";
-        content += "<tr><td>DWR Application Number: </td><td>" + dwr + "</td></tr>";
-        content += "<tr><td>Other ID: </td><td>" + mn + "</td></tr>";
-        content += "<tr><td>KGS Record Number: </td><td id='seq-num'>" + seq + "</td></tr></table>";
+        var content = "<table cellpadding='4'><tr><td>County: </td><td>{COUNTY}</td></tr>";
+        content += "<tr><td>Section: </td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}</td></tr>";
+        content += "<tr><td>Quarter Section: </td><td>{QUARTER_CALL_3}&nbsp;&nbsp;{QUARTER_CALL_2}&nbsp;&nbsp;{QUARTER_CALL_1_LARGEST}</td></tr>";
+        content += "<tr><td>Owner: </td><td>{OWNER_NAME}</td></tr>";
+        content += "<tr><td>Status: </td><td>{STATUS}</td></tr>";
+        content += "<tr><td>Depth (ft): </td><td>{DEPTH_TXT}</td></tr>";
+        content += "<tr><td>Static Water Level (ft): </td><td>{STATIC_LEVEL_TXT}</td></tr>";
+        content += "<tr><td>Estimated Yield (gpm): </td><td>{YIELD_TXT}</td></tr>";
+        content += "<tr><td>Elevation (ft): </td><td>{ELEV_TXT}</td></tr>";
+        content += "<tr><td>Use: </td><td style='white-space:normal'>{USE_DESC}</td></tr>";
+        content += "<tr><td>Completion Date: </td><td>{COMP_DATE_TXT}</td></tr>";
+        content += "<tr><td>Driller: </td><td style='white-space:normal'>{CONTRACTOR}</td></tr>";
+        content += "<tr><td>DWR Application Number: </td><td>{DWR_APPROPRIATION_NUMBER}</td></tr>";
+        content += "<tr><td>Other ID: </td><td>{MONITORING_NUMBER}</td></tr>";
+        content += "<tr><td>KGS Record Number: </td><td id='seq-num'>{INPUT_SEQ_NUMBER}</td></tr></table>";
 
         return content;
     }
