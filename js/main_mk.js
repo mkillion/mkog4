@@ -944,23 +944,19 @@ function(
 
     function fieldContent(feature) {
         var f = feature.attributes;
-        var ftyp = f.FIELD_TYPE !== "Null" ? f.FIELD_TYPE : "";
-        var sta = f.STATUS !== "Null" ? f.STATUS : "";
         var po = f.PROD_OIL !== "Null" ? f.PROD_OIL : "";
         var co = f.CUMM_OIL !== "Null" ? f.CUMM_OIL.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var pg = f.PROD_GAS !== "Null" ? f.PROD_GAS : "";
         var cg = f.CUMM_GAS !== "Null" ? f.CUMM_GAS.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var ac = f.APPROXACRE !== "Null" ? f.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-        var kid = f.FIELD_KID !== "Null" ? f.FIELD_KID : "";
-
         var frm = f.FORMATIONS.split(",");
         var pf = "";
         for (var i=0; i<frm.length; i++) {
             pf += frm[i] + "<br>";
         }
 
-        var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>" + ftyp + "</td></tr>";
-        content += "<tr><td>Status: </td><td>" + sta + "</td></tr>";
+        var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>{FIELD_TYPE}</td></tr>";
+        content += "<tr><td>Status: </td><td>{STATUS}</td></tr>";
         content += "<tr><td>Produces Oil: </td><td>" + po + "</td></tr>";
         content += "<tr><td>Cumulative Oil (bbls): </td><td>" + co + "</td></tr>";
         content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
