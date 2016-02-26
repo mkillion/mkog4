@@ -807,7 +807,7 @@ function(
         $("#lyrs-toc").html(tocContent);
 
         // Add addtional layer-specific controls and content (reference by hyphenated layer id):
-        $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter toc-icon' onclick='filterWells(&quot;og&quot;);' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
+        $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter toc-icon' onclick='$( &quot;#og-filter&quot; ).dialog( &quot;open&quot; );' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
         $("#WWC5-Water-Wells").append("<span class='esri-icon-filter toc-icon' onclick='$( &quot;#wwc5-filter&quot; ).dialog( &quot;open&quot; );' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
 
         var eventDesc = "Data for all events occurring between 1/9/2013 and 3/7/2014 was provided by the Oklahoma Geological Survey - all other data is from the USGS.</p>";
@@ -833,13 +833,6 @@ function(
     labelWells = function(type) {
         // TODO:
         console.log("label wells function");
-    }
-
-
-    filterWells = function(type) {
-        // TODO:
-        console.log("filter wells function");
-        console.log(type);
     }
 
 
