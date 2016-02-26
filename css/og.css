@@ -106,6 +106,7 @@ input[type=checkbox] {
 
 .pu-note {
 	font-size: 12px;
+	padding-left: 3px;
 }
 
 .esri-popup-renderer-description table tr td {
@@ -262,4 +263,3 @@ input[type=checkbox] {
 #cp_outer_left {
 	border-right: 1px solid #000;
 }
-
