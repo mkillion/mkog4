@@ -915,21 +915,22 @@ function(
 
 
     function wwc5Content(feature) {
-        var content = "<table cellpadding='4'><tr><td>County: </td><td>{COUNTY}</td></tr>";
-        content += "<tr><td>Section: </td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}</td></tr>";
-        content += "<tr><td>Quarter Section: </td><td>{QUARTER_CALL_3}&nbsp;&nbsp;{QUARTER_CALL_2}&nbsp;&nbsp;{QUARTER_CALL_1_LARGEST}</td></tr>";
-        content += "<tr><td>Owner: </td><td>{OWNER_NAME}</td></tr>";
-        content += "<tr><td>Status: </td><td>{STATUS}</td></tr>";
-        content += "<tr><td>Depth (ft): </td><td>{DEPTH_TXT}</td></tr>";
-        content += "<tr><td>Static Water Level (ft): </td><td>{STATIC_LEVEL_TXT}</td></tr>";
-        content += "<tr><td>Estimated Yield (gpm): </td><td>{YIELD_TXT}</td></tr>";
-        content += "<tr><td>Elevation (ft): </td><td>{ELEV_TXT}</td></tr>";
-        content += "<tr><td>Use: </td><td style='white-space:normal'>{USE_DESC}</td></tr>";
-        content += "<tr><td>Completion Date: </td><td>{COMP_DATE_TXT}</td></tr>";
-        content += "<tr><td>Driller: </td><td style='white-space:normal'>{CONTRACTOR}</td></tr>";
-        content += "<tr><td>DWR Application Number: </td><td>{DWR_APPROPRIATION_NUMBER}</td></tr>";
-        content += "<tr><td>Other ID: </td><td>{MONITORING_NUMBER}</td></tr>";
-        content += "<tr><td>KGS Record Number: </td><td id='seq-num'>{INPUT_SEQ_NUMBER}</td></tr></table>";
+        var content = "<table cellpadding='4'><tr><td>County:</td><td>{COUNTY}</td></tr>";
+        content += "<tr><td>Section:</td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}</td></tr>";
+        content += "<tr><td>Quarter Section:</td><td>{QUARTER_CALL_3}&nbsp;&nbsp;{QUARTER_CALL_2}&nbsp;&nbsp;{QUARTER_CALL_1_LARGEST}</td></tr>";
+		content += "<tr><td>Longitude, Latitude (NAD27):</td><td>{NAD27_LONGITUDE},&nbsp;&nbsp;{NAD27_LATITUDE}</td></tr>";
+		content += "<tr><td>Owner:</td><td>{OWNER_NAME}</td></tr>";
+        content += "<tr><td>Status:</td><td>{STATUS}</td></tr>";
+        content += "<tr><td>Depth (ft):</td><td>{DEPTH_TXT}</td></tr>";
+        content += "<tr><td>Static Water Level (ft):</td><td>{STATIC_LEVEL_TXT}</td></tr>";
+        content += "<tr><td>Estimated Yield (gpm):</td><td>{YIELD_TXT}</td></tr>";
+        content += "<tr><td>Elevation (ft):</td><td>{ELEV_TXT}</td></tr>";
+        content += "<tr><td>Use:</td><td style='white-space:normal'>{USE_DESC}</td></tr>";
+        content += "<tr><td>Completion Date:</td><td>{COMP_DATE_TXT}</td></tr>";
+        content += "<tr><td>Driller:</td><td style='white-space:normal'>{CONTRACTOR}</td></tr>";
+        content += "<tr><td>DWR Application Number:</td><td>{DWR_APPROPRIATION_NUMBER}</td></tr>";
+        content += "<tr><td>Other ID:</td><td>{MONITORING_NUMBER}</td></tr>";
+        content += "<tr><td>KGS Record Number:</td><td id='seq-num'>{INPUT_SEQ_NUMBER}</td></tr></table>";
 
         return content;
     }
@@ -948,14 +949,14 @@ function(
             pf += frm[i] + "<br>";
         }
 
-        var content = "<table cellpadding='4'><tr><td>Type of Field: </td><td>{FIELD_TYPE}</td></tr>";
-        content += "<tr><td>Status: </td><td>{STATUS}</td></tr>";
-        content += "<tr><td>Produces Oil: </td><td>" + po + "</td></tr>";
-        content += "<tr><td>Cumulative Oil (bbls): </td><td>" + co + "</td></tr>";
-        content += "<tr><td>Produces Gas: </td><td>" + pg + "</td></tr>";
-        content += "<tr><td>Cumulative Gas (mcf): </td><td>" + cg + "</td></tr>";
-        content += "<tr><td>Approximate Acres: </td><td>" + ac + "</td></tr>";
-        content += "<tr><td>Producing Formations: </td><td>" + pf + "</td></tr>";
+        var content = "<table cellpadding='4'><tr><td>Type of Field:</td><td>{FIELD_TYPE}</td></tr>";
+        content += "<tr><td>Status:</td><td>{STATUS}</td></tr>";
+        content += "<tr><td>Produces Oil:</td><td>" + po + "</td></tr>";
+        content += "<tr><td>Cumulative Oil (bbls):</td><td>" + co + "</td></tr>";
+        content += "<tr><td>Produces Gas:</td><td>" + pg + "</td></tr>";
+        content += "<tr><td>Cumulative Gas (mcf):</td><td>" + cg + "</td></tr>";
+        content += "<tr><td>Approximate Acres:</td><td>" + ac + "</td></tr>";
+        content += "<tr><td>Producing Formations:</td><td>" + pf + "</td></tr>";
         content += "<span id='field-kid' class='hide'>{FIELD_KID}</span></table>";
 
         return content;
@@ -967,23 +968,23 @@ function(
         var dpth = f.ROTARY_TOTAL_DEPTH !== "Null" ? f.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
 
-        var content = "<table cellpadding='3'><tr><td>API: </td><td>{API_NUMBER}</td></tr>";
-        content += "<tr><td>Current Operator: </td><td>{CURR_OPERATOR}</td></tr>";
-        content += "<tr><td>Well Type: </td><td>{STATUS_TXT}</td></tr>";
-        content += "<tr><td>Status: </td><td>{WELL_CLASS}</td></tr>";
-        content += "<tr><td>Lease: </td><td>{LEASE_NAME}</td></tr>";
-        content += "<tr><td>Well: </td><td>{WELL_NAME}</td></tr>";
-        content += "<tr><td>Field: </td><td>{FIELD_NAME}</td></tr>";
-        content += "<tr><td>Location: </td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}<br>{SPOT}&nbsp;{SUBDIVISION_4_SMALLEST}&nbsp;{SUBDIVISION_3}&nbsp;{SUBDIVISION_2}&nbsp;{SUBDIVISION_1_LARGEST}</td></tr>";
-        content += "<tr><td>Coordinates (NAD27): </td><td>{NAD27_LONGITUDE}&nbsp;{NAD27_LATITUDE}</td></tr>";
-        content += "<tr><td>County: </td><td>{COUNTY}</td></tr>";
-        content += "<tr><td>Permit Date: </td><td>{PERMIT_DATE_TXT}</td></tr>";
-        content += "<tr><td>Spud Date: </td><td>{SPUD_DATE_TXT}</td></tr>";
-        content += "<tr><td>Completion Date: </td><td>{COMPLETION_DATE_TXT}</td></tr>";
-        content += "<tr><td>Plug Date: </td><td>{PLUG_DATE_TXT}</td></tr>";
-        content += "<tr><td>Total Depth (ft): </td><td>" + dpth + "</td></tr>";
-        content += "<tr><td>Elevation (KB, ft): </td><td>" + elev + "</td></tr>";
-        content += "<tr><td>Producing Formation: </td><td>{PRODUCING_FORMATION}</td></tr>";
+        var content = "<table cellpadding='3'><tr><td>API:</td><td>{API_NUMBER}</td></tr>";
+        content += "<tr><td>Current Operator:</td><td>{CURR_OPERATOR}</td></tr>";
+        content += "<tr><td>Well Type:</td><td>{STATUS_TXT}</td></tr>";
+        content += "<tr><td>Status:</td><td>{WELL_CLASS}</td></tr>";
+        content += "<tr><td>Lease:</td><td>{LEASE_NAME}</td></tr>";
+        content += "<tr><td>Well:</td><td>{WELL_NAME}</td></tr>";
+        content += "<tr><td>Field:</td><td>{FIELD_NAME}</td></tr>";
+        content += "<tr><td>Location:</td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}<br>{SPOT}&nbsp;{SUBDIVISION_4_SMALLEST}&nbsp;{SUBDIVISION_3}&nbsp;{SUBDIVISION_2}&nbsp;{SUBDIVISION_1_LARGEST}</td></tr>";
+        content += "<tr><td>Longitude, Latitude (NAD27):</td><td>{NAD27_LONGITUDE},&nbsp;&nbsp;{NAD27_LATITUDE}</td></tr>";
+        content += "<tr><td>County:</td><td>{COUNTY}</td></tr>";
+        content += "<tr><td>Permit Date:</td><td>{PERMIT_DATE_TXT}</td></tr>";
+        content += "<tr><td>Spud Date:</td><td>{SPUD_DATE_TXT}</td></tr>";
+        content += "<tr><td>Completion Date:</td><td>{COMPLETION_DATE_TXT}</td></tr>";
+        content += "<tr><td>Plug Date:</td><td>{PLUG_DATE_TXT}</td></tr>";
+        content += "<tr><td>Total Depth (ft):</td><td>" + dpth + "</td></tr>";
+        content += "<tr><td>Elevation (KB, ft):</td><td>" + elev + "</td></tr>";
+        content += "<tr><td>Producing Formation:</td><td>{PRODUCING_FORMATION}</td></tr>";
         content += "<span id='well-kid' class='hide'>{KID}</span></table>";
 
         return content;
