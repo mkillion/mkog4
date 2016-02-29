@@ -324,7 +324,10 @@ function(
 		}
 		wwc5Filter += "</table>"
 		wwc5Filter += "<span class='filter-hdr'>Well Use:</span><br><table>";
-		wwc5Filter += "<tr><td><select id='well-use' multiple><option value=''>-- select one or many (ctrl or cmd key) --</option -->";
+		wwc5Filter += "<tr><td><select id='well-use' multiple>";
+		if (!isMobile) {
+			wwc5Filter += "<option value=''>-- select one or many (ctrl or cmd key) --</option>";
+		}
 		for (var k = 0; k < wwc5Use.length; k++) {
 			wwc5Filter += "<option value='" + wwc5Use[k] + "'>" + wwc5Use[k] + "</option>";
 
