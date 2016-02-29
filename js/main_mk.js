@@ -76,7 +76,7 @@ function(
     ArcGISImageLayer
 ) {
     var isMobile = WURFL.is_mobile;
-	var junkDef;
+	var junkDef; // temp - see FIXMEs
 
     // Set up basic frame:
     window.document.title = "FooBar";
@@ -368,15 +368,20 @@ function(
 		console.log(wellUse);
 
 		var def = [];
+		var dateWhere,statusWhere,useWhere;
 		if (wwc5FromDate !== "" && wwc5ToDate !== "") {
-			def[8] = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy') and completion_date <= to_date('" + wwc5ToDate + "','mm/dd/yyyy')";
+			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy') and completion_date <= to_date('" + wwc5ToDate + "','mm/dd/yyyy')";
 		} else if (wwc5FromDate !== "" && wwc5ToDate === "") {
-			def[8] = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy')";
+			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy')";
 		} else if (wwc5FromDate === "" && wwc5ToDate !== "") {
-			def[8] = "completion_date <= to_date('" + wwc5ToDate + "','mm/dd/yyyy')";
+			dateWhere = "completion_date <= to_date('" + wwc5ToDate + "','mm/dd/yyyy')";
 		}
 
-		junkDef = def[8];
+		var conList = "'" + conStatus.join("','") + "'";
+		statusWhere = "status in (" + conList +")";
+
+		def[8] = statusWhere;
+		junkDef = def[8]; // temp - see FIXMEs
 		wwc5Layer.layerDefinitions = def;
 	}
 
@@ -530,7 +535,7 @@ function(
                 zoomToFeature(feature);
             } );
 
-            // TODO: tie last location to the Home button? Put here or in zoomToFeature function.
+            // TODO: tie last location to the Home button?
         }
     }
 
