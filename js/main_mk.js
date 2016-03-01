@@ -394,13 +394,14 @@ function(
 		var useWhere = "";
 		var theWhere = "";
 
-		if (wwc5FromDate !== "" && wwc5ToDate !== "") {
-			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy') and completion_date <= to_date('" + wwc5ToDate + "','mm/dd/yyyy')";
-		} else if (wwc5FromDate !== "" && wwc5ToDate === "") {
+		if (wwc5FromDate && wwc5ToDate) {
+			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy') and completion_date < to_date('" + wwc5ToDate + "','mm/dd/yyyy') + 1";
+		} else if (wwc5FromDate && !wwc5ToDate) {
 			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy')";
-		} else if (wwc5FromDate === "" && wwc5ToDate !== "") {
-			dateWhere = "completion_date <= to_date('" + wwc5ToDate + "','mm/dd/yyyy')";
+		} else if (!wwc5FromDate && wwc5ToDate) {
+			dateWhere = "completion_date < to_date('" + wwc5ToDate + "','mm/dd/yyyy') + 1";
 		}
+		console.log(dateWhere);
 
 		if (conStatus.length > 0) {
 			var conList = "'" + conStatus.join("','") + "'";
@@ -491,7 +492,6 @@ function(
                 }
             }
         }
-		console.log(def);
         usgsEventsLayer.layerDefinitions = def;
     }
 
