@@ -281,8 +281,8 @@ function(
         // earthquakes:
         var magOptions = "<option value='all'>All</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
         var eqFilter = "<span class='filter-hdr'>By Day:</span><br>";
-        eqFilter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='eq-from-date' placeholder='mm/dd/yyyy'></td></tr>";
-        eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' size='12' id='eq-to-date' placeholder='mm/dd/yyyy'></td></tr>";
+        eqFilter += "<table><tr><td class='find-label'>After:</td><td><input type='text' size='12' id='eq-from-date' placeholder='mm/dd/yyyy'></td></tr>";
+        eqFilter += "<tr><td class='find-label'>Before:</td><td><input type='text' size='12' id='eq-to-date' placeholder='mm/dd/yyyy'></td></tr>";
         eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='day-mag' id='day-mag'>";
         eqFilter += magOptions;
         eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' id='day-btn' onclick='filterQuakes(this.id);'>Go</button></td></tr></table><hr>";
@@ -317,8 +317,8 @@ function(
 		var wwc5Status = ["Constructed","Plugged","Reconstructed"];
 		var wwc5Use = ["Air Conditioning","Cathodic Protection Borehole","Dewatering","Domestic","Domestic, Livestock","Domestic, changed from Irrigation","Domestic, changed from Oil Field Water Supply","Environmental Remediation, Air Sparge","Environmental Remediation, Injection","Environmental Remediation, Recovery","Environmental Remediation, Soil Vapor Extraction","Feedlot","Feedlot/Livestock/Windmill","Geothermal, Closed Loop, Horizontal","Geothermal, Closed Loop, Vertical","Geothermal, Open Loop, Inj. of Water","Geothermal, Open Loop, Surface Discharge","Heat Pump (Closed Loop/Disposal), Geothermal","Industrial","Injection well/air sparge (AS)/shallow","Irrigation","Lawn and Garden - domestic only","Monitoring well/observation/piezometer","Oil Field Water Supply","Other","Pond/Swimming Pool/Recreation","Public Water Supply","Recharge Well","Recovery/Soil Vapor Extraction/Soil Vent","Road Construction","Test Hole, Cased","Test Hole, Geotechnical","Test Hole, Uncased","Test hole/well","(unstated)/abandoned"];
 		var wwc5Filter = "<span class='filter-hdr'>Completion Date:</span><br>";
-        wwc5Filter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td>";
-        wwc5Filter += "<td class='find-label'>To:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
+        wwc5Filter += "<table><tr><td class='find-label'>After:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td>";
+        wwc5Filter += "<td class='find-label'>Before:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
 		wwc5Filter += "<span class='filter-hdr'>Construction Status:</span><br><table>";
 		for (var i = 0; i < wwc5Status.length; i++) {
 			wwc5Filter += "<tr><td><input type='checkbox' name='const-status' value='" + wwc5Status[i] + "'>" + wwc5Status[i] + "</td></tr>"
@@ -349,8 +349,20 @@ function(
 		$("#wwc5-from-date").datepicker();
         $("#wwc5-to-date").datepicker();
 
-        // TODO: og wells:
+        // og wells:
+		var ogFilter = "";
 
+		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", title: "Filter Oil and Gas Wells", innerHTML: ogFilter } );
+        $("body").append(ogN);
+
+        $("#og-filter").dialog( {
+            autoOpen: false,
+            dialogClass: "dialog",
+            width: 450
+        } );
+
+		// $("#og-from-date").datepicker();
+        // $("#og-to-date").datepicker();
     }
 
 
