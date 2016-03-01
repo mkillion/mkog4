@@ -76,7 +76,7 @@ function(
     ArcGISImageLayer
 ) {
     var isMobile = WURFL.is_mobile;
-	var junkDef; // temp - see FIXMEs
+	//var junkDef; // temp - see FIXMEs
 
     // Set up basic frame:
     window.document.title = "FooBar";
@@ -361,14 +361,12 @@ function(
 		var wellUse = $("#well-use").val();
 		var wwc5FromDate = dom.byId("wwc5-from-date").value;
 		var wwc5ToDate = dom.byId("wwc5-to-date").value;
-
-		console.log(wwc5FromDate);
-		console.log(wwc5ToDate);
-		console.log(conStatus);
-		console.log(wellUse);
-
 		var def = [];
-		var dateWhere,statusWhere,useWhere;
+		var dateWhere = "";
+		var statusWhere = "";
+		var useWhere = "";
+		var theWhere = "";
+
 		if (wwc5FromDate !== "" && wwc5ToDate !== "") {
 			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy') and completion_date <= to_date('" + wwc5ToDate + "','mm/dd/yyyy')";
 		} else if (wwc5FromDate !== "" && wwc5ToDate === "") {
@@ -377,11 +375,31 @@ function(
 			dateWhere = "completion_date <= to_date('" + wwc5ToDate + "','mm/dd/yyyy')";
 		}
 
-		var conList = "'" + conStatus.join("','") + "'";
-		statusWhere = "status in (" + conList +")";
+		if (conStatus.length > 0) {
+			var conList = "'" + conStatus.join("','") + "'";
+			statusWhere = "status in (" + conList +")";
+		}
 
-		def[8] = statusWhere;
-		junkDef = def[8]; // temp - see FIXMEs
+		if (wellUse) {
+			var useList = "'" + wellUse.join("','") + "'";
+			useWhere = "use_desc in (" + useList +")";
+		}
+
+		if (dateWhere !== "") {
+			theWhere += dateWhere + " and ";
+		}
+		if (statusWhere !== "") {
+			theWhere += statusWhere + " and ";
+		}
+		if (useWhere !== "") {
+			theWhere += useWhere;
+		}
+		if (theWhere.substr(theWhere.length - 5) === " and ") {
+			theWhere = theWhere.slice(0,theWhere.length - 5);
+		}
+
+		def[8] = theWhere;
+		//junkDef = def[8]; // temp - see FIXMEs
 		wwc5Layer.layerDefinitions = def;
 	}
 
@@ -919,7 +937,7 @@ function(
         identifyParams.geometry = event.mapPoint;
         identifyParams.mapExtent = view.extent;
 		// FIXME: features filtered out should be excluded from ID results too. Next line not working.
-		identifyParams.layerDefinitions = [junkDef];
+		//identifyParams.layerDefinitions = [junkDef];
         dom.byId("mapDiv").style.cursor = "wait";
 
         identifyTask.execute(identifyParams).then(function(response) {
