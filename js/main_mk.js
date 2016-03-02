@@ -401,7 +401,6 @@ function(
 		} else if (!wwc5FromDate && wwc5ToDate) {
 			dateWhere = "completion_date < to_date('" + wwc5ToDate + "','mm/dd/yyyy') + 1";
 		}
-		console.log(dateWhere);
 
 		if (conStatus.length > 0) {
 			var conList = "'" + conStatus.join("','") + "'";
@@ -759,7 +758,7 @@ function(
 
             graphicsLayer.clear();
             graphicsLayer.add(pointGraphic);
-            // FIXME: Think there's an api bug here. Point graphic appears huge on the map at first but displays correctly after the map extent changes in some way.
+            // FIXME: Possible api bug here. Point graphic appears huge on the map at first but displays correctly after the map extent changes in some way.
             // It works corrrectly on subsequent passes (after extent has been changed).
             // Adding a new graphics layer every time makes it work correctly, but the layers pile up. either wait on 4.0 final release and test, or
             // test for existence of second graphics layer and remove it.
@@ -979,7 +978,7 @@ function(
     function executeIdTask(event) {
         identifyParams.geometry = event.mapPoint;
         identifyParams.mapExtent = view.extent;
-		// FIXME: features filtered out should be excluded from ID results too. Next line not working.
+		// FIXME: features filtered out should be excluded from ID results too. Next line not working. Retest w/ next api release.
 		//identifyParams.layerDefinitions = [junkDef];
         dom.byId("mapDiv").style.cursor = "wait";
 
@@ -1045,7 +1044,7 @@ function(
         var content = "<table cellpadding='4'><tr><td>County:</td><td>{COUNTY}</td></tr>";
         content += "<tr><td>Section:</td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}</td></tr>";
         content += "<tr><td>Quarter Section:</td><td>{QUARTER_CALL_3}&nbsp;&nbsp;{QUARTER_CALL_2}&nbsp;&nbsp;{QUARTER_CALL_1_LARGEST}</td></tr>";
-		content += "<tr><td>Longitude, Latitude (NAD27):</td><td>{NAD27_LONGITUDE},&nbsp;&nbsp;{NAD27_LATITUDE}</td></tr>";
+		content += "<tr><td>Latitude, Longitude (NAD27):</td><td>{NAD27_LATITUDE},&nbsp;&nbsp;{NAD27_LONGITUDE}</td></tr>";
 		content += "<tr><td>Owner:</td><td>{OWNER_NAME}</td></tr>";
         content += "<tr><td>Status:</td><td>{STATUS}</td></tr>";
         content += "<tr><td>Depth (ft):</td><td>{DEPTH_TXT}</td></tr>";
@@ -1103,7 +1102,7 @@ function(
         content += "<tr><td>Well:</td><td>{WELL_NAME}</td></tr>";
         content += "<tr><td>Field:</td><td>{FIELD_NAME}</td></tr>";
         content += "<tr><td>Location:</td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}<br>{SPOT}&nbsp;{SUBDIVISION_4_SMALLEST}&nbsp;{SUBDIVISION_3}&nbsp;{SUBDIVISION_2}&nbsp;{SUBDIVISION_1_LARGEST}</td></tr>";
-        content += "<tr><td>Longitude, Latitude (NAD27):</td><td>{NAD27_LONGITUDE},&nbsp;&nbsp;{NAD27_LATITUDE}</td></tr>";
+        content += "<tr><td>Latitude, Longitude (NAD27):</td><td>{NAD27_LATITUDE},&nbsp;&nbsp;{NAD27_LONGITUDE}</td></tr>";
         content += "<tr><td>County:</td><td>{COUNTY}</td></tr>";
         content += "<tr><td>Permit Date:</td><td>{PERMIT_DATE_TXT}</td></tr>";
         content += "<tr><td>Spud Date:</td><td>{SPUD_DATE_TXT}</td></tr>";
