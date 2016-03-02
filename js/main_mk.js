@@ -108,7 +108,7 @@ function(
     popCountyDropdown();
     createFilterDialogs();
 
-    // Combo box for og fields:
+    // Combo boxes (fields and operators):
     var autocomplete =  (isMobile) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
     $.get("fields_json.txt", function(response) {
 		// fields_json.txt is updated as part of the og fields update process.
@@ -120,6 +120,18 @@ function(
             searchAttr: "name",
             autoComplete: autocomplete
         }, "field-select").startup();
+    } );
+
+	$.get("operators_json.txt", function(response) {
+		// operators_json.txt is updated with the nightly og wells update.
+        var operators = JSON.parse(response).items;
+        var opsStore = new Memory( {data: operators} );
+        var comboBox = new ComboBox( {
+            id: "ops-select",
+            store: opsStore,
+            searchAttr: "name",
+            autoComplete: autocomplete
+        }, "ops-select").startup();
     } );
 
     // End framework.
@@ -363,6 +375,7 @@ function(
 		}
 		ogF += "</select></tr></td></table>";
 		ogF += "<span class='filter-hdr'>Current Operator:</span><br>";
+		ogF += "<input id='ops-select'>";
 
 		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", title: "Filter Oil and Gas Wells", innerHTML: ogF } );
         $("body").append(ogN);
