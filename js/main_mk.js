@@ -111,6 +111,7 @@ function(
     // Combo box for og fields:
     var autocomplete =  (isMobile) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
     $.get("fields_json.txt", function(response) {
+		// fields_json.txt is updated as part of the og fields update process.
         var fieldNames = JSON.parse(response).items;
         var fieldStore = new Memory( {data: fieldNames} );
         var comboBox = new ComboBox( {
@@ -280,26 +281,26 @@ function(
     function createFilterDialogs() {
         // earthquakes:
         var magOptions = "<option value='all'>All</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
-        var eqFilter = "<span class='filter-hdr'>By Day:</span><br>";
-        eqFilter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='eq-from-date' placeholder='mm/dd/yyyy'></td></tr>";
-        eqFilter += "<tr><td class='find-label'>To:</td><td><input type='text' size='12' id='eq-to-date' placeholder='mm/dd/yyyy'></td></tr>";
-        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='day-mag' id='day-mag'>";
-        eqFilter += magOptions;
-        eqFilter += "</select></td></tr><tr><td></td><td><button class='find-button' id='day-btn' onclick='filterQuakes(this.id);'>Go</button></td></tr></table><hr>";
-        eqFilter += "<span class='filter-hdr'>By Year</span><br>";
-        eqFilter += "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
+        var eqF = "<span class='filter-hdr'>By Day:</span><br>";
+        eqF += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='eq-from-date' placeholder='mm/dd/yyyy'></td></tr>";
+        eqF += "<tr><td class='find-label'>To:</td><td><input type='text' size='12' id='eq-to-date' placeholder='mm/dd/yyyy'></td></tr>";
+        eqF += "<tr><td class='find-label'>Magnitude:</td><td><select name='day-mag' id='day-mag'>";
+        eqF += magOptions;
+        eqF += "</select></td></tr><tr><td></td><td><button class='find-button' id='day-btn' onclick='filterQuakes(this.id);'>Apply Filter</button></td></tr></table><hr>";
+        eqF += "<span class='filter-hdr'>By Year</span><br>";
+        eqF += "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
         for (var y=2016; y>2012; y--) {
-            eqFilter += "<option value='" + y + "'>" + y + "</option>";
+            eqF += "<option value='" + y + "'>" + y + "</option>";
         }
-        eqFilter += "</select></td></tr>";
-        eqFilter += "<tr><td class='find-label'>Magnitude:</td><td><select name='year-mag' id='year-mag'>";
-        eqFilter += magOptions;
-        eqFilter += "</select></td></tr>";
-        eqFilter += "<tr><td></td><td><button class='find-button' id='year-btn' onclick='filterQuakes(this.id);'>Go</button></td></tr></table><hr>";
-        eqFilter += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
-        eqFilter += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
+        eqF += "</select></td></tr>";
+        eqF += "<tr><td class='find-label'>Magnitude:</td><td><select name='year-mag' id='year-mag'>";
+        eqF += magOptions;
+        eqF += "</select></td></tr>";
+        eqF += "<tr><td></td><td><button class='find-button' id='year-btn' onclick='filterQuakes(this.id);'>Apply Filter</button></td></tr></table><hr>";
+        eqF += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
+        eqF += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
 
-        var eqN = domConstruct.create("div", { id: "eq-filter", class: "filter-dialog", title: "Filter Earthquakes", innerHTML: eqFilter } );
+        var eqN = domConstruct.create("div", { id: "eq-filter", class: "filter-dialog", title: "Filter Earthquakes", innerHTML: eqF } );
         $("body").append(eqN);
 
         $("#eq-filter").dialog( {
@@ -316,28 +317,28 @@ function(
         // wwc5 wells:
 		var wwc5Status = ["Constructed","Plugged","Reconstructed"];
 		var wwc5Use = ["Air Conditioning","Cathodic Protection Borehole","Dewatering","Domestic","Domestic, Livestock","Domestic, changed from Irrigation","Domestic, changed from Oil Field Water Supply","Environmental Remediation, Air Sparge","Environmental Remediation, Injection","Environmental Remediation, Recovery","Environmental Remediation, Soil Vapor Extraction","Feedlot","Feedlot/Livestock/Windmill","Geothermal, Closed Loop, Horizontal","Geothermal, Closed Loop, Vertical","Geothermal, Open Loop, Inj. of Water","Geothermal, Open Loop, Surface Discharge","Heat Pump (Closed Loop/Disposal), Geothermal","Industrial","Injection well/air sparge (AS)/shallow","Irrigation","Lawn and Garden - domestic only","Monitoring well/observation/piezometer","Oil Field Water Supply","Other","Pond/Swimming Pool/Recreation","Public Water Supply","Recharge Well","Recovery/Soil Vapor Extraction/Soil Vent","Road Construction","Test Hole, Cased","Test Hole, Geotechnical","Test Hole, Uncased","Test hole/well","(unstated)/abandoned"];
-		var wwc5Filter = "<span class='filter-hdr'>Completion Date:</span><br>";
-        wwc5Filter += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td>";
-        wwc5Filter += "<td class='find-label'>To:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
-		wwc5Filter += "<span class='filter-hdr'>Construction Status:</span><br><table>";
+		var wwc5F = "<span class='filter-hdr'>Completion Date:</span><br>";
+        wwc5F += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td>";
+        wwc5F += "<td class='find-label'>To:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
+		wwc5F += "<span class='filter-hdr'>Construction Status:</span><br><table>";
 		for (var i = 0; i < wwc5Status.length; i++) {
-			wwc5Filter += "<tr><td><input type='checkbox' name='const-status' value='" + wwc5Status[i] + "'>" + wwc5Status[i] + "</td></tr>"
+			wwc5F += "<tr><td><input type='checkbox' name='const-status' value='" + wwc5Status[i] + "'>" + wwc5Status[i] + "</td></tr>"
 		}
-		wwc5Filter += "</table>"
-		wwc5Filter += "<span class='filter-hdr'>Well Use:</span><br><table>";
-		wwc5Filter += "<tr><td><select id='well-use' multiple size='6'>";
+		wwc5F += "</table>"
+		wwc5F += "<span class='filter-hdr'>Well Use:</span><br>";
+		wwc5F += "<table><tr><td><select id='well-use' multiple size='6'>";
 		if (!isMobile) {
-			wwc5Filter += "<option value=''>-- select one or many (ctrl or cmd key) --</option>";
+			wwc5F += "<option value=''>-- select one or many (ctrl or cmd key) --</option>";
 		}
 		for (var k = 0; k < wwc5Use.length; k++) {
-			wwc5Filter += "<option value='" + wwc5Use[k] + "'>" + wwc5Use[k] + "</option>";
+			wwc5F += "<option value='" + wwc5Use[k] + "'>" + wwc5Use[k] + "</option>";
 
 		}
-		wwc5Filter += "</select></td></tr>";
-		wwc5Filter += "<tr><td><button onclick='clearWwc5Filter();'>Clear Filter</button></td></tr>";
-		wwc5Filter += "<tr><td><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();' autofocus>Go</button></td></tr></table>";
+		wwc5F += "</select></td></tr>";
+		wwc5F += "<tr><td colspan='2'><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;<button class='find-button' onclick='clearwwc5F();' autofocus>Clear Filter</button></td></tr>";
+		wwc5F += "</table>";
 
-        var wwc5N = domConstruct.create("div", { id: "wwc5-filter", class: "filter-dialog", title: "Filter Water Wells", innerHTML: wwc5Filter } );
+        var wwc5N = domConstruct.create("div", { id: "wwc5-filter", class: "filter-dialog", title: "Filter Water Wells", innerHTML: wwc5F } );
         $("body").append(wwc5N);
 
         $("#wwc5-filter").dialog( {
@@ -350,9 +351,20 @@ function(
         $("#wwc5-to-date").datepicker();
 
         // og wells:
-		var ogFilter = "";
+		var wellType = ["Coal Bed Methane","Coal Bed Methane, Plugged and Abandoned","Dry and Abandoned","Enhanced Oil Recovery","Enhanced Oil Recovery, Plugged and Abandoned","Gas","Gas, Plugged and Abandoned","Injection","Injection, Plugged and Abandoned","Intent","Location","Oil","Oil and Gas","Oil and Gas, Plugged and Abandoned","Oil, Plugged and Abandoned","Other","Other, Plugged and Abandoned","Salt Water Disposal","Salt Water Disposal, Plugged and Abandoned"];
+		var ogF = "<span class='filter-hdr'>Well Type:</span><br>";
+		ogF += "<table><tr><td><select id='og-well-type' multiple size='3'>";
+		if (!isMobile) {
+			ogF += "<option value=''>-- select one or many (ctrl or cmd key) --</option>";
+		}
+		for (var j = 0; j < wellType.length; j++) {
+			ogF += "<option value='" + wellType[j] + "'>" + wellType[j] + "</option>";
 
-		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", title: "Filter Oil and Gas Wells", innerHTML: ogFilter } );
+		}
+		ogF += "</select></tr></td></table>";
+		ogF += "<span class='filter-hdr'>Current Operator:</span><br>";
+
+		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", title: "Filter Oil and Gas Wells", innerHTML: ogF } );
         $("body").append(ogN);
 
         $("#og-filter").dialog( {
@@ -372,11 +384,8 @@ function(
 
 
 	clearOgFilter = function() {
-		// TODO: modify for og.
-		// dom.byId("wwc5-from-date").value = "";
-        // dom.byId("wwc5-to-date").value = "";
-		// $('input[name="const-status"]').removeAttr("checked");
-		// $('select#well-use option').removeAttr("selected");
+		// TODO:
+
 		wellsLayer.layerDefinitions = [];
 	}
 
@@ -431,7 +440,7 @@ function(
 	}
 
 
-	clearWwc5Filter = function() {
+	clearwwc5F = function() {
 		dom.byId("wwc5-from-date").value = "";
         dom.byId("wwc5-to-date").value = "";
 		$('input[name="const-status"]').removeAttr("checked");
