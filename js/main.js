@@ -1,973 +1,1147 @@
-define([
-    "dojo/_base/declare",
-    "dojo/_base/lang",
-    "esri/arcgis/utils",
-    "dojo/dom-construct",
-    "dojo/dom",
-    "dojo/on",
-    "dojo/dom-style",
-    "dojo/dom-attr",
-    "dojo/dom-class",
-    "application/TableOfContents",
-  	"application/Drawer",
-    "application/DrawerMenu",
-    "esri/dijit/HomeButton",
-    "esri/dijit/LocateButton",
-    "esri/dijit/BasemapToggle",
-    "esri/dijit/Geocoder",
-    "esri/dijit/Popup",
-    "esri/dijit/Legend",
-    "application/About",
-   	"esri/dijit/OverviewMap",
-    "dijit/registry",
+require([
+	"dojo/_base/lang",
+	"dojo/on",
+	"dojo/dom",
+    "dojo/window",
     "dojo/_base/array",
-	"esri/tasks/query",
-	"esri/lang",
-	"esri/layers/FeatureLayer",
-    "esri/tasks/FindTask",
-    "esri/tasks/FindParameters",
-    "esri/geometry/Point",
-    "esri/SpatialReference",
-    "esri/dijit/Scalebar",
-    "esri/layers/ArcGISDynamicMapServiceLayer",
-    "esri/InfoTemplate",
+    "dojo/store/Memory",
+    "dojo/dom-construct",
+    "dijit/form/ComboBox",
+	"application/Drawer",
+    "application/DrawerMenu",
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/layers/ArcGISTiledLayer",
+    "esri/layers/ArcGISDynamicLayer",
+    "esri/widgets/Search",
+    "esri/widgets/Search/SearchViewModel",
+    "esri/widgets/Home",
+    "esri/widgets/Home/HomeViewModel",
+    "esri/widgets/Locate",
+    "esri/widgets/Locate/LocateViewModel",
+    "esri/PopupTemplate",
+    "esri/widgets/Popup",
     "esri/tasks/IdentifyTask",
-    "esri/tasks/IdentifyParameters",
-    "esri/layers/ArcGISTiledMapServiceLayer"
+    "esri/tasks/support/IdentifyParameters",
+    "esri/tasks/FindTask",
+    "esri/tasks/support/FindParameters",
+    "esri/geometry/Point",
+    "esri/geometry/SpatialReference",
+    "esri/symbols/SimpleMarkerSymbol",
+    "esri/layers/GraphicsLayer",
+    "esri/symbols/SimpleLineSymbol",
+    "esri/Graphic",
+    "esri/tasks/GeometryService",
+    "esri/tasks/support/ProjectParameters",
+    "esri/geometry/support/webMercatorUtils",
+    "esri/layers/ArcGISImageLayer",
+    "dojo/domReady!"
 ],
 function(
-    declare,
-    lang,
-    arcgisUtils,
+	lang,
+	on,
+	dom,
+    win,
+    arrayUtils,
+    Memory,
     domConstruct,
-    dom,
-    on,
-    domStyle,
-    domAttr,
-    domClass,
-    TableOfContents, Drawer, DrawerMenu,
-    HomeButton, LocateButton, BasemapToggle,
-    Geocoder,
+    ComboBox,
+	Drawer,
+	DrawerMenu,
+    Map,
+    MapView,
+    ArcGISTiledLayer,
+    ArcGISDynamicLayer,
+    Search,
+    SearchVM,
+    Home,
+    HomeVM,
+    Locate,
+    LocateVM,
+    PopupTemplate,
     Popup,
-    Legend,
-    About,
-   	OverviewMap,
-    registry,
-    array,
-	Query,
-	esriLang,
-	FeatureLayer,
+    IdentifyTask,
+    IdentifyParameters,
     FindTask,
     FindParameters,
     Point,
     SpatialReference,
-    Scalebar,
-    ArcGISDynamicMapServiceLayer,
-    InfoTemplate,
-    IdentifyTask,
-    IdentifyParameters,
-    ArcGISTiledMapServiceLayer
+    SimpleMarkerSymbol,
+    GraphicsLayer,
+    SimpleLineSymbol,
+    Graphic,
+    GeometryService,
+    ProjectParameters,
+    webMercatorUtils,
+    ArcGISImageLayer
 ) {
- 	return declare("", [About], {
-        config: {},
-        constructor: function(){
-            // css classes
-            this.css = {
-                mobileSearchDisplay: "mobile-locate-box-display",
-                toggleBlue: 'toggle-grey',
-                toggleBlueOn: 'toggle-grey-on',
-                panelPadding: "panel-padding",
-                panelContainer: "panel-container",
-                panelHeader: "panel-header",
-                panelSection: "panel-section",
-                panelSummary: "panel-summary",
-                panelDescription: "panel-description",
-                panelModified: "panel-modified-date",
-                panelViews: "panel-views-count",
-                panelMoreInfo: "panel-more-info",
-                pointerEvents: "pointer-events",
-                iconRight: "icon-right",
-                iconList: "icon-list",
-                iconLayers: "icon-layers",
-                iconAbout: "icon-info-circled-1",
-                iconText: "icon-text",
-                locateButtonTheme: "LocateButtonCalcite",
-                homebuttonTheme: "HomeButtonCalcite",
-                desktopGeocoderTheme: "geocoder-desktop",
-                mobileGeocoderTheme: "geocoder-mobile",
-                appLoading: "app-loading",
-                appError: "app-error",
-                // MK:
-                iconZoomTo: "icon-zoom-in",
-                iconWrench: "icon-wrench"
-            };
-            // pointer event support
-            if(this._pointerEventsSupport()){
-                domClass.add(document.documentElement, this.css.pointerEvents);
+    var isMobile = WURFL.is_mobile;
+	//var junkDef; // temp - see FIXMEs
+
+    // Set up basic frame:
+    window.document.title = "FooBar";
+    $("#title").html("Kansas Oil and Gas<a id='kgs-brand' href='http://www.kgs.ku.edu'>Kansas Geological Survey</a>");
+
+    var showDrawerSize = 850;
+
+	var drawer = new Drawer( {
+        showDrawerSize: showDrawerSize,
+        borderContainer: 'bc_outer',
+        contentPaneCenter: 'cp_outer_center',
+        contentPaneSide: 'cp_outer_left',
+        toggleButton: 'hamburger_button'
+    } );
+    drawer.startup();
+
+    // Broke the template drawer open/close behavior when paring down the code, so...
+    $("#hamburger_button").click(function(e) {
+        e.preventDefault();
+        if ($("#cp_outer_left").css("width") === "293px") {
+            $("#cp_outer_left").css("width", "0px");
+        } else {
+            $("#cp_outer_left").css("width", "293px");
+        }
+    } );
+
+    createMenus();
+    createTools();
+    popCountyDropdown();
+    createFilterDialogs();
+
+    // Combo boxes (fields and operators):
+    var autocomplete =  (isMobile) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
+    $.get("fields_json.txt", function(response) {
+		// fields_json.txt is updated as part of the og fields update process.
+        var fieldNames = JSON.parse(response).items;
+        var fieldStore = new Memory( {data: fieldNames} );
+        var comboBox = new ComboBox( {
+            id: "field-select",
+            store: fieldStore,
+            searchAttr: "name",
+            autoComplete: autocomplete
+        }, "field-select").startup();
+    } );
+
+	$.get("operators_json.txt", function(response) {
+		// operators_json.txt is updated with the nightly og wells update.
+        var operators = JSON.parse(response).items;
+        var opsStore = new Memory( {data: operators} );
+        var comboBox = new ComboBox( {
+            id: "ops-select",
+            store: opsStore,
+            searchAttr: "name",
+            autoComplete: autocomplete
+        }, "ops-select").startup();
+    } );
+
+    // End framework.
+
+    // Create map and map widgets:
+    var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
+    var identifyTask, identifyParams;
+    var findTask = new FindTask(ogGeneralServiceURL);
+    var findParams = new FindParameters();
+
+    var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
+    var fieldsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
+    var wellsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
+    var plssLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
+    var wwc5Layer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", visibleLayers:[8], id:"WWC5 Water Wells", visible:false} );
+    var usgsEventsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[13], id:"Earthquakes", visible:false} );
+    var lepcLayer = new ArcGISDynamicLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
+    var topoLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", visibleLayers:[11], id:"Topography", visible:false } );
+    var naip2014Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/FSA_NAIP_2014_Color/ImageServer", id:"2014 Aerials", visible:false} );
+    var doqq2002Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_2002/ImageServer", id:"2002 Aerials", visible:false} );
+    var doqq1991Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_1991/ImageServer", id:"1991 Aerials", visible:false} );
+
+    var map = new Map( {
+        // Not defining basemap here for TOC toggle reasons.
+        //basemap: "topo",
+        layers: [basemapLayer, doqq1991Layer, doqq2002Layer, naip2014Layer, topoLayer, lepcLayer, fieldsLayer, plssLayer, usgsEventsLayer, wwc5Layer, wellsLayer]
+    } );
+    map.then(createTOC, mapErr);
+
+    var graphicsLayer = new GraphicsLayer();
+    map.add(graphicsLayer);
+
+    var view = new MapView( {
+        map: map,
+        container: "mapDiv",
+        center: [-98, 38],
+        zoom: 7,
+        ui: { components: ["zoom"] }
+    } );
+
+    view.then(function() {
+        on(view, "click", executeIdTask);
+
+        identifyTask = new IdentifyTask(ogGeneralServiceURL);
+        identifyParams = new IdentifyParameters();
+        identifyParams.tolerance = (isMobile) ? 9 : 3;
+        identifyParams.layerIds = [0, 13, 8, 1];
+        identifyParams.layerOption = "visible";
+        identifyParams.width = view.width;
+        identifyParams.height = view.height;
+
+        // Define additional popup actions:
+        var fullInfoAction = {
+            title: "Full Report",
+            id: "full-report",
+            className: "esri-icon-documentation"
+        };
+        view.popup.viewModel.actions.push(fullInfoAction);
+
+        var bufferFeatureAction = {
+            title: "Buffer Feature",
+            id: "buffer-feature",
+            className: "esri-icon-radio-checked"
+        };
+        view.popup.viewModel.actions.push(bufferFeatureAction);
+
+        var reportErrorAction = {
+            title: "Report a Location or Data Problem",
+            id: "report-error",
+            className: "esri-icon-contact"
+        };
+        view.popup.viewModel.actions.push(reportErrorAction);
+
+        view.popup.viewModel.on("action-click", function(evt){
+            if(evt.action.id === "full-report") {
+                showFullInfo();
+            } else if (evt.action.id === "buffer-feature") {
+                // TODO:
+                console.log("buffer feature action clicked");
+            } else if (evt.action.id === "report-error") {
+                // TODO:
+                console.log("report error action clicked");
             }
-            // mobile size switch domClass
-            this._showDrawerSize = 850;
-        },
-        startup: function (config) {
-            // config will contain application and user defined info for the template such as i18n strings, the web map id
-            // and application id
-            // any url parameters and any application specific configuration information.
-            if (config) {
-                //config will contain application and user defined info for the template such as i18n strings, the web map id
-                // and application id
-                // any url parameters and any application specific configuration information.
-                this.config = config;
-                // drawer
-                this._drawer = new Drawer({
-                    showDrawerSize: this._showDrawerSize,
-                    borderContainer: 'bc_outer',
-                    contentPaneCenter: 'cp_outer_center',
-                    contentPaneSide: 'cp_outer_left',
-                    toggleButton: 'hamburger_button'
-                });
-                // drawer resize event
-                on(this._drawer, 'resize', lang.hitch(this, function () {
-                    // check mobile button status
-                    this._checkMobileGeocoderVisibility();
-                }));
-                // startup drawer
-                this._drawer.startup();
+        } );
+    } );
 
-                // MK:
-                this.createFrameElements();
 
-                //supply either the webmap id or, if available, the item info
-                var itemInfo = this.config.itemInfo || this.config.webmap;
-                this._createWebMap(itemInfo);
+    function mapErr(err) {
+        console.log("Map Error: " + err);
+    }
+
+    var searchWidget = new Search( {
+        //Setting widget properties via viewModel is subject to
+        //change for the 4.0 final release
+        viewModel: new SearchVM( {
+          view: view
+        } )
+    }, "srch");
+    searchWidget.startup();
+
+    /*$("#mobileGeocoderIconContainer").click(function() {
+        $("#lb").toggleClass("small-search");
+    } );*/
+
+    var homeBtn = new Home( {
+        //Setting widget properties via viewModel is subject to
+        //change for the 4.0 final release
+        viewModel: new HomeVM( {
+            view: view
+        } )
+    }, "HomeButton");
+    homeBtn.startup();
+
+    var locateBtn = new Locate({
+        //Setting widget properties via viewModel is subject to
+        //change for the 4.0 final release
+        viewModel: new LocateVM({
+            view: view,
+            scale: 4000
+        } )
+    }, "LocateButton");
+    locateBtn.startup();
+
+    // End map and map widgets.
+
+    urlZoom(location.search.substr(1));
+
+    // Side-panel click handlers:
+    // TODO: following click function is only for testing opening a popup from a link; in future versions link would be a value in a table cell.
+    $("#junktest").click(function() {
+        var kid = $("#junktest").html();
+        findWell(kid);
+        // TODO: zoom to feature from side-panel link.
+    } );
+
+    $(".find-header").click(function() {
+        $("[id^=find]").fadeOut("medium");
+        $(".find-header").removeClass("esri-icon-down-arrow");
+        $(this).addClass("esri-icon-down-arrow");
+        var findBody = $(this).attr("id");
+        $("#find-"+findBody).fadeIn("medium");
+    } );
+
+    $(".esri-icon-erase").click(function() {
+        graphicsLayer.clear();
+    } );
+
+
+    function popCountyDropdown() {
+        var cntyArr = new Array("Allen", "Anderson", "Atchison", "Barber", "Barton", "Bourbon", "Brown", "Butler", "Chase", "Chautauqua", "Cherokee", "Cheyenne", "Clark", "Clay", "Cloud", "Coffey", "Comanche", "Cowley", "Crawford", "Decatur", "Dickinson", "Doniphan", "Douglas", "Edwards", "Elk", "Ellis", "Ellsworth", "Finney", "Ford", "Franklin", "Geary", "Gove", "Graham", "Grant", "Gray", "Greeley", "Greenwood", "Hamilton", "Harper", "Harvey", "Haskell", "Hodgeman", "Jackson", "Jefferson", "Jewell", "Johnson", "Kearny", "Kingman", "Kiowa", "Labette", "Lane", "Leavenworth", "Lincoln", "Linn", "Logan", "Lyon", "McPherson", "Marion", "Marshall", "Meade", "Miami", "Mitchell", "Montgomery", "Morris", "Morton", "Nemaha", "Neosho", "Ness", "Norton", "Osage", "Osborne", "Ottawa", "Pawnee", "Phillips", "Pottawatomie", "Pratt", "Rawlins", "Reno", "Republic", "Rice", "Riley", "Rooks", "Rush", "Russell", "Saline", "Scott", "Sedgwick", "Seward", "Shawnee", "Sheridan", "Sherman", "Smith", "Stafford", "Stanton", "Stevens", "Sumner", "Thomas", "Trego", "Wabaunsee", "Wallace", "Washington", "Wichita", "Wilson", "Woodson", "Wyandotte");
+
+        for(var i=0; i<cntyArr.length; i++) {
+            theCnty = cntyArr[i];
+            $('#lstCounty').append('<option value="' + theCnty + '">' + theCnty + '</option>');
+        }
+    }
+
+
+    function createFilterDialogs() {
+        // earthquakes:
+        var magOptions = "<option value='all'>All</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
+        var eqF = "<span class='filter-hdr'>By Day:</span><br>";
+        eqF += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='eq-from-date' placeholder='mm/dd/yyyy'></td></tr>";
+        eqF += "<tr><td class='find-label'>To:</td><td><input type='text' size='12' id='eq-to-date' placeholder='mm/dd/yyyy'></td></tr>";
+        eqF += "<tr><td class='find-label'>Magnitude:</td><td><select name='day-mag' id='day-mag'>";
+        eqF += magOptions;
+        eqF += "</select></td></tr><tr><td></td><td><button class='find-button' id='day-btn' onclick='filterQuakes(this.id);'>Apply Filter</button></td></tr></table><hr>";
+        eqF += "<span class='filter-hdr'>By Year</span><br>";
+        eqF += "<table><tr><td class='find-label'>Year:</td><td><select name='year' id='year'><option value='all'>All</option>";
+        for (var y=2016; y>2012; y--) {
+            eqF += "<option value='" + y + "'>" + y + "</option>";
+        }
+        eqF += "</select></td></tr>";
+        eqF += "<tr><td class='find-label'>Magnitude:</td><td><select name='year-mag' id='year-mag'>";
+        eqF += magOptions;
+        eqF += "</select></td></tr>";
+        eqF += "<tr><td></td><td><button class='find-button' id='year-btn' onclick='filterQuakes(this.id);'>Apply Filter</button></td></tr></table><hr>";
+        eqF += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
+        eqF += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
+
+        var eqN = domConstruct.create("div", { id: "eq-filter", class: "filter-dialog", title: "Filter Earthquakes", innerHTML: eqF } );
+        $("body").append(eqN);
+
+        $("#eq-filter").dialog( {
+            autoOpen: false,
+            dialogClass: "dialog",
+            width: 260
+        } );
+
+        $("#eq-from-date").datepicker( {
+            minDate: new Date("01/01/2013")
+        } );
+        $("#eq-to-date").datepicker();
+
+        // wwc5 wells:
+		var wwc5Status = ["Constructed","Plugged","Reconstructed"];
+		var wwc5Use = ["Air Conditioning","Cathodic Protection Borehole","Dewatering","Domestic","Domestic, Livestock","Domestic, changed from Irrigation","Domestic, changed from Oil Field Water Supply","Environmental Remediation, Air Sparge","Environmental Remediation, Injection","Environmental Remediation, Recovery","Environmental Remediation, Soil Vapor Extraction","Feedlot","Feedlot/Livestock/Windmill","Geothermal, Closed Loop, Horizontal","Geothermal, Closed Loop, Vertical","Geothermal, Open Loop, Inj. of Water","Geothermal, Open Loop, Surface Discharge","Heat Pump (Closed Loop/Disposal), Geothermal","Industrial","Injection well/air sparge (AS)/shallow","Irrigation","Lawn and Garden - domestic only","Monitoring well/observation/piezometer","Oil Field Water Supply","Other","Pond/Swimming Pool/Recreation","Public Water Supply","Recharge Well","Recovery/Soil Vapor Extraction/Soil Vent","Road Construction","Test Hole, Cased","Test Hole, Geotechnical","Test Hole, Uncased","Test hole/well","(unstated)/abandoned"];
+		var wwc5F = "<span class='filter-hdr'>Completion Date:</span><br>";
+        wwc5F += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td>";
+        wwc5F += "<td class='find-label'>To:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
+		wwc5F += "<span class='filter-hdr'>Construction Status:</span><br><table>";
+		for (var i = 0; i < wwc5Status.length; i++) {
+			wwc5F += "<tr><td><input type='checkbox' name='const-status' value='" + wwc5Status[i] + "'>" + wwc5Status[i] + "</td></tr>"
+		}
+		wwc5F += "</table>"
+		wwc5F += "<span class='filter-hdr'>Well Use:</span><br>";
+		wwc5F += "<table><tr><td><select id='well-use' multiple size='6'>";
+		if (!isMobile) {
+			wwc5F += "<option value=''>-- select one or many (ctrl or cmd key) --</option>";
+		}
+		for (var k = 0; k < wwc5Use.length; k++) {
+			wwc5F += "<option value='" + wwc5Use[k] + "'>" + wwc5Use[k] + "</option>";
+
+		}
+		wwc5F += "</select></td></tr>";
+		wwc5F += "<tr><td colspan='2'><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;<button class='find-button' onclick='clearwwc5F();' autofocus>Clear Filter</button></td></tr>";
+		wwc5F += "</table>";
+
+        var wwc5N = domConstruct.create("div", { id: "wwc5-filter", class: "filter-dialog", title: "Filter Water Wells", innerHTML: wwc5F } );
+        $("body").append(wwc5N);
+
+        $("#wwc5-filter").dialog( {
+            autoOpen: false,
+            dialogClass: "dialog",
+            width: 450
+        } );
+
+		$("#wwc5-from-date").datepicker();
+        $("#wwc5-to-date").datepicker();
+
+        // og wells:
+		var wellType = ["Coal Bed Methane","Coal Bed Methane, Plugged and Abandoned","Dry and Abandoned","Enhanced Oil Recovery","Enhanced Oil Recovery, Plugged and Abandoned","Gas","Gas, Plugged and Abandoned","Injection","Injection, Plugged and Abandoned","Intent","Location","Oil","Oil and Gas","Oil and Gas, Plugged and Abandoned","Oil, Plugged and Abandoned","Other","Other, Plugged and Abandoned","Salt Water Disposal","Salt Water Disposal, Plugged and Abandoned"];
+		var ogF = "<span class='filter-hdr'>Well Type:</span><br>";
+		ogF += "<table><tr><td><select id='og-well-type' multiple size='3'>";
+		if (!isMobile) {
+			ogF += "<option value=''>-- select one or many (ctrl or cmd key) --</option>";
+		}
+		for (var j = 0; j < wellType.length; j++) {
+			ogF += "<option value='" + wellType[j] + "'>" + wellType[j] + "</option>";
+
+		}
+		ogF += "</select></tr></td></table>";
+		ogF += "<span class='filter-hdr'>Current Operator:</span><br>";
+		ogF += "<input id='ops-select'>";
+
+		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", title: "Filter Oil and Gas Wells", innerHTML: ogF } );
+        $("body").append(ogN);
+
+        $("#og-filter").dialog( {
+            autoOpen: false,
+            dialogClass: "dialog",
+            width: 450
+        } );
+
+		// $("#og-from-date").datepicker();
+        // $("#og-to-date").datepicker();
+    }
+
+
+	filterOG = function() {
+		// TODO:
+	}
+
+
+	clearOgFilter = function() {
+		// TODO:
+
+		wellsLayer.layerDefinitions = [];
+	}
+
+
+	filterWWC5 = function() {
+		var conStatus = $('input[name="const-status"]:checked').map(function() {
+		    return this.value;
+		} ).get();
+		var wellUse = $("#well-use").val();
+		var wwc5FromDate = dom.byId("wwc5-from-date").value;
+		var wwc5ToDate = dom.byId("wwc5-to-date").value;
+		var def = [];
+		var dateWhere = "";
+		var statusWhere = "";
+		var useWhere = "";
+		var theWhere = "";
+
+		if (wwc5FromDate && wwc5ToDate) {
+			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy') and completion_date < to_date('" + wwc5ToDate + "','mm/dd/yyyy') + 1";
+		} else if (wwc5FromDate && !wwc5ToDate) {
+			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy')";
+		} else if (!wwc5FromDate && wwc5ToDate) {
+			dateWhere = "completion_date < to_date('" + wwc5ToDate + "','mm/dd/yyyy') + 1";
+		}
+
+		if (conStatus.length > 0) {
+			var conList = "'" + conStatus.join("','") + "'";
+			statusWhere = "status in (" + conList +")";
+		}
+
+		if (wellUse) {
+			var useList = "'" + wellUse.join("','") + "'";
+			useWhere = "use_desc in (" + useList +")";
+		}
+
+		if (dateWhere !== "") {
+			theWhere += dateWhere + " and ";
+		}
+		if (statusWhere !== "") {
+			theWhere += statusWhere + " and ";
+		}
+		if (useWhere !== "") {
+			theWhere += useWhere;
+		}
+		if (theWhere.substr(theWhere.length - 5) === " and ") {
+			theWhere = theWhere.slice(0,theWhere.length - 5);
+		}
+
+		def[8] = theWhere;
+		//junkDef = def[8]; // temp - see FIXMEs
+		wwc5Layer.layerDefinitions = def;
+	}
+
+
+	clearwwc5F = function() {
+		dom.byId("wwc5-from-date").value = "";
+        dom.byId("wwc5-to-date").value = "";
+		$('input[name="const-status"]').removeAttr("checked");
+		$('select#well-use option').removeAttr("selected");
+		wwc5Layer.layerDefinitions = [];
+	}
+
+
+    filterQuakes = function(btn) {
+        var def = [];
+        var lMag, uMag;
+        if (btn === "day-btn") {
+            lMag = dom.byId("day-mag").value;
+            uMag = parseInt(lMag) + 0.99;
+			var fromDate = dom.byId('eq-from-date').value;
+			var toDate = dom.byId('eq-to-date').value;
+			var fromWhr = "central_standard_time >= to_date('" + fromDate + "','mm/dd/yyyy')";
+			var toWhr = "central_standard_time < to_date('" + toDate + "','mm/dd/yyyy') + 1";
+			var netWhr = " and net in ('us', ' ', 'US')";
+
+            if (lMag !== "all") {
+				if (fromDate && toDate) {
+                	def[13] = fromWhr + " and " + toWhr + " and mag >= " + lMag + " and mag <= " + uMag + netWhr;
+				} else if (fromDate && !toDate) {
+					def[13] = fromWhr + " and mag >= " + lMag + " and mag <= " + uMag + netWhr;
+				} else if (!fromDate && toDate) {
+					def[13] = toWhr + " and mag >= " + lMag + " and mag <= " + uMag + netWhr;
+				}
             } else {
-                var error = new Error("Main:: Config is not defined");
-                this.reportError(error);
+				if (fromDate && toDate) {
+                	def[13] = fromWhr + " and " + toWhr + netWhr;
+				} else if (fromDate && !toDate) {
+					def[13] = fromWhr + netWhr;
+				} else if (!fromDate && toDate) {
+					def[13] = toWhr + netWhr;
+				}
             }
-        },
-        reportError: function (error) {
-            // remove spinner
-            this._hideLoadingIndicator();
-            // add app error
-            domClass.add(document.body, this.css.appError);
-            // set message
-            var node = dom.byId('error_message');
-            if(node){
-                if (this.config && this.config.i18n) {
-                    node.innerHTML = this.config.i18n.map.error + ": " + error.message;
+        } else {
+            var year = dom.byId("year").value;
+            var nextYear = parseInt(year) + 1;
+
+            lMag = dom.byId("year-mag").value;
+            uMag = parseInt(lMag) + 0.99;
+
+            if (year !== "all") {
+				var whr = "central_standard_time >= to_date('01/01/" + year + "','mm/dd/yyyy') and central_standard_time < to_date('01/01/" + nextYear + "','mm/dd/yyyy') and net in ('us', ' ', 'US')";
+                if (lMag !== "all") {
+                    def[13] = whr + " and mag >= " + lMag + " and mag <= " + uMag;
                 } else {
-                    node.innerHTML = "Unable to create map: " + error.message;
+                    def[13] = whr;
+                }
+            } else {
+                if (lMag !== "all") {
+                    def[13] = " mag >= " + lMag + " and mag <= " + uMag;
+                } else {
+                    def[13] = "";
                 }
             }
-        },
-        // if pointer events are supported
-        _pointerEventsSupport: function(){
-            var element = document.createElement('x');
-            element.style.cssText = 'pointer-events:auto';
-            return element.style.pointerEvents === 'auto';
-        },
-        _initLegend: function(){
-            var legendNode = dom.byId('LegendDiv');
-
-			if(legendNode){
-                this._mapLegend = new Legend({
-                    map: this.map,
-                	layerInfos: this.layerInfos
-                }, legendNode);
-                this._mapLegend.startup();
-            }
-        },
-        _initTOC: function(){
-            // layers
-         	var tocNode = dom.byId('TableOfContents'), tocLayers, toc;
-            if (tocNode) {
-                tocLayers = this.layers;
-                toc = new TableOfContents({
-                    map: this.map,
-                    layers: tocLayers
-                }, tocNode);
-                toc.startup();
-            }
-        },
-        _init: function () {
-            // locate button
-            if (this.config.enableLocateButton) {
-                this._LB = new LocateButton({
-                    map: this.map,
-                    theme: this.css.locateButtonTheme
-                }, 'LocateButton');
-                this._LB.startup();
-            }
-
-            // home button
-            if (this.config.enableHomeButton) {
-                this._HB = new HomeButton({
-                    map: this.map,
-                    theme: this.css.homebuttonTheme
-                }, 'HomeButton');
-                this._HB.startup();
-                // clear locate on home button
-                on(this._HB, 'home', lang.hitch(this, function(){
-                    if(this._LB){
-                        this._LB.clear();
-                    }
-                }));
-            }
-
-            // basemap toggle
-            if (this.config.enableBasemapToggle) {
-                var BT = new BasemapToggle({
-                    map: this.map,
-                    basemap: this.config.nextBasemap,
-                    defaultBasemap: this.config.defaultBasemap
-                }, 'BasemapToggle');
-                BT.startup();
-
-                /* Start temporary until after JSAPI 4.0 is released */
-                var layers = this.map.getLayersVisibleAtScale(this.map.getScale());
-                on.once(this.map, 'basemap-change', lang.hitch(this, function () {
-                    for (var i = 0; i < layers.length; i++) {
-                        if (layers[i]._basemapGalleryLayerType) {
-                            var layer = this.map.getLayer(layers[i].id);
-                            this.map.removeLayer(layer);
-                        }
-                    }
-                }));
-                /* END temporary until after JSAPI 4.0 is released */
-            }
-
-			// i18n overview placement
-            var overviewPlacement = 'left';
-            if(this.config.i18n.direction === 'rtl'){
-                overviewPlacement = 'right';
-            }
-
-            // Overview Map
-            if(this.config.enableOverviewMap){
-                var size = this._getOverviewMapSize();
-                this._overviewMap = new OverviewMap({
-                    attachTo: "bottom-" + overviewPlacement,
-                    width: size,
-                    height: size,
-                    visible: this.config.openOverviewMap,
-                    map: this.map
-                });
-                this._overviewMap.startup();
-                // responsive overview size
-                on(this.map, 'resize', lang.hitch(this, function(){
-                    this._resizeOverviewMap();
-                }));
-            }
-
-            // geocoders
-            this._createGeocoders();
-
-            // startup legend
-            this._initLegend();
-
-            // startup toc
-            //mk this._initTOC();
-
-            // on body click containing underlay class
-            on(document.body, '.dijitDialogUnderlay:click', function(){
-                // get all dialogs
-                var filtered = array.filter(registry.toArray(), function(w){
-                    return w && w.declaredClass == "dijit.Dialog";
-                });
-                // hide all dialogs
-                array.forEach(filtered, function(w){
-                    w.hide();
-                });
-            });
-
-            // hide loading div
-            this._hideLoadingIndicator();
-
-            // dialog modal
-            if(this.config.enableDialogModal){
-                require(["dijit/Dialog"], lang.hitch(this, function(Dialog){
-                    var dialogContent = this.config.dialogModalContent;
-                    var dialogModal = new Dialog({
-                        title: this.config.dialogModalTitle || "Access and Use Constraints",
-                        content: dialogContent,
-                        style: "width: 375px"
-                    });
-                    dialogModal.show();
-                }));
-            }
-
-            // swipe layer
-            if(this.config.swipeLayer && this.config.swipeLayer.id){
-                // get swipe tool
-                require(["esri/dijit/LayerSwipe"], lang.hitch(this, function(LayerSwipe){
-                    // get layer
-                    var layer = this.map.getLayer(this.config.swipeLayer.id);
-                    if(layer){
-                        // create swipe
-                        var layerSwipe = new LayerSwipe({
-                            type: this.config.swipeType,
-                            theme: "PIMSwipe",
-                            invertPlacement: this.config.swipeInvertPlacement,
-                            map: this.map,
-                            layers: [ layer ]
-                        }, "swipeDiv");
-                        layerSwipe.startup();
-                        on(layer, 'visibility-change', lang.hitch(this, function(evt){
-                            if(evt.visible){
-                                layerSwipe.set("enabled", true);
-                            }
-                            else{
-                                layerSwipe.set("enabled", false);
-                            }
-                        }));
-                    }
-                }));
-            }
-            // drawer size check
-            this._drawer.resize();
-
-            this.urlZoom(location.search.substr(1));
-        },
-
-        // Begin MK functions:
-        createFrameElements: function() {
-            this._setTitleBar();
-
-            this.drawerMenus = [];
-            var content, menuObj;
-
-            // Zoom-to panel:
-            if (this.config.enableZoomToPanel) {
-                content = '';
-                content += '<div class="' + this.css.panelContainer + '">';
-
-                content += '<div class="' + this.css.panelHeader + '">Zoom To</div>';
-                content += '<div class="' + this.css.panelPadding + '">';
-                content += '<table width="90%" style="font-size:10px;">';
+        }
+        usgsEventsLayer.layerDefinitions = def;
+    }
 
 
-                content += '</div>';
-                content += '</div>';
+    clearQuakeFilter = function() {
+        usgsEventsLayer.layerDefinitions = [];
+        dom.byId("year").options[0].selected="selected";
+        dom.byId("year-mag").options[0].selected="selected";
+        dom.byId("day-mag").options[0].selected="selected";
+        dom.byId("eq-from-date").value = "";
+        dom.byId("eq-to-date").value = "";
+    }
 
-                menuObj = {
-                    title: this.config.i18n.general.about,
-                    label: '<div class="' + this.css.iconZoomTo + '"></div><div class="' + this.css.iconText + '">Zoom To</div>',
-                    content: content
-                };
 
-                if(this.config.defaultPanel === 'zoomto'){
-                    this.drawerMenus.splice(0,0,menuObj);
-                }
-                else{
-                    this.drawerMenus.push(menuObj);
-                }
-            }
+    filterQuakesLast = function() {
+        var def = [];
+        def[13] = "state = 'KS' and net in ('us', ' ', 'US') and the_date = (select max(the_date) from earthquakes where state = 'KS' and net in ('us', ' ', 'US'))";
+        usgsEventsLayer.layerDefinitions = def;
+    }
 
-            // Layers panel:
-            if (this.config.enableLayersPanel) {
-                content = '';
-                content += '<div class="' + this.css.panelHeader + '">' + this.config.i18n.general.layers + '</div>';
-                content += '<div class="' + this.css.panelContainer + '">';
-                //content += '<div id="TableOfContents"></div>';
-                content += '<div id="lyrs-toc"></div>';
-                content += '</div>';
 
-                menuObj = {
-                    title: this.config.i18n.general.layers,
-                    label: '<div class="' + this.css.iconLayers + '"></div><div class="' + this.css.iconText + '">' + this.config.i18n.general.layers + '</div>',
-                    content: content
-                };
+    function findWell(kid) {
+        findParams.layerIds = [0];
+        findParams.searchFields = ["KID"];
+        findParams.searchText = kid;
+        findParams.returnGeometry = true;
+        findTask.execute(findParams)
+            .then(function(response) {
+                return arrayUtils.map(response, function(result) {
+                    var feature = result.feature;
+                        var t = new PopupTemplate( {
+                            title: "<span class='pu-title'>Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME + "  </span><span class='pu-note'>(" + feature.attributes.API_NUMBER + ")</span>",
+                            content: wellContent(feature)
+                        } );
+                        feature.popupTemplate = t;
 
-                if(this.config.defaultPanel === 'layers'){
-                    this.drawerMenus.splice(0,0,menuObj);
-                }
-                else{
-                    this.drawerMenus.push(menuObj);
-                }
-            }
+                    return feature;
+              } );
+            } )
+            .then(function(feature) {
+                openPopup(feature);
+                zoomToFeature(feature);
+            } );
+    }
 
-            // Legend panel:
-            if (this.config.enableLegendPanel) {
-                content = '';
-                content += '<div class="' + this.css.panelHeader + '">' + this.config.i18n.general.legend + '</div>';
-                content += '<div class="' + this.css.panelContainer + '">';
-                content += '<div class="' + this.css.panelPadding + '">';
 
-                content += '</div>';
-                content += '</div>';
+    function openPopup(feature) {
+        view.popup.viewModel.features = feature;
+        view.popup.viewModel.docked = true;
+        view.popup.viewModel.visible = true;
+        dom.byId("mapDiv").style.cursor = "auto";
+    }
 
-                menuObj = {
-                    title: this.config.i18n.general.legend,
-                    label: '<div class="' + this.css.iconList + '"></div><div class="' + this.css.iconText + '">' + this.config.i18n.general.legend + '</div>',
-                    content: content
-                };
-                // legend menu
-                if(this.config.defaultPanel === 'legend'){
-                    this.drawerMenus.splice(0,0,menuObj);
-                }
-                else{
-                    this.drawerMenus.push(menuObj);
-                }
-            }
 
-            // Tools panel:
-            if (this.config.enableToolsPanel) {
-                content = '';
+    function urlZoom(urlParams) {
+        var items = urlParams.split("&");
+        if (items.length > 1) {
+            var extType = items[0].substring(11);
+            var extValue = items[1].substring(12);
 
-                content += '<div class="' + this.css.panelContainer + '">';
-                content += '<div class="' + this.css.panelHeader + '">Tools</div>';
-                content += '<div class="' + this.css.panelPadding + '">';
-                content += '</div>';
-                content += '</div>';
+            findParams.returnGeometry = true;
+            findParams.contains = false;
 
-                menuObj = {
-                    title: this.config.i18n.general.legend,
-                    label: '<div class="' + this.css.iconWrench + '"></div><div class="' + this.css.iconText + '">Tools</div>',
-                    content: content
-                };
-
-                if(this.config.defaultPanel === 'tools'){
-                    this.drawerMenus.splice(0,0,menuObj);
-                }
-                else{
-                    this.drawerMenus.push(menuObj);
-                }
-            }
-
-            // Create menus:
-            this._drawerMenu = new DrawerMenu({
-                menus: this.drawerMenus
-            }, dom.byId("drawer_menus"));
-            this._drawerMenu.startup();
-
-        },  // End createFrameElements.
-
-        urlZoom: function(params) {
-            var pairs = params.split("&");
-            if (pairs.length > 1) {
-                var extType = pairs[0].substring(11);
-                var extValue = pairs[1].substring(12);
-
-                var findURL = "";
-                var findParams = new FindParameters();
-                findParams.returnGeometry = true;
-                findParams.contains = false;
-
-                switch (extType) {
-                    case "well":
-                        findParams.layerIds = [0];
-                        findParams.searchFields = ["kid"];
-                        break;
-                    case "field":
-                        findParams.layerIds = [1];
-                        findParams.searchFields = ["field_kid"];
-                        // TODO: reinstate this (if fields layer is not visible by default)?
-                        /*var myLayer = theMap.getLayer("theFieldsLayer");
-                        myLayer.setVisibility(true);*/
-                        break;
-                }
-
-                var find = new FindTask("http://services.kgs.ku.edu/arcgis/rest/services/oilgas/oilgas_general/MapServer");
-                findParams.searchText = extValue;
-                find.execute(findParams,this.zoomToResults);
-
-                // TODO: tie last location to the Home button?
-                //lastLocType = extType;
-                //lastLocValue = extValue;
-            }
-        },
-        zoomToResults: function(results) {
-            // TODO: reinstate this error msg?
-            /*if (results.length === 0) {
-                // Show warning dialog box:
-                dojo.byId('warning_msg').innerHTML = "This search did not return any features.<br>Please check your entries and try again.";
-                dijit.byId('warning_box').show();
-            }*/
-
-            var feature = results[0].feature;
-
-            switch (feature.geometry.type) {
-                case "point":
-                    var x = feature.geometry.x;
-                    var y = feature.geometry.y;
-
-                    //d var point = new Point([x,y],sr);
-                    var point = new Point(x, y, new SpatialReference({ wkid: 3857 }));
-                    theMap.centerAndZoom(point,16);
-
-                    /*var lyrId = results[0].layerId;
-                    showPoint(feature,lyrId);*/
+            switch (extType) {
+                case "well":
+                    findParams.layerIds = [0];
+                    findParams.searchFields = ["kid"];
                     break;
-                case "polygon":
-                    var ext = feature.geometry.getExtent();
-                    theMap.setExtent(ext, true);
-
-                    /*var lyrId = results[0].layerId;
-                    showPoly(feature,lyrId);*/
+                case "field":
+                    findParams.layerIds = [1];
+                    findParams.searchFields = ["field_kid"];
                     break;
             }
-            // TODO: highlight feature and open popup.
-        },
-        // End MK functions.
 
-        _getOverviewMapSize: function(){
-            var breakPoint = 500;
-            var size = 150;
-            if(this.map.width < breakPoint || this.map.height < breakPoint){
-                size = 75;
-            }
-            return size;
-        },
-        _resizeOverviewMap: function(){
-            if(this._overviewMap){
-                var size = this._getOverviewMapSize();
-                if(this._overviewMap.hasOwnProperty('resize')){
-                    this._overviewMap.resize({ w:size, h:size });
-                }
-            }
-        },
-        _checkMobileGeocoderVisibility: function () {
-            if(this._mobileGeocoderIconNode && this._mobileSearchNode){
-                // check if mobile icon needs to be selected
-                if (domClass.contains(this._mobileGeocoderIconNode, this.css.toggleBlueOn)) {
-                    domClass.add(this._mobileSearchNode, this.css.mobileSearchDisplay);
-                }
-            }
-        },
-        _showMobileGeocoder: function () {
-            if(this._mobileSearchNode && this._mobileGeocoderIconContainerNode){
-                domClass.add(this._mobileSearchNode, this.css.mobileSearchDisplay);
-                domClass.replace(this._mobileGeocoderIconContainerNode, this.css.toggleBlueOn, this.css.toggleBlue);
-            }
-        },
-        _hideMobileGeocoder: function () {
-            if(this._mobileSearchNode && this._mobileGeocoderIconContainerNode){
-                domClass.remove(this._mobileSearchNode, this.css.mobileSearchDisplay);
-                domStyle.set(this._mobileSearchNode, "display", "none");
-                domClass.replace(this._mobileGeocoderIconContainerNode, this.css.toggleBlue, this.css.toggleBlueOn);
-            }
-        },
-        _setTitle: function(title){
-            // set config title
-            this.config.title = title;
-            // window title
-            window.document.title = 'Map of Kansas Oil and Gas';
-        },
-        _setTitleBar: function () {
-            // map title node
-            var node = dom.byId('title');
-            if (node) {
-                // set title
-                node.innerHTML = this.config.title;
-                // title attribute
-                domAttr.set(node, "title", this.config.title);
-            }
-        },
-        _setDialogModalContent: function(content) {
-            // set dialog modal content
-            this.config.dialogModalContent = content;
-        },
-        _createGeocoderOptions: function() {
-            var hasEsri = false, esriIdx, geocoders = lang.clone(this.config.helperServices.geocode);
-            // default options
-            var options = {
-                map: this.map,
-                autoNavigate: true,
-                autoComplete: true,
-                arcgisGeocoder: {
-                    placeholder: this.config.i18n.general.find
-                },
-                geocoders: null
-            };
-            //only use geocoders with a url defined
-            geocoders = array.filter(geocoders, function (geocoder) {
-                if (geocoder.url) {
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            });
-            // at least 1 geocoder defined
-            if(geocoders.length){
-                // each geocoder
-                array.forEach(geocoders, lang.hitch(this, function(geocoder) {
-                    // if esri geocoder
-                    if (geocoder.url && geocoder.url.indexOf(".arcgis.com/arcgis/rest/services/World/GeocodeServer") > -1) {
-                        hasEsri = true;
-                        geocoder.name = "Esri World Geocoder";
-                        geocoder.outFields = "Match_addr, stAddr, City";
-                        geocoder.singleLineFieldName = "SingleLine";
-                        geocoder.esri = true;
-                        geocoder.placefinding = true;
-                        geocoder.placeholder = this.config.i18n.general.find;
+            findParams.searchText = extValue;
+            findTask.execute(findParams)
+            .then(function(response) {
+                return arrayUtils.map(response, function(result) {
+                    var feature = result.feature;
+                    var layerName = result.layerName;
+
+                    if (layerName === 'OG_WELLS') {
+                        var ogWellsTemplate = new PopupTemplate( {
+                            title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>({API_NUMBER})</span>",
+                            content: wellContent(feature)
+                        } );
+                        feature.popupTemplate = ogWellsTemplate;
                     }
-                }));
-                //only use geocoders with a singleLineFieldName that allow placefinding unless its custom
-                geocoders = array.filter(geocoders, function (geocoder) {
-                    if (geocoder.name && geocoder.name === "Custom") {
-                        return (esriLang.isDefined(geocoder.singleLineFieldName));
-                    } else {
-                        return (esriLang.isDefined(geocoder.singleLineFieldName) && esriLang.isDefined(geocoder.placefinding) && geocoder.placefinding);
+                    else if (layerName === 'OG_FIELDS') {
+                        var ogFieldsTemplate = new PopupTemplate( {
+                            title: "Field: {FIELD_NAME}",
+                            content: fieldContent(feature)
+                            } );
+                        feature.popupTemplate = ogFieldsTemplate;
                     }
-                });
-                // if we have an esri geocoder
-                if (hasEsri) {
-                    for (var i = 0; i < geocoders.length; i++) {
-                        if (esriLang.isDefined(geocoders[i].esri) && geocoders[i].esri === true) {
-                            esriIdx = i;
-                            break;
-                        }
-                    }
-                }
-                // set autoComplete
-                options.autoComplete = hasEsri;
-                // set esri options
-                if (hasEsri) {
-                    options.minCharacters = 0;
-                    options.maxLocations = 5;
-                    options.searchDelay = 100;
-                }
-                //If the World geocoder is primary enable auto complete
-                if (hasEsri && esriIdx === 0) {
-                    options.arcgisGeocoder = geocoders.splice(0, 1)[0]; //geocoders[0];
-                    if (geocoders.length > 0) {
-                        options.geocoders = geocoders;
-                    }
-                } else {
-                    options.arcgisGeocoder = false;
-                    options.geocoders = geocoders;
-                }
-            }
-            return options;
-        },
-        // create geocoder widgets
-        _createGeocoders: function () {
-            // get options
-            var createdOptions = this._createGeocoderOptions();
-            // desktop geocoder options
-            var desktopOptions = lang.mixin({}, createdOptions, {
-                theme: this.css.desktopGeocoderTheme
-            });
-            // mobile geocoder options
-            var mobileOptions = lang.mixin({}, createdOptions, {
-                theme: this.css.mobileGeocoderTheme
-            });
-            // desktop size geocoder
-            this._geocoder = new Geocoder(desktopOptions, dom.byId("geocoderSearch"));
-            this._geocoder.startup();
-            // geocoder results
-            on(this._geocoder, 'find-results', lang.hitch(this, function (response) {
-                if (!response.results || !response.results.results || !response.results.results.length) {
-                    alert(this.config.i18n.general.noSearchResult);
-                }
-            }));
-            // mobile sized geocoder
-            this._mobileGeocoder = new Geocoder(mobileOptions, dom.byId("geocoderMobile"));
-            this._mobileGeocoder.startup();
-            // geocoder results
-            on(this._mobileGeocoder, 'find-results', lang.hitch(this, function (response) {
-                if (!response.results || !response.results.results || !response.results.results.length) {
-                    alert(this.config.i18n.general.noSearchResult);
-                }
-                this._hideMobileGeocoder();
-            }));
-            // keep geocoder values in sync
-            this._geocoder.watch("value", lang.hitch(this, function () {
-                var value = arguments[2];
-                this._mobileGeocoder.set("value", value);
-            }));
-            // keep geocoder values in sync
-            this._mobileGeocoder.watch("value", lang.hitch(this, function () {
-                var value = arguments[2];
-                this._geocoder.set("value", value);
-            }));
-            // geocoder nodes
-            this._mobileGeocoderIconNode = dom.byId("mobileGeocoderIcon");
-            this._mobileSearchNode = dom.byId("mobileSearch");
-            this._mobileGeocoderIconContainerNode = dom.byId("mobileGeocoderIconContainer");
-            // mobile geocoder toggle
-            if (this._mobileGeocoderIconNode) {
-                on(this._mobileGeocoderIconNode, "click", lang.hitch(this, function () {
-                    if (domStyle.get(this._mobileSearchNode, "display") === "none") {
-                        this._showMobileGeocoder();
-                    } else {
-                        this._hideMobileGeocoder();
-                    }
-                }));
-            }
-            var closeMobileGeocoderNode = dom.byId("btnCloseGeocoder");
-            if(closeMobileGeocoderNode){
-                // cancel mobile geocoder
-                on(closeMobileGeocoderNode, "click", lang.hitch(this, function () {
-                    this._hideMobileGeocoder();
-                }));
-            }
-        },
-        // hide map loading spinner
-        _hideLoadingIndicator: function () {
-            // add loaded class
-            domClass.remove(document.body, this.css.appLoading);
-        },
-        //create a map based on the input web map id
-        _createWebMap: function (itemInfo) {
-            // popup dijit
-            var customPopup = new Popup({}, domConstruct.create("div"));
-            // add popup theme
-            domClass.add(customPopup.domNode, "calcite");
-            customPopup.resize(400,500);
 
-            // set extent from URL Param
-            if(this.config.extent){
-                var e = this.config.extent.split(',');
-                if(e.length === 4){
-                    itemInfo.item.extent = [
-                        [
-                            parseFloat(e[0]),
-                            parseFloat(e[1])
-                        ],
-                        [
-                            parseFloat(e[2]),
-                            parseFloat(e[3])
-                        ]
-                    ];
-                }
-            }
-            //can be defined for the popup like modifying the highlight symbol, margin etc.
-           // arcgisUtils.createMap(itemInfo, "mapDiv", {
+                    return feature;
+              } );
+            } )
+            .then(function(feature) {
+                openPopup(feature);
+                zoomToFeature(feature);
+            } );
 
-		// Define map and layers:
-		webmap = {};
-         webmap.item = {
-          "title":"Kansas Oil and Gas",
-          "snippet": "",
-		  "extent": [[-103, 35],[-94, 41]]
-        };
-
-        webmap.itemData = {
-       		"operationalLayers": [],
-          	"baseMap": {
-            	"baseMapLayers": [ {
-                    "id": "Base Map",
-              		"opacity": 1,
-              		"visibility": true,
-              		"url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"
-              	}
-                ],
-            	"title": "World_Terrain_Base"
-          	},
-          	"version": "1.1"
-        };
+            // TODO: tie last location to the Home button?
+        }
+    }
 
 
-		// Create map:
-			arcgisUtils.createMap(webmap, "mapDiv", {
-                mapOptions: {
-                    logo: false
-                    //infoWindow: customPopup
-                    //Optionally define additional map config here for example you can
-                    //turn the slider off, display info windows, disable wraparound 180, slider position and more.
-                },
-                editable: false,
-                usePopupManager: true,
-                bingMapsKey: this.config.bingmapskey
-            }).then(lang.hitch(this, function (response) {
-                //Once the map is created we get access to the response which provides important info
-                //such as the map, operational layers, popup info and more. This object will also contain
-                //any custom options you defined for the template. In this example that is the 'theme' property.
-                //Here' we'll use it to update the application to match the specified color theme.
+    function zoomToFeature(features) {
+        var f = features[0] ? features[0] : features;
 
-				theMap = response.map;
+        switch (f.geometry.type) {
+            case "point":
+                var x = f.geometry.x;
+                var y = f.geometry.y;
+                var point = new Point(x, y, new SpatialReference( { wkid: 3857 } ) );
+                view.center = point;
+                view.scale = 24000;
+                //highlightFeature(feature);
+                break;
+            case "polygon":
+                var ext = f.geometry.extent;
+                view.extent = ext;
+                break;
+        }
+    }
 
-                this.map = response.map;
-                this.layers = response.itemInfo.itemData.operationalLayers;
-                //mk this.layers = response.map._layers;
-                this.item = response.itemInfo.item;
-                this.bookmarks = response.itemInfo.itemData.bookmarks;
-                this.layerInfos = arcgisUtils.getLegendLayers(response);
 
-                // window title and config title
-                this._setTitle(this.config.title || response.itemInfo.item.title);
-                // title bar title
-                //this._setTitleBar();
+    function highlightFeature(features) {
+        var f = features[0] ? features[0] : features;
 
-                // dialog modal content
-                this._setDialogModalContent(this.config.dialogModalContent || response.itemInfo.item.licenseInfo);
+        switch (f.geometry.type) {
+            case "point":
+                var x = f.geometry.x;
+                var y = f.geometry.y;
+                var point = new Point(x, y, new SpatialReference( { wkid: 3857 } ) );
+                markerSymbol = new SimpleMarkerSymbol( {
+                    color: [255, 255, 0, 0],
+                    size: 20,
+                    outline: new SimpleLineSymbol( {
+                        color: "yellow",
+                        width: 8
+                    } )
+                  } );
 
-                // map loaded
-                if (this.map.loaded) {
-                    this._init();
-                } else {
-                    on.once(this.map, 'load', lang.hitch(this, function () {
-                        this._init();
-                    }));
-                }
-
-                legendLayers = arcgisUtils.getLegendLayers(response);
-
-                // MK additions:
-
-                var scalebar = new Scalebar({
-                    map: theMap,
-                    attachTo: "bottom-left"
+                var pointGraphic = new Graphic( {
+                    geometry: point,
+                    symbol: markerSymbol
                 } );
 
-                // Layers:
-                var fieldsLayer = new ArcGISTiledMapServiceLayer(this.config.fieldsServiceURL, { id: "Oil and Gas Fields",  visible: true } );
-                var wellsLayer = new ArcGISDynamicMapServiceLayer(this.config.wellsServiceURL, { id: "Oil and Gas Wells", visible: true } );
-                wellsLayer.setVisibleLayers([0]);
-                var plssLayer = new ArcGISTiledMapServiceLayer(this.config.plssServiceURL, { id: "Section-Township-Range", visible: true } );
-
-
-                theMap.addLayers( [fieldsLayer, plssLayer, wellsLayer] );
-
-                // Identify:
-                var identifyTask = new IdentifyTask(this.config.wellsServiceURL);
-                var identifyParams = new IdentifyParameters();
-                identifyParams.tolerance = 3;
-                identifyParams.returnGeometry = true;
-                identifyParams.layerIds = [0, 1]; // wells, fields.
-                identifyParams.width = theMap.width;
-                identifyParams.height = theMap.height;
-
-                theMap.on("click", executeIdTask);
-
-                function executeIdTask(event) {
-                    identifyParams.geometry = event.mapPoint;
-                    identifyParams.mapExtent = theMap.extent;
-
-                    var deferred = identifyTask
-                        .execute(identifyParams)
-                        .addCallback(function (response) {
-                            return array.map(response, function (result) {
-                                var feature = result.feature;
-                                var layId = result.layerId;
-
-                                if (layId === 1) {
-                                    var fieldsTemplate = new InfoTemplate();
-                                    fieldsTemplate.setTitle("<b>${FIELD_NAME}</b>");
-                                    fieldsTemplate.setContent(fieldsContent);
-                                    feature.setInfoTemplate(fieldsTemplate);
-                                }
-                                else if (layId === 0) {
-                                    var wellsTemplate = new InfoTemplate();
-                                    wellsTemplate.setTitle("<b>${LEASE_NAME} ${WELL_NAME}</b>");
-                                    wellsTemplate.setContent(wellsContent);
-                                    feature.setInfoTemplate(wellsTemplate);
-                                }
-                                return feature;
-                            } );
-                        } );
-
-                    theMap.infoWindow.setFeatures( [deferred] );
-                    theMap.infoWindow.show(event.mapPoint);
-                    theMap.infoWindow.resize(330, 575);
-                    theMap.infoWindow.reposition();
-                }
-
-                function fieldsContent(graphic) {
-                    var ga = graphic.attributes;
-                    var ftyp = ga.FIELD_TYPE !== "Null" ? ga.FIELD_TYPE : "";
-                    var sta = ga.STATUS !== "Null" ? ga.STATUS : "";
-                    var po = ga.PROD_OIL !== "Null" ? ga.PROD_OIL : "";
-                    var co = ga.CUMM_OIL !== "Null" ? ga.CUMM_OIL.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-                    var pg = ga.PROD_GAS !== "Null" ? ga.PROD_GAS : "";
-                    var cg = ga.CUMM_GAS !== "Null" ? ga.CUMM_GAS.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-                    var ac = ga.APPROXACRE !== "Null" ? ga.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-                    var kid = ga.FIELD_KID !== "Null" ? ga.FIELD_KID : "";
-
-                    var content = "<table cellpadding='4'><tr><td class='pu-label'>Type of Field: </td><td class='pu-data'>" + ftyp + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Status: </td><td class='pu-data'>" + sta + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Produces Oil: </td><td class='pu-data'>" + po + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Cumulative Oil (bbls): </td><td class='pu-data'>" + co + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Produces Gas: </td><td class='pu-data'>" + pg + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Cumulative Gas (mcf): </td><td class='pu-data'>" + cg + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Approximate Acres: </td><td class='pu-data'>" + ac + "</td></tr>";
-                    content += "<tr><td colspan='2'><a href='http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + kid + "' target='_blank'>Production Information</a></td></tr>";
-                    content += "</table>";
-
-                    return content;
-                }
-
-                function wellsContent(graphic) {
-                    var ga = graphic.attributes;
-                    var api = ga.API_NUMBER !== "Null" ? ga.API_NUMBER : "";
-                    var currOp = ga.CURR_OPERATOR !== "Null" ? ga.CURR_OPERATOR : "";
-                    var type = ga.STATUS_TXT !== "Null" ? ga.STATUS_TXT : "";
-                    var stat = ga.WELL_CLASS !== "Null" ? ga.WELL_CLASS : "";
-                    var lease = ga.LEASE_NAME !== "Null" ? ga.LEASE_NAME : "";
-                    var well = ga.WELL_NAME !== "Null" ? ga.WELL_NAME : "";
-                    var fld = ga.FIELD_NAME !== "Null" ? ga.FIELD_NAME : "";
-                    var twp = ga.TOWNSHIP !== "Null" ? ga.TOWNSHIP : "";
-                    var rng = ga.RANGE !== "Null" ? ga.RANGE : "";
-                    var rngd = ga.RANGE_DIRECTION !== "Null" ? ga.RANGE_DIRECTION : "";
-                    var sec = ga.SECTION !== "Null" ? ga.SECTION : "";
-                    var spt = ga.SPOT !== "Null" ? ga.SPOT : "";
-                    var sub4 = ga.SUBDIVISION_4_SMALLEST !== "Null" ? ga.SUBDIVISION_4_SMALLEST : "";
-                    var sub3 = ga.SUBDIVISION_3 !== "Null" ? ga.SUBDIVISION_3 : "";
-                    var sub2 = ga.SUBDIVISION_2 !== "Null" ? ga.SUBDIVISION_2 : "";
-                    var sub1 = ga.SUBDIVISION_1_LARGEST !== "Null" ? ga.SUBDIVISION_1_LARGEST : "";
-                    var lon = ga.NAD27_LONGITUDE !== "Null" ? ga.NAD27_LONGITUDE : "";
-                    var lat = ga.NAD27_LATITUDE !== "Null" ? ga.NAD27_LATITUDE : "";
-                    var co = ga.COUNTY !== "Null" ? ga.COUNTY : "";
-                    var pdt = ga.PERMIT_DATE_TXT !== "Null" ? ga.PERMIT_DATE_TXT : "";
-                    var sdt = ga.SPUD_DATE_TXT !== "Null" ? ga.SPUD_DATE_TXT : "";
-                    var cdt = ga.COMPLETION_DATE_TXT !== "Null" ? ga.COMPLETION_DATE_TXT : "";
-                    var pldt = ga.PLUG_DATE_TXT !== "Null" ? ga.PLUG_DATE_TXT : "";
-                    var dpth = ga.ROTARY_TOTAL_DEPTH !== "Null" ? ga.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-                    var elev = ga.ELEVATION_KB !== "Null" ? ga.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
-                    var frm = ga.PRODUCING_FORMATION !== "Null" ? ga.PRODUCING_FORMATION : "";
-                    var kid = ga.KID !== "Null" ? ga.KID : "";
-
-                    var content = "<table cellpadding='3'><tr><td class='pu-label'>API: </td><td class='pu-data'>" + api + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Current Operator: </td><td class='pu-data'>" + currOp + "</td></tr>"
-                    content += "<tr><td class='pu-label'>Well Type: </td><td class='pu-data'>" + type + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Status: </td><td class='pu-data'>" + stat + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Lease: </td><td class='pu-data'>" + lease + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Well: </td><td class='pu-data'>" + well + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Field: </td><td class='pu-data'>" + fld + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Location: </td><td class='pu-data'>T" + twp + "S R" + rng + rngd + " Sec " + sec + "<br>" + spt + " " + sub4 + " " + sub3 + " " + sub2 + " " + sub1 + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Coordinates (NAD27): </td><td class='pu-data'>" + lon + ", " + lat + "</td></tr>";
-                    content += "<tr><td class='pu-label'>County: </td><td class='pu-data'>" + co + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Permit Date: </td><td class='pu-data'>" + pdt + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Spud Date: </td><td class='pu-data'>" + sdt + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Completion Date: </td><td class='pu-data'>" + cdt + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Plug Date: </td><td class='pu-data'>" + pldt + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Total Depth (ft): </td><td class='pu-data'>" + dpth + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Elevation (KB, ft): </td><td class='pu-data'>" + elev + "</td></tr>";
-                    content += "<tr><td class='pu-label'>Producing Formation: </td><td class='pu-data'>" + frm + "</td></tr>";
-                    content += "<tr><td colspan='2'><a href='http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + kid + "' target='_blank'>Full Record</a></td></tr>";
-                    content += "<tr><td colspan='2'><a href='javascript: bufferFeature(" + kid + ");'>Buffer Well</a></td></tr>";
-                    content += "<tr><td colspan='2'><a href='javascript: reportBadSpot(" + kid + ");'>Report Location Problem</a></td></tr>";
-                    content += "</table>";
-
-                    return content;
-                }
-
-
-                // Kludge to get right icons to show up in geocoder (haven't been able to fix in fontello.css):
-                $(".esriGeocoderSearch").addClass("icon-search-1");
-                $(".esriGeocoderReset").addClass("icon-cancel-1");
-
-                // Add filter and label links to wells layer in toc:
-                // re-examine after fixing TOC after new op layer technique.
-                /*$("[title='Oil and Gas Wells']").after("<div id='wells-filter'><a id='wells-filter-link' class='toc-link' href='javascript: void(0);'>Filter</a></div>");
-                $("#wells-filter-link").on("click", filterWells);
-                $("#wells-filter").after("<div id='label-switch'><a id='labels-link' class='toc-link' href='javascript: void(0);'>Labels</a></div>");
-                $("#labels-link").on("click", labelWells);*/
-
-                // Create TOC:
-                var tocContent = "";
-                var chkd;
-                for (var j=theMap.layerIds.length - 1; j>-1; j--) {
-                    chkd = theMap.getLayer(theMap.layerIds[j]).visible ? "checked" : "";
-                    tocContent += "<div class='toc-item'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + theMap.layerIds[j] + "</label></div>";
-                }
-                $("#lyrs-toc").html(tocContent);
-
-                // End MK additions.
-
-			}), this.reportError);
-
+                graphicsLayer.add(pointGraphic);
+                break;
+            case "polygon":
+                var ext = features[0].geometry.extent;
+                view.extent = ext;
+                break;
         }
-	});
-});
+    }
+
+
+    jumpFocus = function(nextField,chars,currField) {
+        if (dom.byId(currField).value.length == chars) {
+            dom.byId(nextField).focus();
+        }
+    }
+
+
+    findIt = function(what) {
+        findParams.returnGeometry = true;
+
+        switch (what) {
+            case "plss":
+                var plssText;
+
+                if (dom.byId('rngdir-e').checked == true) {
+                    var dir = 'E';
+                }
+                else {
+                    var dir = 'W';
+                }
+
+                if (dom.byId('sec').value !== "") {
+                    plssText = 'S' + dom.byId('sec').value + '-T' + dom.byId('twn').value + 'S-R' + dom.byId('rng').value + dir;
+                    findParams.layerIds = [3];
+                    findParams.searchFields = ["s_r_t"];
+                }
+                else {
+                    plssText = 'T' + dom.byId('twn').value + 'S-R' + dom.byId('rng').value + dir;
+                    findParams.layerIds = [4];
+                    findParams.searchFields = ["t_r"];
+                }
+                findParams.searchText = plssText;
+                break;
+            case "api":
+                var apiText = dom.byId('api_state').value + "-" + dom.byId('api_county').value + "-" + dom.byId('api_number').value;
+
+                if (dom.byId('api_extension').value != "") {
+                    apiText = apiText + "-" + dom.byId('api_extension').value;
+                }
+                findParams.layerIds = [0];
+                findParams.searchFields = ["api_number"];
+                findParams.searchText = apiText;
+                break;
+            case "county":
+                findParams.layerIds = [2];
+                findParams.searchFields = ["county"];
+                findParams.searchText = dom.byId("lstCounty").value;
+                break;
+            case "field":
+                findParams.layerIds = [1];
+                findParams.searchFields = ["field_name"];
+                findParams.contains = false;
+                findParams.searchText = dom.byId("field-select").value;
+                if (!fieldsLayer.visible) {
+                    fieldsLayer.visible = true;
+                    $("#Oil-and-Gas-Fields input").prop("checked", true);
+                }
+        }
+        findTask.execute(findParams).then(function(response) {
+            zoomToFeature(response[0].feature);
+        } );
+    }
+
+
+    zoomToLatLong = function() {
+        var lat = dom.byId("lat").value;
+        var lon = dom.byId("lon").value;
+        var datum = dom.byId("datum").value;
+
+        var gsvc = new GeometryService("http://services.kgs.ku.edu/arcgis2/rest/services/Utilities/Geometry/GeometryServer");
+        var params = new ProjectParameters();
+        var wgs84Sr = new SpatialReference( { wkid: 4326 } );
+
+        if (lon > 0) {
+            lon = 0 - lon;
+        }
+
+        var srId = (datum === "nad27") ? 4267 : 4326;
+
+        var p = new Point(lon, lat, new SpatialReference( { wkid: srId } ) );
+        params.geometries = [p];
+        params.outSR = wgs84Sr;
+
+        gsvc.project(params).then( function(features) {
+            var pt84 = new Point(features[0].x, features[0].y, wgs84Sr);
+            var wmPt = webMercatorUtils.geographicToWebMercator(pt84);
+
+            view.center = wmPt;
+            view.zoom = 16;
+
+            var ptSymbol = new SimpleMarkerSymbol( {
+                style: "x",
+                size: 22,
+                outline: new SimpleLineSymbol( {
+                  color: [255, 0, 0],
+                  width: 4
+                } )
+            } );
+
+            var pointGraphic = new Graphic( {
+                geometry: wmPt,
+                symbol: ptSymbol
+            } );
+
+            graphicsLayer.clear();
+            graphicsLayer.add(pointGraphic);
+            // FIXME: Possible api bug here. Point graphic appears huge on the map at first but displays correctly after the map extent changes in some way.
+            // It works corrrectly on subsequent passes (after extent has been changed).
+            // Adding a new graphics layer every time makes it work correctly, but the layers pile up. either wait on 4.0 final release and test, or
+            // test for existence of second graphics layer and remove it.
+        } );
+    }
+
+
+    function createMenus() {
+    	var drawerMenus = [];
+        var content, menuObj;
+
+        // Find panel:
+        content = '';
+        content += '<div class="panel-container">';
+        content += '<div class="panel-header">Find <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-padding">';
+        // address:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"> Address or Place</div>';
+        content += '<div class="find-body hide" id="find-address">';
+        content += '<div id="srch"></div>';
+        content += '</div>';
+        // plss:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss"> Section-Township-Range</div>';
+        content += '<div class="find-body hide" id="find-plss">';
+        content += '<table><tr><td class="find-label">Township:</td><td><select id="twn"><option value=""></option>';
+        for (var i=1; i<36; i++) {
+            content += '<option value="' + i + '"">' + i + '</option>';
+        }
+        content += '</select> South</td></tr>';
+        content += '<tr><td class="find-label">Range:</td><td><select id="rng"><option value=""></option>';
+        for (var i=1; i<44; i++) {
+            content += '<option value="' + i + '"">' + i + '</option>';
+        }
+        content += '</select> East: <input type="radio" name="rngdir" id="rngdir-e" value="e"> West: <input type="radio" name="rngdir" id="rngdir-w" value="w" checked></td></tr>';
+        content += '<tr><td class="find-label">Section:</td><td><select id="sec"><option value=""></option>';
+        for (var i=1; i<37; i++) {
+            content += '<option value="' + i + '"">' + i + '</option>';
+        }
+        content += '</select></td></tr>';
+        content += '<tr><td></td><td><button class=find-button onclick=findIt("plss")>Find</button></td></tr>';
+        content += '</table></div>';
+        // api:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="api"> Well API</div>';
+        content += '<div class="find-body hide" id="find-api">';
+        content += 'API Number (extension optional):<br>';
+        content += '<input type="text" id="api_state" size="2" onKeyUp="jumpFocus(api_county, 2, this.id)"/> - ';
+        content += '<input type="text" id="api_county" size="3" onKeyUp="jumpFocus(api_number, 3, this.id)"/> - ';
+        content += '<input type="text" id="api_number" size="5" onKeyUp="jumpFocus(api_extension, 5, this.id)"/> - ';
+        content += '<input type="text" id="api_extension" size="4"/>';
+        content += '<button class=find-button onclick=findIt("api")>Find</button>';
+        content += '</div>';
+        // lat-lon:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="latlon"> Latitude-Longitude</div>';
+        content += '<div class="find-body hide" id="find-latlon">';
+        content += '<table><tr><td class="find-label">Latitude:</td><td><input type="text" id="lat" placeholder="e.g. 38.12345"></td></tr>';
+        content += '<tr><td class="find-label">Longitude:</td><td><input type="text" id="lon" placeholder="e.g. -98.12345"></td></tr>';
+        content += '<tr><td class="find-label">Datum:</td><td><select id="datum"><option value="nad27">NAD27</option><option value="wgs84">WGS84</option><td></td></tr>';
+        content += '<tr><td></td><td><button class="find-button" onclick="zoomToLatLong();">Find</button></td></tr>';
+        content += '</table></div>';
+        // field:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"> Field</div>';
+        content += '<div class="find-body hide" id="find-field">';
+        content += '<table><tr><td class="find-label">Name:</td><td><input id="field-select"></td><td><button class=find-button onclick=findIt("field")>Find</button></td></tr></table>';
+        content += '</div>';
+        // county:
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"> County</div>';
+        content += '<div class="find-body hide" id="find-county">';
+        content += '<table><tr><td class="find-label">County:</td><td><select id="lstCounty"></select></td><td><button class=find-button onclick=findIt("county")>Find</button></td></tr></table>';
+        content += '</div>';
+
+        content += '</div>';
+        content += '</div>';
+
+        menuObj = {
+            label: '<div class="icon-zoom-in"></div><div class="icon-text">Find</div>',
+            content: content
+        };
+        drawerMenus.push(menuObj);
+
+        // Layers panel:
+        content = '';
+        content += '<div class="panel-container">';
+        content += '<div class="panel-header">Layers* <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div id="lyrs-toc"></div>';
+        content += '</div>';
+
+        menuObj = {
+            label: '<div class="icon-layers"></div><div class="icon-text">Layers</div>',
+            content: content
+        };
+        drawerMenus.push(menuObj);
+
+        // Legend panel:
+        content = '';
+        content += '<div class="panel-container">';
+        content += '<div class="panel-header">Legend <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-padding">';
+        content += '<div id="legend-content"></div>';
+        content += '</div>';
+        content += '</div>';
+
+        menuObj = {
+            label: '<div class="icon-list"></div><div class="icon-text">Legend</div>',
+            content: content
+        };
+        drawerMenus.push(menuObj);
+
+        // Tools panel:
+        content = '';
+        content += '<div class="panel-container">';
+        content += '<div class="panel-header">Tools <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-padding">';
+        content += '<div id="tools-content"></div>';
+        content += '</div>';
+        content += '</div>';
+
+        menuObj = {
+            label: '<div class="icon-wrench"></div><div class="icon-text">Tools</div>',
+            content: content
+        };
+        drawerMenus.push(menuObj);
+
+        var drawerMenu = new DrawerMenu({
+            menus: drawerMenus
+        }, dom.byId("drawer_menus"));
+        drawerMenu.startup();
+    }
+
+
+    function showFullInfo() {
+        var popupTitle = $(".esri-title").html();
+
+        if (popupTitle.indexOf("Field:") > -1) {
+            var fieldKID = $("#field-kid").html();
+            var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + fieldKID, "target='_blank'");
+        } else if (popupTitle.indexOf("Well:") > -1) {
+            var wellKID = $("#well-kid").html();
+            var win = window.open("http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + wellKID, "target='_blank'");
+        } else if (popupTitle.indexOf("Earthquake") > -1) {
+            var usgsID = $("#usgs-id").html();
+            var win = window.open("http://earthquake.usgs.gov/earthquakes/eventpage/" + usgsID, "target='_blank'");
+        } else if (popupTitle.indexOf("(WWC5)") > -1) {
+            var wwc5ID = $("#seq-num").html();
+            var win = window.open("http://chasm.kgs.ku.edu/ords/wwc5.wwc5d2.well_details?well_id=" + wwc5ID, "target='_blank'");
+        }
+    }
+
+
+    function createTOC() {
+        var lyrs = map.layers;
+        var chkd, tocContent = "";
+        var transparentLayers = ["Oil and Gas Fields","Topography","2014 Aerials","2002 Aerials","1991 Aerials"];
+
+        for (var j=lyrs.length - 1; j>-1; j--) {
+            var layerID = lyrs._items[j].id;
+            chkd = map.getLayer(layerID).visible ? "checked" : "";
+            if (layerID.indexOf("-layer-") === -1) {
+                // ^ Excludes default graphics layer from the TOC.
+                var htmlID = layerID.replace(/ /g, "-");
+                tocContent += "<div class='toc-item' id='" + htmlID + "'><label><input type='checkbox' id='tcb-" + j + "' onclick='toggleLayer(" + j + ");'" + chkd + ">" + layerID + "</label>";
+
+                if ($.inArray(layerID, transparentLayers) !== -1) {
+                    // Add transparency control buttons to specified layers.
+                    tocContent += "</span><span class='esri-icon-forward toc-icon' title='Make Layer Opaque' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;up&quot;);'></span><span class='esri-icon-reverse toc-icon' title='Make Layer Transparent' onclick='changeOpacity(&quot;" + layerID + "&quot;,&quot;down&quot;);'>";
+                }
+                tocContent += "</div>";
+            }
+        }
+        tocContent += "<span class='toc-note'>* Some layers only visible when zoomed in</span>";
+        $("#lyrs-toc").html(tocContent);
+
+        // Add addtional layer-specific controls and content (reference by hyphenated layer id):
+        $("#Oil-and-Gas-Wells").append("</span><span class='esri-icon-filter toc-icon' onclick='$( &quot;#og-filter&quot; ).dialog( &quot;open&quot; );' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;og&quot;);' title='Label Wells'>");
+        $("#WWC5-Water-Wells").append("<span class='esri-icon-filter toc-icon' onclick='$( &quot;#wwc5-filter&quot; ).dialog( &quot;open&quot; );' title='Filter Wells'></span><span class='esri-icon-labels toc-icon' onclick='labelWells(&quot;wwc5&quot;);' title='Label Wells'></span>");
+
+        var eventDesc = "Data for all events occurring between 1/9/2013 and 3/7/2014 was provided by the Oklahoma Geological Survey - all other data is from the USGS.</p>";
+        eventDesc += "<p>Earthquake data for Oklahoma is incomplete and only extends back to 12/2/2014. Only events occurring in northern Oklahoma<br>(north of Medford) are included on the mapper.</p>";
+        $("#Earthquakes").append("<span class='esri-icon-filter toc-icon' onclick='$( &quot;#eq-filter&quot; ).dialog( &quot;open&quot; );' title='Filter Earthquakes'></span><span class='esri-icon-description toc-icon' id='event-desc-icon'></span><span class='tooltip hide' id='event-desc'>" + eventDesc + "</span>");
+        $("#event-desc-icon").click(function() {
+            $("#event-desc").toggleClass("show");
+        } );
+
+        var lepcDesc = "<p>The Lesser Prairie Chicken (LEPC) Crucial Habitat map layer is part of the Southern Great Plains Crucial Habitat Assessment Tool (SGP CHAT), produced and maintained";
+        lepcDesc += "by the Kansas Biological Survey. For more information, including inquiries, please visit the <a href='http://kars.ku.edu/geodata/maps/sgpchat' target='_blank'>project website</a>.</p>";
+        lepcDesc += "<p>SGP CHAT is intended to provide useful and non-regulatory information during the early planning stages of development projects, conservation opportunities, and environmental review.</p>";
+        lepcDesc += "<p>SGP CHAT is not intended to replace consultation with local, state, or federal agencies.</p>";
+        lepcDesc += "<p>The finest data resolution is one square mile hexagons, and use of this data layer at a more localized scale is not appropriate and may lead to inaccurate interpretations.";
+        lepcDesc += "The classification may or may not apply to the entire section. Consult with local biologists for more localized information.</p>";
+        $("#LEPC-Crucial-Habitat").append("<span class='esri-icon-description toc-icon' id='lepc-desc-icon'></span><span class='tooltip hide' id='lepc-desc'>" + lepcDesc + "</span>");
+        $("#lepc-desc-icon").click(function() {
+            $("#lepc-desc").toggleClass("show");
+        } );
+    }
+
+
+    labelWells = function(type) {
+        // TODO:
+        console.log("label wells function");
+    }
+
+
+    changeOpacity = function(id, dir) {
+        var lyr = map.getLayer(id);
+        var incr = (dir === "down") ? -0.2 : 0.2;
+        lyr.opacity = lyr.opacity + incr;
+    }
+
+
+    function createTools() {
+        // TODO: below is just a test.
+        var content = "";
+        content += '<span id="junktest">1006116441</span>';
+        $("#tools-content").html(content);
+    }
+
+
+    function executeIdTask(event) {
+        identifyParams.geometry = event.mapPoint;
+        identifyParams.mapExtent = view.extent;
+		// FIXME: features filtered out should be excluded from ID results too. Next line not working. Retest w/ next api release.
+		//identifyParams.layerDefinitions = [junkDef];
+        dom.byId("mapDiv").style.cursor = "wait";
+
+        identifyTask.execute(identifyParams).then(function(response) {
+            return arrayUtils.map(response, function(result) {
+                var feature = result.feature;
+                var layerName = result.layerName;
+
+                if (layerName === 'OG_WELLS') {
+                    var ogWellsTemplate = new PopupTemplate( {
+                        title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>{API_NUMBER}</span>",
+                        content: wellContent(feature)
+                    } );
+                    feature.popupTemplate = ogWellsTemplate;
+                }
+                else if (layerName === 'OG_FIELDS') {
+                    var ogFieldsTemplate = new PopupTemplate( {
+                        title: "Field: {FIELD_NAME}",
+                        content: fieldContent(feature)
+                        } );
+                    feature.popupTemplate = ogFieldsTemplate;
+                }
+                else if (layerName === 'WWC5_WELLS') {
+                    var wwc5Template = new PopupTemplate( {
+                        title: "Water Well (WWC5): ",
+                        content: wwc5Content(feature)
+                    } );
+                    feature.popupTemplate = wwc5Template;
+                }
+                else if (layerName === 'EARTHQUAKES') {
+                    var earthquakeTemplate = new PopupTemplate( {
+                        title: "Earthquake Event: ",
+                        content: earthquakeContent(feature)
+                    } );
+                    feature.popupTemplate = earthquakeTemplate;
+                }
+
+                return feature;
+          } );
+        } ).then(function(feature) {
+            openPopup(feature);
+            //highlightFeature(feature);
+        } );
+    }
+
+
+    function earthquakeContent(feature) {
+        var date = feature.attributes.CENTRAL_STANDARD_TIME !== "Null" ? feature.attributes.CENTRAL_STANDARD_TIME : "";
+        var content = "<table cellpadding='4'><tr><td>Magnitude: </td><td>{MAG}</td></tr>";
+        content += "<tr><td>Date/Time (CST): </td><td>" + date + "</td></tr>";
+        content += "<tr><td>Latitude: </td><td>{LATITUDE}</td></tr>";
+        content += "<tr><td>Longitude: </td><td>{LONGITUDE}</td></tr>";
+        content += "<tr><td>Depth: </td><td>{DEPTH} km</td></tr>";
+        content += "<tr><td>Magnitude Type: </td><td>{MAGTYPE}</td></tr>";
+        content += "<tr><td>Data Source: </td><td>{SOURCE}</td></tr>";
+        content += "<span id='usgs-id' class='hide'>{ID}</span></table>";
+
+        return content;
+    }
+
+
+    function wwc5Content(feature) {
+        var content = "<table cellpadding='4'><tr><td>County:</td><td>{COUNTY}</td></tr>";
+        content += "<tr><td>Section:</td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}</td></tr>";
+        content += "<tr><td>Quarter Section:</td><td>{QUARTER_CALL_3}&nbsp;&nbsp;{QUARTER_CALL_2}&nbsp;&nbsp;{QUARTER_CALL_1_LARGEST}</td></tr>";
+		content += "<tr><td>Latitude, Longitude (NAD27):</td><td>{NAD27_LATITUDE},&nbsp;&nbsp;{NAD27_LONGITUDE}</td></tr>";
+		content += "<tr><td>Owner:</td><td>{OWNER_NAME}</td></tr>";
+        content += "<tr><td>Status:</td><td>{STATUS}</td></tr>";
+        content += "<tr><td>Depth (ft):</td><td>{DEPTH_TXT}</td></tr>";
+        content += "<tr><td>Static Water Level (ft):</td><td>{STATIC_LEVEL_TXT}</td></tr>";
+        content += "<tr><td>Estimated Yield (gpm):</td><td>{YIELD_TXT}</td></tr>";
+        content += "<tr><td>Elevation (ft):</td><td>{ELEV_TXT}</td></tr>";
+        content += "<tr><td>Use:</td><td style='white-space:normal'>{USE_DESC}</td></tr>";
+        content += "<tr><td>Completion Date:</td><td>{COMP_DATE_TXT}</td></tr>";
+        content += "<tr><td>Driller:</td><td style='white-space:normal'>{CONTRACTOR}</td></tr>";
+        content += "<tr><td>DWR Application Number:</td><td>{DWR_APPROPRIATION_NUMBER}</td></tr>";
+        content += "<tr><td>Other ID:</td><td>{MONITORING_NUMBER}</td></tr>";
+        content += "<tr><td>KGS Record Number:</td><td id='seq-num'>{INPUT_SEQ_NUMBER}</td></tr></table>";
+
+        return content;
+    }
+
+
+    function fieldContent(feature) {
+        var f = feature.attributes;
+        var po = f.PROD_OIL !== "Null" ? f.PROD_OIL : "";
+        var co = f.CUMM_OIL !== "Null" ? f.CUMM_OIL.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+        var pg = f.PROD_GAS !== "Null" ? f.PROD_GAS : "";
+        var cg = f.CUMM_GAS !== "Null" ? f.CUMM_GAS.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+        var ac = f.APPROXACRE !== "Null" ? f.APPROXACRE.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+        var frm = f.FORMATIONS.split(",");
+        var pf = "";
+        for (var i=0; i<frm.length; i++) {
+            pf += frm[i] + "<br>";
+        }
+
+        var content = "<table cellpadding='4'><tr><td>Type of Field:</td><td>{FIELD_TYPE}</td></tr>";
+        content += "<tr><td>Status:</td><td>{STATUS}</td></tr>";
+        content += "<tr><td>Produces Oil:</td><td>" + po + "</td></tr>";
+        content += "<tr><td>Cumulative Oil (bbls):</td><td>" + co + "</td></tr>";
+        content += "<tr><td>Produces Gas:</td><td>" + pg + "</td></tr>";
+        content += "<tr><td>Cumulative Gas (mcf):</td><td>" + cg + "</td></tr>";
+        content += "<tr><td>Approximate Acres:</td><td>" + ac + "</td></tr>";
+        content += "<tr><td>Producing Formations:</td><td>" + pf + "</td></tr>";
+        content += "<span id='field-kid' class='hide'>{FIELD_KID}</span></table>";
+
+        return content;
+    }
+
+
+    function wellContent(feature) {
+        var f = feature.attributes;
+        var dpth = f.ROTARY_TOTAL_DEPTH !== "Null" ? f.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+        var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
+
+        var content = "<table cellpadding='3'><tr><td>API:</td><td>{API_NUMBER}</td></tr>";
+        content += "<tr><td>Current Operator:</td><td>{CURR_OPERATOR}</td></tr>";
+        content += "<tr><td>Well Type:</td><td>{STATUS_TXT}</td></tr>";
+        content += "<tr><td>Status:</td><td>{WELL_CLASS}</td></tr>";
+        content += "<tr><td>Lease:</td><td>{LEASE_NAME}</td></tr>";
+        content += "<tr><td>Well:</td><td>{WELL_NAME}</td></tr>";
+        content += "<tr><td>Field:</td><td>{FIELD_NAME}</td></tr>";
+        content += "<tr><td>Location:</td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}<br>{SPOT}&nbsp;{SUBDIVISION_4_SMALLEST}&nbsp;{SUBDIVISION_3}&nbsp;{SUBDIVISION_2}&nbsp;{SUBDIVISION_1_LARGEST}</td></tr>";
+        content += "<tr><td>Latitude, Longitude (NAD27):</td><td>{NAD27_LATITUDE},&nbsp;&nbsp;{NAD27_LONGITUDE}</td></tr>";
+        content += "<tr><td>County:</td><td>{COUNTY}</td></tr>";
+        content += "<tr><td>Permit Date:</td><td>{PERMIT_DATE_TXT}</td></tr>";
+        content += "<tr><td>Spud Date:</td><td>{SPUD_DATE_TXT}</td></tr>";
+        content += "<tr><td>Completion Date:</td><td>{COMPLETION_DATE_TXT}</td></tr>";
+        content += "<tr><td>Plug Date:</td><td>{PLUG_DATE_TXT}</td></tr>";
+        content += "<tr><td>Total Depth (ft):</td><td>" + dpth + "</td></tr>";
+        content += "<tr><td>Elevation (KB, ft):</td><td>" + elev + "</td></tr>";
+        content += "<tr><td>Producing Formation:</td><td>{PRODUCING_FORMATION}</td></tr>";
+        content += "<span id='well-kid' class='hide'>{KID}</span></table>";
+
+        return content;
+    }
+
+
+    toggleLayer = function(j) {
+        var l = map.getLayer(map.layers._items[j].id);
+        l.visible = $("#tcb-" + j).is(":checked") ? true : false;
+    }
+
+} );
