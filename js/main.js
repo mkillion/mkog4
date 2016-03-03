@@ -386,7 +386,6 @@ function(
 		ogF += "<div class='filter-div'><span class='filter-hdr'>Injection Wells: </span>";
 		ogF += "<select id='inj'><option value=''></option><option value='inj-1'>Class I</option><option value='inj-2'>Class II</option></select></div>";
 		ogF += "<div class='filter-div'><span class='filter-hdr'>Horizontal Wells: </span> <input type='checkbox' id='hrz'></div>";
-		ogF += "<div class='filter-div'><span class='filter-hdr'>Producing Formation:</span> <input id='formation'></div>";
 		ogF += "<div class='filter-div'><span class='filter-hdr'>Total Depth (ft):</span><br>";
 		ogF += "Greater Than: <input type='text' size='4' id='og-gt-depth'>&nbsp;&nbsp;";
         ogF += "Less Than: <input type='text' size='4' id='og-lt-depth'></div>";
