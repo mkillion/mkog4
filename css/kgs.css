@@ -33,6 +33,10 @@
 	font-size: 16px;
 }
 
+.filter-div {
+	padding-bottom: 12px;
+}
+
 .find-body {
 	color: #000;
 	padding: 10px 12px;
@@ -47,8 +51,16 @@
 	margin-left: 3px;
 }
 
+.opt-note {
+	color: #a9a9a9;
+}
+
 td {
 	padding: 4px;
+}
+
+.og-filter-tbl td {
+	padding: 0;
 }
 
 #find-address {

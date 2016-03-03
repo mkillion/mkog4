@@ -108,7 +108,7 @@ function(
     popCountyDropdown();
     createFilterDialogs();
 
-    // Combo boxes (fields and operators):
+    // Combo boxes:
     var autocomplete =  (isMobile) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
     $.get("fields_json.txt", function(response) {
 		// fields_json.txt is updated as part of the og fields update process.
@@ -124,14 +124,14 @@ function(
 
 	$.get("operators_json.txt", function(response) {
 		// operators_json.txt is updated with the nightly og wells update.
-        var operators = JSON.parse(response).items;
-        var opsStore = new Memory( {data: operators} );
+        var ops = JSON.parse(response).items;
+        var opsStore = new Memory( {data: ops} );
         var comboBox = new ComboBox( {
-            id: "ops-select",
+            id: "operators",
             store: opsStore,
             searchAttr: "name",
             autoComplete: autocomplete
-        }, "ops-select").startup();
+        }, "operators").startup();
     } );
 
     // End framework.
@@ -318,7 +318,7 @@ function(
         $("#eq-filter").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
-            width: 260
+            width: 270
         } );
 
         $("#eq-from-date").datepicker( {
@@ -340,7 +340,7 @@ function(
 		wwc5F += "<span class='filter-hdr'>Well Use:</span><br>";
 		wwc5F += "<table><tr><td><select id='well-use' multiple size='6'>";
 		if (!isMobile) {
-			wwc5F += "<option value=''>-- select one or many (ctrl or cmd key) --</option>";
+			wwc5F += "<option value='' class='opt-note'>-- select one or many (ctrl or cmd key) --</option>";
 		}
 		for (var k = 0; k < wwc5Use.length; k++) {
 			wwc5F += "<option value='" + wwc5Use[k] + "'>" + wwc5Use[k] + "</option>";
@@ -364,18 +364,33 @@ function(
 
         // og wells:
 		var wellType = ["Coal Bed Methane","Coal Bed Methane, Plugged and Abandoned","Dry and Abandoned","Enhanced Oil Recovery","Enhanced Oil Recovery, Plugged and Abandoned","Gas","Gas, Plugged and Abandoned","Injection","Injection, Plugged and Abandoned","Intent","Location","Oil","Oil and Gas","Oil and Gas, Plugged and Abandoned","Oil, Plugged and Abandoned","Other","Other, Plugged and Abandoned","Salt Water Disposal","Salt Water Disposal, Plugged and Abandoned"];
-		var ogF = "<span class='filter-hdr'>Well Type:</span><br>";
-		ogF += "<table><tr><td><select id='og-well-type' multiple size='3'>";
+		var ogF = "<div class='filter-div'><span class='filter-hdr'>Well Type:</span><br>";
+		ogF += "<select id='og-well-type' multiple size='3'>";
 		if (!isMobile) {
-			ogF += "<option value=''>-- select one or many (ctrl or cmd key) --</option>";
+			ogF += "<option value='' class='opt-note'>-- select one or many (ctrl or cmd key) --</option>";
 		}
 		for (var j = 0; j < wellType.length; j++) {
 			ogF += "<option value='" + wellType[j] + "'>" + wellType[j] + "</option>";
-
 		}
-		ogF += "</select></tr></td></table>";
-		ogF += "<span class='filter-hdr'>Current Operator:</span><br>";
-		ogF += "<input id='ops-select'>";
+		ogF += "</select></div>";
+		ogF += "<div class='filter-div'><span class='filter-hdr'>Completion Date:</span><br>";
+		ogF += "From: <input type='text' size='12' id='og-from-date' placeholder='mm/dd/yyyy'>&nbsp;&nbsp;";
+        ogF += "To: <input type='text' size='12' id='og-to-date' placeholder='mm/dd/yyyy'></div>";
+		ogF += "<div class='filter-div'><span class='filter-hdr'>Current Operator:</span> <input id='operators'></div>";
+		ogF += "<div class='filter-div'>";
+		ogF += "<table class='og-filter-tbl'><tr><td class='filter-hdr' style='padding-left:0'>Has:</td><td><input type='checkbox' id='paper-log'>Paper Logs</td></tr>";
+		ogF += "<tr><td></td><td><input type='checkbox' id='scan-log'>Scanned Logs</td></tr>";
+		ogF += "<tr><td></td><td><input type='checkbox' id='las'>LAS File</td></tr>";
+		ogF += "<tr><td></td><td><input type='checkbox' id='core'>Core</td></tr>";
+		ogF += "<tr><td></td><td><input type='checkbox' id='cuttings'>Cuttings</td></tr></table></div>";
+		ogF += "<div class='filter-div'><span class='filter-hdr'>Injection Wells: </span>";
+		ogF += "<select id='inj'><option value=''></option><option value='inj-1'>Class I</option><option value='inj-2'>Class II</option></select></div>";
+		ogF += "<div class='filter-div'><span class='filter-hdr'>Horizontal Wells: </span> <input type='checkbox' id='hrz'></div>";
+		ogF += "<div class='filter-div'><span class='filter-hdr'>Producing Formation:</span> <input id='formation'></div>";
+		ogF += "<div class='filter-div'><span class='filter-hdr'>Total Depth (ft):</span><br>";
+		ogF += "Greater Than: <input type='text' size='4' id='og-gt-depth'>&nbsp;&nbsp;";
+        ogF += "Less Than: <input type='text' size='4' id='og-lt-depth'></div>";
+		ogF += "<hr><div class='filter-div'><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;<button class='find-button' onclick='clearwwc5F();' autofocus>Clear Filter</button></div>";
 
 		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", title: "Filter Oil and Gas Wells", innerHTML: ogF } );
         $("body").append(ogN);
@@ -386,8 +401,8 @@ function(
             width: 450
         } );
 
-		// $("#og-from-date").datepicker();
-        // $("#og-to-date").datepicker();
+		$("#og-from-date").datepicker();
+        $("#og-to-date").datepicker();
     }
 
 
