@@ -312,12 +312,13 @@ function(
         eqF += "<button onclick='filterQuakesLast();'>Show Last Event in Kansas</button><hr>";
         eqF += "<button onclick='clearQuakeFilter();' autofocus>Clear Filter</button>";
 
-        var eqN = domConstruct.create("div", { id: "eq-filter", class: "filter-dialog", title: "Filter Earthquakes", innerHTML: eqF } );
+        var eqN = domConstruct.create("div", { id: "eq-filter", class: "filter-dialog", innerHTML: eqF } );
         $("body").append(eqN);
 
         $("#eq-filter").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
+			title: "Filter Earthquakes",
             width: 270
         } );
 
@@ -332,7 +333,7 @@ function(
 		var wwc5F = "<span class='filter-hdr'>Completion Date:</span><br>";
         wwc5F += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td>";
         wwc5F += "<td class='find-label'>To:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
-		wwc5F += "<span class='filter-hdr'>Construction Status:</span><br><table class='filter-tbl'>";
+		wwc5F += "<span class='filter-hdr'>Construction Status:</span><br><table>";
 		for (var i = 0; i < wwc5Status.length; i++) {
 			wwc5F += "<tr><td><input type='checkbox' name='const-status' value='" + wwc5Status[i] + "'>" + wwc5Status[i] + "</td></tr>"
 		}
@@ -350,12 +351,13 @@ function(
 		wwc5F += "<tr><td colspan='2'><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;<button class='find-button' onclick='clearwwc5F();' autofocus>Clear Filter</button></td></tr>";
 		wwc5F += "</table>";
 
-        var wwc5N = domConstruct.create("div", { id: "wwc5-filter", class: "filter-dialog", title: "Filter Water Wells", innerHTML: wwc5F } );
+        var wwc5N = domConstruct.create("div", { id: "wwc5-filter", class: "filter-dialog", innerHTML: wwc5F } );
         $("body").append(wwc5N);
 
         $("#wwc5-filter").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
+			title: "Filter Water Wells",
             width: 450
         } );
 
@@ -378,7 +380,7 @@ function(
         ogF += "To: <input type='text' size='12' id='og-to-date' placeholder='mm/dd/yyyy'></div>";
 		ogF += "<div class='filter-div'><span class='filter-hdr'>Current Operator:</span> <input id='operators'></div>";
 		ogF += "<div class='filter-div'>";
-		ogF += "<table class='filter-tbl'><tr><td class='filter-hdr' style='padding-left:0'>Has:</td><td><input type='checkbox' id='paper-log'>Paper Logs</td></tr>";
+		ogF += "<table><tr><td class='filter-hdr' style='padding-left:0'>Has:</td><td><input type='checkbox' id='paper-log'>Paper Logs</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='scan-log'>Scanned Logs</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='las'>LAS File</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='core'>Core</td></tr>";
@@ -391,13 +393,14 @@ function(
         ogF += "Less Than: <input type='text' size='4' id='og-lt-depth'></div>";
 		ogF += "<hr><div class='filter-div'><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;<button class='find-button' onclick='clearwwc5F();' autofocus>Clear Filter</button></div>";
 
-		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", title: "Filter Oil and Gas Wells", innerHTML: ogF } );
+		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", innerHTML: ogF } );
         $("body").append(ogN);
 
         $("#og-filter").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
-            width: 450
+			title: "Filter Oil and Gas Wells",
+            width: 440
         } );
 
 		$("#og-from-date").datepicker();
