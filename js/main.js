@@ -332,7 +332,7 @@ function(
 		var wwc5F = "<span class='filter-hdr'>Completion Date:</span><br>";
         wwc5F += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td>";
         wwc5F += "<td class='find-label'>To:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
-		wwc5F += "<span class='filter-hdr'>Construction Status:</span><br><table>";
+		wwc5F += "<span class='filter-hdr'>Construction Status:</span><br><table class='filter-tbl'>";
 		for (var i = 0; i < wwc5Status.length; i++) {
 			wwc5F += "<tr><td><input type='checkbox' name='const-status' value='" + wwc5Status[i] + "'>" + wwc5Status[i] + "</td></tr>"
 		}
@@ -378,7 +378,7 @@ function(
         ogF += "To: <input type='text' size='12' id='og-to-date' placeholder='mm/dd/yyyy'></div>";
 		ogF += "<div class='filter-div'><span class='filter-hdr'>Current Operator:</span> <input id='operators'></div>";
 		ogF += "<div class='filter-div'>";
-		ogF += "<table class='og-filter-tbl'><tr><td class='filter-hdr' style='padding-left:0'>Has:</td><td><input type='checkbox' id='paper-log'>Paper Logs</td></tr>";
+		ogF += "<table class='filter-tbl'><tr><td class='filter-hdr' style='padding-left:0'>Has:</td><td><input type='checkbox' id='paper-log'>Paper Logs</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='scan-log'>Scanned Logs</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='las'>LAS File</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='core'>Core</td></tr>";
