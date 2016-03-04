@@ -341,7 +341,7 @@ function(
 		wwc5F += "<span class='filter-hdr'>Well Use:</span><br>";
 		wwc5F += "<table><tr><td><select id='well-use' multiple size='6'>";
 		if (!isMobile) {
-			wwc5F += "<option value='' class='opt-note'>-- select one or many (ctrl or cmd key) --</option>";
+			wwc5F += "<option value='' class='opt-note'>select one or many (ctrl or cmd key)</option>";
 		}
 		for (var k = 0; k < wwc5Use.length; k++) {
 			wwc5F += "<option value='" + wwc5Use[k] + "'>" + wwc5Use[k] + "</option>";
@@ -365,18 +365,18 @@ function(
         $("#wwc5-to-date").datepicker();
 
         // og wells:
-		var wellType = ["Coal Bed Methane","Coal Bed Methane, Plugged and Abandoned","Dry and Abandoned","Enhanced Oil Recovery","Enhanced Oil Recovery, Plugged and Abandoned","Gas","Gas, Plugged and Abandoned","Injection","Injection, Plugged and Abandoned","Intent","Location","Oil","Oil and Gas","Oil and Gas, Plugged and Abandoned","Oil, Plugged and Abandoned","Other","Other, Plugged and Abandoned","Salt Water Disposal","Salt Water Disposal, Plugged and Abandoned"];
+		var wellType = ["Coal Bed Methane","Coal Bed Methane, Plugged","Dry and Abandoned","Enhanced Oil Recovery","Enhanced Oil Recovery, Plugged","Gas","Gas, Plugged","Injection","Injection, Plugged","Intent","Location","Oil","Oil and Gas","Oil and Gas, Plugged","Oil, Plugged","Other","Other, Plugged","Salt Water Disposal","Salt Water Disposal, Plugged"];
 		var ogF = "<div class='filter-div'><span class='filter-hdr'>Well Type:</span><br>";
 		ogF += "<select id='og-well-type' multiple size='3'>";
 		if (!isMobile) {
-			ogF += "<option value='' class='opt-note'>-- select one or many (ctrl or cmd key) --</option>";
+			ogF += "<option value='' class='opt-note'>select one or many (ctrl or cmd key)</option>";
 		}
 		for (var j = 0; j < wellType.length; j++) {
 			ogF += "<option value='" + wellType[j] + "'>" + wellType[j] + "</option>";
 		}
 		ogF += "</select></div>";
 		ogF += "<div class='filter-div'><span class='filter-hdr'>Completion Date:</span><br>";
-		ogF += "From: <input type='text' size='12' id='og-from-date' placeholder='mm/dd/yyyy'>&nbsp;&nbsp;";
+		ogF += "From: <input type='text' size='12' id='og-from-date' placeholder='mm/dd/yyyy'><br>";
         ogF += "To: <input type='text' size='12' id='og-to-date' placeholder='mm/dd/yyyy'></div>";
 		ogF += "<div class='filter-div'><span class='filter-hdr'>Current Operator:</span> <input id='operators'></div>";
 		ogF += "<div class='filter-div'>";
@@ -400,7 +400,7 @@ function(
             autoOpen: false,
             dialogClass: "dialog",
 			title: "Filter Oil and Gas Wells",
-            width: 440
+            width: 319
         } );
 
 		$("#og-from-date").datepicker();
