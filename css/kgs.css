@@ -33,9 +33,9 @@
 	font-size: 16px;
 }
 
-.filter-div {
+/*.filter-div {
 	padding-bottom: 12px;
-}
+}*/
 
 .find-body {
 	color: #000;
@@ -58,10 +58,6 @@
 td {
 	padding: 4px;
 }
-
-/*.filter-tbl td {
-	padding: 0;
-}*/
 
 #find-address {
 	padding: 10px 0;

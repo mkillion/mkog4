@@ -366,32 +366,32 @@ function(
 
         // og wells:
 		var wellType = ["Coal Bed Methane","Coal Bed Methane, Plugged","Dry and Abandoned","Enhanced Oil Recovery","Enhanced Oil Recovery, Plugged","Gas","Gas, Plugged","Injection","Injection, Plugged","Intent","Location","Oil","Oil and Gas","Oil and Gas, Plugged","Oil, Plugged","Other","Other, Plugged","Salt Water Disposal","Salt Water Disposal, Plugged"];
-		var ogF = "<div class='filter-div'><span class='filter-hdr'>Well Type:</span><br>";
-		ogF += "<select id='og-well-type' multiple size='3'>";
+		var ogF = "<span class='filter-hdr'>Well Type:</span><br>";
+		ogF += "<table><tr><td><select id='og-well-type' multiple size='3'>";
 		if (!isMobile) {
-			ogF += "<option value='' class='opt-note'>select one or many (ctrl or cmd key)</option>";
+			ogF += "<option value='' class='opt-note'>select one or many (ctrl or cmd)</option>";
 		}
 		for (var j = 0; j < wellType.length; j++) {
 			ogF += "<option value='" + wellType[j] + "'>" + wellType[j] + "</option>";
 		}
-		ogF += "</select></div>";
-		ogF += "<div class='filter-div'><span class='filter-hdr'>Completion Date:</span><br>";
-		ogF += "From: <input type='text' size='12' id='og-from-date' placeholder='mm/dd/yyyy'><br>";
-        ogF += "To: <input type='text' size='12' id='og-to-date' placeholder='mm/dd/yyyy'></div>";
-		ogF += "<div class='filter-div'><span class='filter-hdr'>Current Operator:</span> <input id='operators'></div>";
-		ogF += "<div class='filter-div'>";
+		ogF += "</select></td></tr></table>";
+		ogF += "<span class='filter-hdr'>Completion Date:</span><br>";
+		ogF += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='og-from-date' placeholder='mm/dd/yyyy'></td></tr>";
+        ogF += "<tr><td class='find-label'>To:</td><td><input type='text' size='12' id='og-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
+		ogF += "<table><tr><td class='filter-hdr' style='padding-left:0'>Operator:</td><td><input id='operators'></td></tr></table>";
 		ogF += "<table><tr><td class='filter-hdr' style='padding-left:0'>Has:</td><td><input type='checkbox' id='paper-log'>Paper Logs</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='scan-log'>Scanned Logs</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='las'>LAS File</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' id='core'>Core</td></tr>";
-		ogF += "<tr><td></td><td><input type='checkbox' id='cuttings'>Cuttings</td></tr></table></div>";
-		ogF += "<div class='filter-div'><span class='filter-hdr'>Injection Wells: </span>";
-		ogF += "<select id='inj'><option value=''></option><option value='inj-1'>Class I</option><option value='inj-2'>Class II</option></select></div>";
-		ogF += "<div class='filter-div'><span class='filter-hdr'>Horizontal Wells: </span> <input type='checkbox' id='hrz'></div>";
-		ogF += "<div class='filter-div'><span class='filter-hdr'>Total Depth (ft):</span><br>";
-		ogF += "Greater Than: <input type='text' size='4' id='og-gt-depth'>&nbsp;&nbsp;";
-        ogF += "Less Than: <input type='text' size='4' id='og-lt-depth'></div>";
-		ogF += "<hr><div class='filter-div'><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;<button class='find-button' onclick='clearwwc5F();' autofocus>Clear Filter</button></div>";
+		ogF += "<tr><td></td><td><input type='checkbox' id='cuttings'>Cuttings</td></tr></table>";
+		ogF += "<table><tr><td class='filter-hdr' style='padding-left:0'>Injection Wells:</td>";
+		ogF += "<td><select id='inj'><option value=''></option><option value='inj-1'>Class I</option><option value='inj-2'>Class II</option></select></td></tr>";
+		ogF += "<tr><td class='filter-hdr'style='padding-left:0'>Horizontal Wells:</td><td><input type='checkbox' id='hrz'></td></tr></table>";
+		ogF += "<span class='filter-hdr'>Total Depth (ft):</span><br>";
+		ogF += "<table><tr><td>Greater Than:</td><td><input type='text' size='4' id='og-gt-depth'></td></tr>";
+        ogF += "<tr><td>Less Than:</td><td><input type='text' size='4' id='og-lt-depth'></td></tr></table>";
+		ogF += "<hr><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;&nbsp;";
+		ogF += "<button class='find-button' onclick='clearwwc5F();' autofocus>Clear Filter</button>";
 
 		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", innerHTML: ogF } );
         $("body").append(ogN);
@@ -400,7 +400,7 @@ function(
             autoOpen: false,
             dialogClass: "dialog",
 			title: "Filter Oil and Gas Wells",
-            width: 319
+            width: 315
         } );
 
 		$("#og-from-date").datepicker();
