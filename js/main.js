@@ -76,7 +76,7 @@ function(
     ArcGISImageLayer
 ) {
     var isMobile = WURFL.is_mobile;
-	//var junkDef; // temp - see FIXMEs
+	var idDef = [];
 
     // Set up basic frame:
     window.document.title = "FooBar";
@@ -341,7 +341,7 @@ function(
 		wwc5F += "<span class='filter-hdr'>Well Use:</span><br>";
 		wwc5F += "<table><tr><td><select id='well-use' multiple size='6'>";
 		if (!isMobile) {
-			wwc5F += "<option value='' class='opt-note'>select one or many (ctrl or cmd key)</option>";
+			wwc5F += "<option value='' class='opt-note'>select one or many (ctrl or cmd)</option>";
 		}
 		for (var k = 0; k < wwc5Use.length; k++) {
 			wwc5F += "<option value='" + wwc5Use[k] + "'>" + wwc5Use[k] + "</option>";
@@ -410,6 +410,7 @@ function(
 
 	filterOG = function() {
 		// TODO:
+		// remember that "and abandoned" was removed from the descriptions in id='og-well-type' stuff. account for this in where clause.
 	}
 
 
@@ -465,7 +466,7 @@ function(
 		}
 
 		def[8] = theWhere;
-		//junkDef = def[8]; // temp - see FIXMEs
+		idDef[8] = def[8];
 		wwc5Layer.layerDefinitions = def;
 	}
 
@@ -1017,8 +1018,7 @@ function(
     function executeIdTask(event) {
         identifyParams.geometry = event.mapPoint;
         identifyParams.mapExtent = view.extent;
-		// FIXME: features filtered out should be excluded from ID results too. Next line not working. Retest w/ next api release.
-		//identifyParams.layerDefinitions = [junkDef];
+		identifyParams.layerDefinitions = idDef;
         dom.byId("mapDiv").style.cursor = "wait";
 
         identifyTask.execute(identifyParams).then(function(response) {
