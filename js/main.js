@@ -390,7 +390,7 @@ function(
 		ogF += "<span class='filter-hdr'>Total Depth (ft):</span><br>";
 		ogF += "<table><tr><td>Greater Than:</td><td><input type='text' size='4' id='og-gt-depth' class='og-input'></td></tr>";
         ogF += "<tr><td>Less Than:</td><td><input type='text' size='4' id='og-lt-depth' class='og-input'></td></tr></table>";
-		ogF += "<hr><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;&nbsp;";
+		ogF += "<hr><button class='find-button' id='wwc5-go-btn' onclick='filterOG();'>Apply Filter</button>&nbsp;&nbsp;&nbsp;";
 		ogF += "<button class='find-button' onclick='clearOgFilter();' autofocus>Clear Filter</button>";
 
 		var ogN = domConstruct.create("div", { id: "og-filter", class: "filter-dialog", innerHTML: ogF } );
@@ -409,8 +409,38 @@ function(
 
 
 	filterOG = function() {
-		// TODO:
-		// remember that "and abandoned" was removed from the descriptions in id='og-well-type' stuff. account for this in where clause.
+		var def = [];
+		var theWhere = "";
+		var typeWhere = "";
+		var dateWhere = "";
+		var opWhere = "";
+		var hasWhere = "";
+		var ogType = $("#og-well-type").val();
+		var fromDate = dom.byId("og-from-date").value;
+		var toDate = dom.byId("og-to-date").value;
+		var op = dom.byId(operators).value;
+		var ogHas = $('input[name="og-has"]:checked').map(function() {
+		    return this.value;
+		} ).get();
+
+		if (ogType) {
+			var typeList = "'" + ogType.join("','") + "'";
+			typeWhere = "status_txt in (" + typeList +")";
+		}
+
+		if (fromDate && toDate) {
+			dateWhere = "completion_date >= to_date('" + fromDate + "','mm/dd/yyyy') and completion_date < to_date('" + toDate + "','mm/dd/yyyy') + 1";
+		} else if (fromDate && !toDate) {
+			dateWhere = "completion_date >= to_date('" + fromDate + "','mm/dd/yyyy')";
+		} else if (!fromDate && toDate) {
+			dateWhere = "completion_date < to_date('" + toDate + "','mm/dd/yyyy') + 1";
+		}
+
+		if (op) {
+			opWhere = "curr_operator = '" + op + "'";
+		}
+
+		console.log(ogHas);
 	}
 
 
@@ -425,17 +455,17 @@ function(
 
 
 	filterWWC5 = function() {
+		var def = [];
+		var theWhere = "";
+		var dateWhere = "";
+		var statusWhere = "";
+		var useWhere = "";
 		var conStatus = $('input[name="const-status"]:checked').map(function() {
 		    return this.value;
 		} ).get();
 		var wellUse = $("#well-use").val();
 		var wwc5FromDate = dom.byId("wwc5-from-date").value;
 		var wwc5ToDate = dom.byId("wwc5-to-date").value;
-		var def = [];
-		var dateWhere = "";
-		var statusWhere = "";
-		var useWhere = "";
-		var theWhere = "";
 
 		if (wwc5FromDate && wwc5ToDate) {
 			dateWhere = "completion_date >= to_date('" + wwc5FromDate + "','mm/dd/yyyy') and completion_date < to_date('" + wwc5ToDate + "','mm/dd/yyyy') + 1";
