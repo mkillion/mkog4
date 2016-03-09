@@ -564,6 +564,7 @@ function(
                 }
             }
         }
+		idDef[13] = def[13];
         usgsEventsLayer.layerDefinitions = def;
     }
 
@@ -575,13 +576,15 @@ function(
         dom.byId("day-mag").options[0].selected="selected";
         dom.byId("eq-from-date").value = "";
         dom.byId("eq-to-date").value = "";
+		idDef[13] = "";
     }
 
 
     filterQuakesLast = function() {
         var def = [];
         def[13] = "state = 'KS' and net in ('us', ' ', 'US') and the_date = (select max(the_date) from earthquakes where state = 'KS' and net in ('us', ' ', 'US'))";
-        usgsEventsLayer.layerDefinitions = def;
+		idDef[13] = def[13];
+		usgsEventsLayer.layerDefinitions = def;
     }
 
 
