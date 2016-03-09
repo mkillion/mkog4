@@ -388,8 +388,8 @@ function(
 		ogF += "<td><select id='inj' class='og-select'><option value=''></option><option value='inj-1'>Class I</option><option value='inj-2'>Class II</option></select></td></tr>";
 		ogF += "<tr><td class='filter-hdr'style='padding-left:0'>Horizontal Wells:</td><td><input type='checkbox' id='hrz'></td></tr></table>";
 		ogF += "<span class='filter-hdr'>Total Depth (ft):</span><br>";
-		ogF += "<table><tr><td>Greater Than:</td><td><input type='text' size='4' id='og-gt-depth' class='og-input'></td></tr>";
-        ogF += "<tr><td>Less Than:</td><td><input type='text' size='4' id='og-lt-depth' class='og-input'></td></tr></table>";
+		ogF += "<table><tr><td>Greater Than or Equal To:</td><td><input type='text' size='4' id='og-gt-depth' class='og-input'></td></tr>";
+        ogF += "<tr><td>Less Than or Equal To:</td><td><input type='text' size='4' id='og-lt-depth' class='og-input'></td></tr></table>";
 		ogF += "<hr><button class='find-button' id='wwc5-go-btn' onclick='filterOG();'>Apply Filter</button>&nbsp;&nbsp;&nbsp;";
 		ogF += "<button class='find-button' onclick='clearOgFilter();' autofocus>Clear Filter</button>";
 
@@ -415,13 +415,19 @@ function(
 		var dateWhere = "";
 		var opWhere = "";
 		var hasWhere = "";
+		var injWhere = "";
+		var hrzWhere = "";
+		var depthWhere = "";
 		var ogType = $("#og-well-type").val();
 		var fromDate = dom.byId("og-from-date").value;
 		var toDate = dom.byId("og-to-date").value;
 		var op = dom.byId(operators).value;
-		var ogHas = $('input[name="og-has"]:checked').map(function() {
-		    return this.value;
-		} ).get();
+		// var ogHas = $('input[name="og-has"]:checked').map(function() {
+		//     return this.value;
+		// } ).get();
+		var inj = dom.byId("inj").value;
+		var depthGT = dom.byId("og-gt-depth").value;
+		var depthLT = dom.byId("og-lt-depth").value;
 
 		if (ogType) {
 			var typeList = "'" + ogType.join("','") + "'";
@@ -440,7 +446,36 @@ function(
 			opWhere = "curr_operator = '" + op + "'";
 		}
 
-		console.log(ogHas);
+		if (inj) {
+			if (inj === "inj-1") {
+				injWhere = "well_type = 'CLASS1'";
+			} else {
+				injWhere = "status in ('SWD','EOR','INJ')";
+			}
+		}
+
+		if (dom.byId(hrz).checked) {
+			hrzWhere = "substr(api_workovers, 1, 2) <> '00'";
+		}
+
+		if (depthGT && depthLT) {
+			if (depthLT < depthGT) {
+				alert("Invalid values: less-than value must be larger than greater-than value.");
+			} else {
+				depthWhere = "";
+			}
+		} else if (depthGT && !depthLT) {
+			depthWhere = "";
+		} else if (!depthGT && depthLT) {
+			depthWhere = "";
+		}
+
+		// TODO: construct hasWhere.
+
+		console.log(depthWhere);
+		// def[0] = theWhere;
+		// idDef[0] = def[0];
+		// wellsLayer.layerDefinitions = def;
 	}
 
 
@@ -451,6 +486,7 @@ function(
 		$('select.og-select option').removeAttr("selected");
 		dom.byId("hrz").checked = false;
 		wellsLayer.layerDefinitions = [];
+		idDef[0] = "";
 	}
 
 
@@ -510,6 +546,7 @@ function(
 		$('input[name="const-status"]').removeAttr("checked");
 		$('select#well-use option').removeAttr("selected");
 		wwc5Layer.layerDefinitions = [];
+		idDef[8] = "";
 	}
 
 
