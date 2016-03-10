@@ -379,7 +379,7 @@ function(
 		ogF += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='og-from-date' class='og-input' placeholder='mm/dd/yyyy'></td></tr>";
         ogF += "<tr><td class='find-label'>To:</td><td><input type='text' size='12' id='og-to-date' class='og-input' placeholder='mm/dd/yyyy'></td></tr></table>";
 		ogF += "<table><tr><td class='filter-hdr' style='padding-left:0'>Operator:</td><td><input id='operators'></td></tr></table>";
-		ogF += "<table><tr><td class='filter-hdr' style='padding-left:0'>Has:</td><td><input type='checkbox' name='og-has' value='paper'>Paper Logs</td></tr>";
+		ogF += "<table><tr><td class='filter-hdr' style='padding-left:0'>Has:</td><td><input type='checkbox' name='og-has' value='paper-log'>Paper Logs</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' name='og-has' value='scan-log'>Scanned Logs</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' name='og-has' value='las'>LAS File</td></tr>";
 		ogF += "<tr><td></td><td><input type='checkbox' name='og-has' value='core'>Core</td></tr>";
@@ -414,17 +414,21 @@ function(
 		var typeWhere = "";
 		var dateWhere = "";
 		var opWhere = "";
-		var hasWhere = "";
 		var injWhere = "";
 		var hrzWhere = "";
 		var depthWhere = "";
+		var paperLogWhere = "";
+		var scanLogWhere = "";
+		var lasWhere = "";
+		var coreWhere = "";
+		var cuttingsWhere = "";
 		var ogType = $("#og-well-type").val();
 		var fromDate = dom.byId("og-from-date").value;
 		var toDate = dom.byId("og-to-date").value;
 		var op = dom.byId(operators).value;
-		// var ogHas = $('input[name="og-has"]:checked').map(function() {
-		//     return this.value;
-		// } ).get();
+		var ogHas = $('input[name="og-has"]:checked').map(function() {
+		    return this.value;
+		} ).get();
 		var inj = dom.byId("inj").value;
 		var depthGT = dom.byId("og-gt-depth").value;
 		var depthLT = dom.byId("og-lt-depth").value;
@@ -459,23 +463,77 @@ function(
 		}
 
 		if (depthGT && depthLT) {
-			if (depthLT < depthGT) {
-				alert("Invalid values: less-than value must be larger than greater-than value.");
+			if (parseInt(depthLT) < parseInt(depthGT)) {
+				alert("Invalid depth values: less-than value must be larger than greater-than value.");
 			} else {
-				depthWhere = "";
+				depthWhere = "rotary_total_depth >= " + depthGT + " and rotary_total_depth <= " + depthLT;
 			}
 		} else if (depthGT && !depthLT) {
-			depthWhere = "";
+			depthWhere = "rotary_total_depth >= " + depthGT;
 		} else if (!depthGT && depthLT) {
-			depthWhere = "";
+			depthWhere = "rotary_total_depth <= " + depthLT;
 		}
 
-		// TODO: construct hasWhere.
+		for (var y=0; y<ogHas.length; y++) {
+			switch (ogHas[y]) {
+				case "paper-log":
+					paperLogWhere = "kid in (select well_header_kid from elog.log_headers)";
+					break;
+				case "scan-log":
+					scanLogWhere = "kid in (select well_header_kid from elog.scan_urls)";
+					break;
+				case "las":
+					lasWhere = "kid in (select well_header_kid from las.well_headers where proprietary = 0)";
+					break;
+				case "core":
+					coreWhere = "kid in (select well_header_kid from core.core_headers)";
+					break;
+				case "cuttings":
+					cuttingsWhere = "kid in (select well_header_kid from cuttings.boxes)";
+					break;
+			}
+		}
 
-		console.log(depthWhere);
-		// def[0] = theWhere;
-		// idDef[0] = def[0];
-		// wellsLayer.layerDefinitions = def;
+		if (typeWhere !== "") {
+			theWhere += typeWhere + " and ";
+		}
+		if (dateWhere !== "") {
+			theWhere += dateWhere + " and ";
+		}
+		if (opWhere !== "") {
+			theWhere += opWhere + " and ";
+		}
+		if (injWhere !== "") {
+			theWhere += injWhere + " and ";
+		}
+		if (hrzWhere !== "") {
+			theWhere += hrzWhere + " and ";
+		}
+		if (depthWhere !== "") {
+			theWhere += depthWhere + " and ";
+		}
+		if (paperLogWhere !== "") {
+			theWhere += paperLogWhere + " and ";
+		}
+		if (scanLogWhere !== "") {
+			theWhere += scanLogWhere + " and ";
+		}
+		if (lasWhere !== "") {
+			theWhere += lasWhere + " and ";
+		}
+		if (coreWhere !== "") {
+			theWhere += coreWhere + " and ";
+		}
+		if (cuttingsWhere !== "") {
+			theWhere += cuttingsWhere + " and ";
+		}
+		if (theWhere.substr(theWhere.length - 5) === " and ") {
+			theWhere = theWhere.slice(0,theWhere.length - 5);
+		}
+		
+		def[0] = theWhere;
+		idDef[0] = def[0];
+		wellsLayer.layerDefinitions = def;
 	}
 
 
