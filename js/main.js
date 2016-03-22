@@ -123,7 +123,7 @@ function(
     } );
 
 	$.get("operators_json.txt", function(response) {
-		// operators_json.txt is updated with the nightly og wells update.
+		// operators_json.txt is updated as part of the monthly maintenance tasks.
         var ops = JSON.parse(response).items;
         var opsStore = new Memory( {data: ops} );
         var comboBox = new ComboBox( {
@@ -530,7 +530,7 @@ function(
 		if (theWhere.substr(theWhere.length - 5) === " and ") {
 			theWhere = theWhere.slice(0,theWhere.length - 5);
 		}
-		
+
 		def[0] = theWhere;
 		idDef[0] = def[0];
 		wellsLayer.layerDefinitions = def;
@@ -947,12 +947,12 @@ function(
         content += '<div class="panel-header">Find <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         // address:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"> Address or Place</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"><span class="find-hdr-txt"> Address or Place<span></div>';
         content += '<div class="find-body hide" id="find-address">';
         content += '<div id="srch"></div>';
         content += '</div>';
         // plss:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss"> Section-Township-Range</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="plss"><span class="find-hdr-txt"> Section-Township-Range</span></div>';
         content += '<div class="find-body hide" id="find-plss">';
         content += '<table><tr><td class="find-label">Township:</td><td><select id="twn"><option value=""></option>';
         for (var i=1; i<36; i++) {
@@ -972,7 +972,7 @@ function(
         content += '<tr><td></td><td><button class=find-button onclick=findIt("plss")>Find</button></td></tr>';
         content += '</table></div>';
         // api:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="api"> Well API</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="api"><span class="find-hdr-txt"> Well API</span></div>';
         content += '<div class="find-body hide" id="find-api">';
         content += 'API Number (extension optional):<br>';
         content += '<input type="text" id="api_state" size="2" onKeyUp="jumpFocus(api_county, 2, this.id)"/> - ';
@@ -982,7 +982,7 @@ function(
         content += '<button class=find-button onclick=findIt("api")>Find</button>';
         content += '</div>';
         // lat-lon:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="latlon"> Latitude-Longitude</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="latlon"><span class="find-hdr-txt"> Latitude-Longitude</span></div>';
         content += '<div class="find-body hide" id="find-latlon">';
         content += '<table><tr><td class="find-label">Latitude:</td><td><input type="text" id="lat" placeholder="e.g. 38.12345"></td></tr>';
         content += '<tr><td class="find-label">Longitude:</td><td><input type="text" id="lon" placeholder="e.g. -98.12345"></td></tr>';
@@ -990,12 +990,12 @@ function(
         content += '<tr><td></td><td><button class="find-button" onclick="zoomToLatLong();">Find</button></td></tr>';
         content += '</table></div>';
         // field:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"> Field</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"><span class="find-hdr-txt"> Field</span></div>';
         content += '<div class="find-body hide" id="find-field">';
         content += '<table><tr><td class="find-label">Name:</td><td><input id="field-select"></td><td><button class=find-button onclick=findIt("field")>Find</button></td></tr></table>';
         content += '</div>';
         // county:
-        content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"> County</div>';
+        content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"><span class="find-hdr-txt"> County</span></div>';
         content += '<div class="find-body hide" id="find-county">';
         content += '<table><tr><td class="find-label">County:</td><td><select id="lstCounty"></select></td><td><button class=find-button onclick=findIt("county")>Find</button></td></tr></table>';
         content += '</div>';
