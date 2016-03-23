@@ -35,6 +35,8 @@ require([
     "esri/tasks/support/ProjectParameters",
     "esri/geometry/support/webMercatorUtils",
     "esri/layers/ArcGISImageLayer",
+	"esri/geometry/geometryEngine",
+	"esri/symbols/SimpleFillSymbol",
     "dojo/domReady!"
 ],
 function(
@@ -73,7 +75,9 @@ function(
     GeometryService,
     ProjectParameters,
     webMercatorUtils,
-    ArcGISImageLayer
+    ArcGISImageLayer,
+	geometryEngine,
+	SimpleFillSymbol
 ) {
     var isMobile = WURFL.is_mobile;
 	var idDef = [];
@@ -210,8 +214,7 @@ function(
             if(evt.action.id === "full-report") {
                 showFullInfo();
             } else if (evt.action.id === "buffer-feature") {
-                // TODO:
-                console.log("buffer feature action clicked");
+                bufferFeature(view.popup.viewModel.selectedFeature);
             } else if (evt.action.id === "report-error") {
                 // TODO:
                 console.log("report error action clicked");
@@ -707,6 +710,35 @@ function(
                 zoomToFeature(feature);
             } );
     }
+
+
+	function bufferFeature(feature) {
+		if (feature.geometry.type === "point") {
+			var point = new Point( {
+			    x: feature.geometry.x,
+			    y: feature.geometry.y,
+			    spatialReference: new SpatialReference(3857)
+			 } );
+			var buffPoly = geometryEngine.geodesicBuffer(point, 2, "miles");
+
+			var fillSymbol = new SimpleFillSymbol({
+		        color: [227, 139, 79, 0.8],
+		        outline: new SimpleLineSymbol({
+		          color: [255, 255, 255],
+		          width: 1
+		        })
+		      });
+
+			  var polygonGraphic = new Graphic({
+		        geometry: buffPoly,
+		        symbol: fillSymbol
+		      });
+
+			  graphicsLayer.add(polygonGraphic);
+		} else {
+
+		}
+	}
 
 
     function openPopup(feature) {
