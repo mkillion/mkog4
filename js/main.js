@@ -37,6 +37,7 @@ require([
     "esri/layers/ArcGISImageLayer",
 	"esri/geometry/geometryEngine",
 	"esri/symbols/SimpleFillSymbol",
+	"esri/geometry/Polygon",
     "dojo/domReady!"
 ],
 function(
@@ -77,7 +78,8 @@ function(
     webMercatorUtils,
     ArcGISImageLayer,
 	geometryEngine,
-	SimpleFillSymbol
+	SimpleFillSymbol,
+	Polygon
 ) {
     var isMobile = WURFL.is_mobile;
 	var idDef = [];
@@ -714,30 +716,34 @@ function(
 
 	function bufferFeature(feature) {
 		if (feature.geometry.type === "point") {
-			var point = new Point( {
+			var buffFeature = new Point( {
 			    x: feature.geometry.x,
 			    y: feature.geometry.y,
 			    spatialReference: new SpatialReference(3857)
 			 } );
-			var buffPoly = geometryEngine.geodesicBuffer(point, 2, "miles");
-
-			var fillSymbol = new SimpleFillSymbol({
-		        color: [227, 139, 79, 0.8],
-		        outline: new SimpleLineSymbol({
-		          color: [255, 255, 255],
-		          width: 1
-		        })
-		      });
-
-			  var polygonGraphic = new Graphic({
-		        geometry: buffPoly,
-		        symbol: fillSymbol
-		      });
-
-			  graphicsLayer.add(polygonGraphic);
 		} else {
-
+			var buffFeature = new Polygon( {
+			    rings: feature.geometry.rings,
+			    spatialReference: new SpatialReference(3857)
+			 } );
 		}
+
+		var buffPoly = geometryEngine.geodesicBuffer(buffFeature, 1, "miles");
+		var fillSymbol = new SimpleFillSymbol( {
+			color: [227, 139, 79, 0.4],
+			outline: new SimpleLineSymbol( {
+				color: [0, 0, 0],
+			  	width: 1
+			} )
+		} );
+		var polygonGraphic = new Graphic( {
+			geometry: buffPoly,
+			symbol: fillSymbol
+		} );
+
+		graphicsLayer.add(polygonGraphic);
+		var ext = buffPoly.extent;
+		view.extent = ext;
 	}
 
 
