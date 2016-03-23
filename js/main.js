@@ -361,8 +361,8 @@ function(
             width: 450
         } );
 
-		$("#wwc5-from-date").datepicker();
-        $("#wwc5-to-date").datepicker();
+		//$("#wwc5-from-date").datepicker();
+        //$("#wwc5-to-date").datepicker();
 
         // og wells:
 		var wellType = ["Coal Bed Methane","Coal Bed Methane, Plugged","Dry and Abandoned","Enhanced Oil Recovery","Enhanced Oil Recovery, Plugged","Gas","Gas, Plugged","Injection","Injection, Plugged","Intent","Location","Oil","Oil and Gas","Oil and Gas, Plugged","Oil, Plugged","Other","Other, Plugged","Salt Water Disposal","Salt Water Disposal, Plugged"];
@@ -403,8 +403,8 @@ function(
             width: 315
         } );
 
-		$("#og-from-date").datepicker();
-        $("#og-to-date").datepicker();
+		//$("#og-from-date").datepicker();
+        //$("#og-to-date").datepicker();
     }
 
 
