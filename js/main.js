@@ -177,6 +177,7 @@ function(
 
         identifyTask = new IdentifyTask(ogGeneralServiceURL);
         identifyParams = new IdentifyParameters();
+		identifyParams.returnGeometry = true;
         identifyParams.tolerance = (isMobile) ? 9 : 3;
         identifyParams.layerIds = [0, 13, 8, 1];
         identifyParams.layerOption = "visible";
@@ -1185,7 +1186,6 @@ function(
                     } );
                     feature.popupTemplate = earthquakeTemplate;
                 }
-
                 return feature;
           } );
         } ).then(function(feature) {
