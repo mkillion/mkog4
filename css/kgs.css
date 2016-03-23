@@ -128,6 +128,10 @@ input[type=checkbox] {
 	white-space: nowrap;
 }
 
+.esri-has-popup-renderer {
+	width: 400px !important;
+}
+
 *[class^='esri-icon-'] {
 	font-size: 20px;
 }
