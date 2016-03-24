@@ -728,7 +728,7 @@ function(
 			 } );
 		}
 
-		var buffPoly = geometryEngine.geodesicBuffer(buffFeature, 1, "miles");
+		var buffPoly = geometryEngine.geodesicBuffer(buffFeature, 2, "miles");
 		var fillSymbol = new SimpleFillSymbol( {
 			color: [227, 139, 79, 0.4],
 			outline: new SimpleLineSymbol( {
@@ -741,9 +741,10 @@ function(
 			symbol: fillSymbol
 		} );
 
+		graphicsLayer.clear();
 		graphicsLayer.add(polygonGraphic);
-		var ext = buffPoly.extent;
-		view.extent = ext;
+		// var ext = buffPoly.extent;
+		// view.extent = ext;
 	}
 
 
@@ -939,7 +940,17 @@ function(
             lon = 0 - lon;
         }
 
-        var srId = (datum === "nad27") ? 4267 : 4326;
+		switch (datum) {
+			case "nad27":
+				var srId = 4267;
+				break;
+			case "nad83":
+				var srId = 4269;
+				break;
+			case "wgs84":
+				var srId = 4326;
+				break;
+		}
 
         var p = new Point(lon, lat, new SpatialReference( { wkid: srId } ) );
         params.geometries = [p];
@@ -1025,7 +1036,7 @@ function(
         content += '<div class="find-body hide" id="find-latlon">';
         content += '<table><tr><td class="find-label">Latitude:</td><td><input type="text" id="lat" placeholder="e.g. 38.12345"></td></tr>';
         content += '<tr><td class="find-label">Longitude:</td><td><input type="text" id="lon" placeholder="e.g. -98.12345"></td></tr>';
-        content += '<tr><td class="find-label">Datum:</td><td><select id="datum"><option value="nad27">NAD27</option><option value="wgs84">WGS84</option><td></td></tr>';
+        content += '<tr><td class="find-label">Datum:</td><td><select id="datum"><option value="nad27">NAD27</option><option value="nad83">NAD83</option><option value="wgs84">WGS84</option><td></td></tr>';
         content += '<tr><td></td><td><button class="find-button" onclick="zoomToLatLong();">Find</button></td></tr>';
         content += '</table></div>';
         // field:
