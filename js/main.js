@@ -112,7 +112,7 @@ function(
     createMenus();
     createTools();
     popCountyDropdown();
-    createFilterDialogs();
+    createDialogs();
 
     // Combo boxes:
     var autocomplete =  (isMobile) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
@@ -216,7 +216,7 @@ function(
             if(evt.action.id === "full-report") {
                 showFullInfo();
             } else if (evt.action.id === "buffer-feature") {
-                bufferFeature(view.popup.viewModel.selectedFeature);
+				$("#buff-dia").dialog("open");
             } else if (evt.action.id === "report-error") {
                 // TODO:
                 console.log("report error action clicked");
@@ -296,7 +296,7 @@ function(
     }
 
 
-    function createFilterDialogs() {
+    function createDialogs() {
         // earthquakes:
         var magOptions = "<option value='all'>All</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
         var eqF = "<span class='filter-hdr'>By Day:</span><br>";
@@ -411,6 +411,24 @@ function(
 
 		//$("#og-from-date").datepicker();
         //$("#og-to-date").datepicker();
+
+		// Buffer dialog:
+		var units = ["feet","yards","meters","kilometers","miles"];
+		var buffDia = "<table><tr><td class='find-label'>Distance:</td><td><input type='text' size='4' id='buff-dist'></td></tr>";
+		buffDia += "<tr><td class='find-label'>Units:</td><td><select id='buff-units'>";
+		for (var j = 0; j < units.length; j++) {
+			buffDia += "<option value='" + units[j] + "'>" + units[j] + "</option>";
+		}
+		buffDia += "</select></td></tr><tr><td></td><td><button class='find-button' onclick='bufferFeature()'>Create Buffer</button></td></tr></table>";
+
+		var buffN = domConstruct.create("div", { id: "buff-dia", class: "filter-dialog", innerHTML: buffDia } );
+        $("body").append(buffN);
+
+        $("#buff-dia").dialog( {
+            autoOpen: false,
+            dialogClass: "dialog",
+			title: "Buffer"
+        } );
     }
 
 
@@ -714,23 +732,24 @@ function(
     }
 
 
-	function bufferFeature(feature) {
-		if (feature.geometry.type === "point") {
+	bufferFeature = function() {
+		var f = view.popup.viewModel.selectedFeature;
+		if (f.geometry.type === "point") {
 			var buffFeature = new Point( {
-			    x: feature.geometry.x,
-			    y: feature.geometry.y,
+			    x: f.geometry.x,
+			    y: f.geometry.y,
 			    spatialReference: new SpatialReference(3857)
 			 } );
 		} else {
 			var buffFeature = new Polygon( {
-			    rings: feature.geometry.rings,
+			    rings: f.geometry.rings,
 			    spatialReference: new SpatialReference(3857)
 			 } );
 		}
 
-		var buffPoly = geometryEngine.geodesicBuffer(buffFeature, 2, "miles");
+		var buffPoly = geometryEngine.geodesicBuffer(buffFeature, dom.byId('buff-dist').value, dom.byId('buff-units').value);
 		var fillSymbol = new SimpleFillSymbol( {
-			color: [227, 139, 79, 0.4],
+			color: [102, 205, 170, 0.4],
 			outline: new SimpleLineSymbol( {
 				color: [0, 0, 0],
 			  	width: 1
@@ -745,6 +764,7 @@ function(
 		graphicsLayer.add(polygonGraphic);
 		// var ext = buffPoly.extent;
 		// view.extent = ext;
+		$("#buff-dia").dialog("close");
 	}
 
 
