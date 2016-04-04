@@ -308,7 +308,7 @@ input[type=text]::-ms-clear {
     max-width: 40%;
     text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;;
     float: left;
 }
 .esriRTL .app-title {
