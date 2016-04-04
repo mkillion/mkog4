@@ -335,10 +335,47 @@ function(
 
         // wwc5 wells:
 		var wwc5Status = ["Constructed","Plugged","Reconstructed"];
-		var wwc5Use = ["Air Conditioning","Cathodic Protection Borehole","Dewatering","Domestic","Domestic, Livestock","Domestic, changed from Irrigation","Domestic, changed from Oil Field Water Supply","Environmental Remediation, Air Sparge","Environmental Remediation, Injection","Environmental Remediation, Recovery","Environmental Remediation, Soil Vapor Extraction","Feedlot","Feedlot/Livestock/Windmill","Geothermal, Closed Loop, Horizontal","Geothermal, Closed Loop, Vertical","Geothermal, Open Loop, Inj. of Water","Geothermal, Open Loop, Surface Discharge","Heat Pump (Closed Loop/Disposal), Geothermal","Industrial","Injection well/air sparge (AS)/shallow","Irrigation","Lawn and Garden - domestic only","Monitoring well/observation/piezometer","Oil Field Water Supply","Other","Pond/Swimming Pool/Recreation","Public Water Supply","Recharge Well","Recovery/Soil Vapor Extraction/Soil Vent","Road Construction","Test Hole, Cased","Test Hole, Geotechnical","Test Hole, Uncased","Test hole/well","(unstated)/abandoned"];
+		var wwc5UseNames = {
+			"Air Conditioning": "Air Conditioning",
+			"Cathodic Protection Borehole": "Cathodic Protection Borehole",
+			"Dewatering": "Dewatering",
+			"Domestic": "Domestic",
+			"Domestic, Livestock": "Domestic, Livestock",
+			"Domestic, changed from Irrigation": "Domestic, was Irrigation",
+			"Domestic, changed from Oil Field Water Supply": "Domestic, was Oil Field supply",
+			"Environmental Remediation, Air Sparge": "Enviro. Remediation, Air Sparge",
+			"Environmental Remediation, Injection": "Enviro. Remediation, Injection",
+			"Environmental Remediation, Recovery": "Enviro. Remediation, Recovery",
+			"Environmental Remediation, Soil Vapor Extraction": "Env. Remed., Soil Vapor Ext.",
+			"Feedlot": "Feedlot",
+			"Feedlot/Livestock/Windmill": "Feedlot/Livestock/Windmill",
+			"Geothermal, Closed Loop, Horizontal": "Geotherm., Closed Loop, Horiz.",
+			"Geothermal, Closed Loop, Vertical": "Geotherm., Closed Loop, Vert.",
+			"Geothermal, Open Loop, Inj. of Water": "Geotherm. Open Loop Inj of Water",
+			"Geothermal, Open Loop, Surface Discharge": "Geotherm. Open Loop Surf. Disp.",
+			"Heat Pump (Closed Loop/Disposal), Geothermal": "Heat Pump Closed Loop/Disp Geo",
+			"Industrial": "Industrial",
+			"Injection well/air sparge (AS)/shallow": "Inj well/air sparge (AS)/shallow",
+			"Irrigation": "Irrigation",
+			"Lawn and Garden - domestic only": "Lawn and Garden - domestic only",
+			"Monitoring well/observation/piezometer": "Monitoring well/obs./piezometer",
+			"Oil Field Water Supply": "Oil Field Water Supply",
+			"Other": "Other",
+			"Pond/Swimming Pool/Recreation": "Pond/Swimming Pool/Recreation",
+			"Public Water Supply": "Public Water Supply",
+			"Recharge Well": "Recharge Well",
+			"Recovery/Soil Vapor Extraction/Soil Vent": "Recov./Soil Vap. Ext/Soil Vent",
+			"Road Construction": "Road Construction",
+			"Test Hole, Cased": "Test Hole, Cased",
+			"Test Hole, Geotechnical": "Test Hole, Geotechnical",
+			"Test Hole, Uncased": "Test Hole, Uncased",
+			"Test hole/well": "Test hole/well",
+			"(unstated)/abandoned": "(unstated)/abandoned"
+		}
+
 		var wwc5F = "<span class='filter-hdr'>Completion Date:</span><br>";
-        wwc5F += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td>";
-        wwc5F += "<td class='find-label'>To:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
+        wwc5F += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='wwc5-from-date' placeholder='mm/dd/yyyy'></td></tr>";
+        wwc5F += "<tr><td class='find-label'>To:</td><td><input type='text' size='12' id='wwc5-to-date' placeholder='mm/dd/yyyy'></td></tr></table>";
 		wwc5F += "<span class='filter-hdr'>Construction Status:</span><br><table>";
 		for (var i = 0; i < wwc5Status.length; i++) {
 			wwc5F += "<tr><td><input type='checkbox' name='const-status' value='" + wwc5Status[i] + "'>" + wwc5Status[i] + "</td></tr>"
@@ -349,9 +386,10 @@ function(
 		if (!isMobile) {
 			wwc5F += "<option value='' class='opt-note'>select one or many (ctrl or cmd)</option>";
 		}
-		for (var k = 0; k < wwc5Use.length; k++) {
-			wwc5F += "<option value='" + wwc5Use[k] + "'>" + wwc5Use[k] + "</option>";
-
+		for (var key in wwc5UseNames) {
+  			if (wwc5UseNames.hasOwnProperty(key) ) {
+				wwc5F += "<option value='" + key + "'>" + wwc5UseNames[key] + "</option>";
+  			}
 		}
 		wwc5F += "</select></td></tr>";
 		wwc5F += "<tr><td colspan='2'><button class='find-button' id='wwc5-go-btn' onclick='filterWWC5();'>Apply Filter</button>&nbsp;&nbsp;<button class='find-button' onclick='clearwwc5F();' autofocus>Clear Filter</button></td></tr>";
@@ -360,11 +398,13 @@ function(
         var wwc5N = domConstruct.create("div", { id: "wwc5-filter", class: "filter-dialog", innerHTML: wwc5F } );
         $("body").append(wwc5N);
 
+		var wwc5Width = (WURFL.form_factor === "Smartphone") ? 315 : 345;
+
         $("#wwc5-filter").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
 			title: "Filter Water Wells",
-            width: 450
+            width: wwc5Width
         } );
 
 		//$("#wwc5-from-date").datepicker();
@@ -406,7 +446,7 @@ function(
             autoOpen: false,
             dialogClass: "dialog",
 			title: "Filter Oil and Gas Wells",
-            width: 315
+            width: 320
         } );
 
 		//$("#og-from-date").datepicker();
