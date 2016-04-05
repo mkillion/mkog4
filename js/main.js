@@ -489,24 +489,40 @@ function(
 
 
 	sendProblem = function() {
-		var msg = $("#prob-msg").val();
-
-		if (view.popup.viewModel.selectedFeature.geometry.type === "point") {
-
-		} else {
-			var featType = "field";
-			var featName = view.popup.viewModel.selectedFeature.attributes.FIELD_NAME;
-			var featId = view.popup.viewModel.selectedFeature.attributes.FIELD_KID;
+		var sfa = view.popup.viewModel.selectedFeature.attributes;
+		if (sfa.hasOwnProperty('INPUT_SEQ_NUMBER')) {
+			var fId = sfa.INPUT_SEQ_NUMBER;
+			var fName = sfa.OWNER_NAME;
+			var fType = "wwc5";
+			var otherId = "";
+		} else if (sfa.hasOwnProperty('API_NUMBER')) {
+			var fId = sfa.KID;
+			var fName = sfa.LEASE_NAME + " " + sfa.WELL_NAME;
+			var fType = "ogwell";
+			var otherId = sfa.API_NUMBER;
+		} else if (sfa.hasOwnProperty('MAG')) {
+			var fId = sfa.ID;
+			var fName = "";
+			var fType = "earthquake";
+			var otherId = "";
+		} else if (sfa.hasOwnProperty('FIELD_KID')) {
+			var fId = sfa.FIELD_KID;
+			var fName = sfa.FIELD_NAME;
+			var fType = "field";
+			var otherId = "";
 		}
+
+		var msg = $("#prob-msg").val();
 
 		$.ajax( {
 		  type: "post",
 		  url: "reportProblem.cfm",
 		  data: {
-			  "id": featId,
-			  "name": featName,
-			  "msg": msg,
-			  "type": featType
+			  "id": fId,
+			  "name": fName,
+			  "type": fType,
+			  "otherId": otherId,
+			  "msg": msg
 		  }
 		} );
 		$("#prob-dia").dialog("close");
