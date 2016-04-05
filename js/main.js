@@ -194,21 +194,21 @@ function(
         var fullInfoAction = {
             title: "Full Report",
             id: "full-report",
-            className: "esri-icon-documentation"
+            className: "esri-icon-documentation pu-icon"
         };
         view.popup.viewModel.actions.push(fullInfoAction);
 
         var bufferFeatureAction = {
             title: "Buffer Feature",
             id: "buffer-feature",
-            className: "esri-icon-radio-checked"
+            className: "esri-icon-radio-checked pu-icon"
         };
         view.popup.viewModel.actions.push(bufferFeatureAction);
 
         var reportErrorAction = {
             title: "Report a Location or Data Problem",
             id: "report-error",
-            className: "esri-icon-contact"
+            className: "esri-icon-contact pu-icon"
         };
         view.popup.viewModel.actions.push(reportErrorAction);
 
@@ -218,8 +218,7 @@ function(
             } else if (evt.action.id === "buffer-feature") {
 				$("#buff-dia").dialog("open");
             } else if (evt.action.id === "report-error") {
-                // TODO:
-                console.log("report error action clicked");
+                $("#prob-dia").dialog("open");
             }
         } );
     } );
@@ -297,7 +296,7 @@ function(
 
 
     function createDialogs() {
-        // earthquakes:
+        // Earthquake filter:
         var magOptions = "<option value='all'>All</option><option value='2'>2.0 to 2.9</option><option value='3'>3.0 to 3.9</option><option value='4'>4.0 +</option>";
         var eqF = "<span class='filter-hdr'>By Day:</span><br>";
         eqF += "<table><tr><td class='find-label'>From:</td><td><input type='text' size='12' id='eq-from-date' placeholder='mm/dd/yyyy'></td></tr>";
@@ -333,7 +332,7 @@ function(
         } );
         $("#eq-to-date").datepicker();
 
-        // wwc5 wells:
+        // WWC5 wells filter:
 		var wwc5Status = ["Constructed","Plugged","Reconstructed"];
 		var wwc5UseNames = {
 			"Air Conditioning": "Air Conditioning",
@@ -410,7 +409,7 @@ function(
 		//$("#wwc5-from-date").datepicker();
         //$("#wwc5-to-date").datepicker();
 
-        // og wells:
+        // OG wells filter:
 		var wellType = ["Coal Bed Methane","Coal Bed Methane, Plugged","Dry and Abandoned","Enhanced Oil Recovery","Enhanced Oil Recovery, Plugged","Gas","Gas, Plugged","Injection","Injection, Plugged","Intent","Location","Oil","Oil and Gas","Oil and Gas, Plugged","Oil, Plugged","Other","Other, Plugged","Salt Water Disposal","Salt Water Disposal, Plugged"];
 		var ogF = "<span class='filter-hdr'>Well Type:</span><br>";
 		ogF += "<table><tr><td><select id='og-well-type' class='og-select' multiple size='4'>";
@@ -469,7 +468,49 @@ function(
             dialogClass: "dialog",
 			title: "Buffer"
         } );
+
+		// Report problem dialog:
+		var probDia = "<table><tr><td class='find-label'>Message:</td><td><textarea rows='4' cols='25' id='prob-msg' placeholder='Well info is automatically appended. Messages are anonymous unless you include your contact info.'></textarea></td></tr>";
+		probDia += "<tr><td></td><td><button class='find-button' onclick='sendProblem()'>Send</button></td></tr>";
+		probDia += "<tr><td colspan='2'><span class='toc-note'>(report website problems to <a href='mailto:killion@kgs.ku.edu'>GIS Services)</a></span></td></tr></table>";
+
+		var problemN = domConstruct.create("div", { id: "prob-dia", class: "filter-dialog", innerHTML: probDia } );
+        $("body").append(problemN);
+
+		var probTitle = (isMobile) ? "Report an error" : "Report a location or data error";
+
+        $("#prob-dia").dialog( {
+            autoOpen: false,
+            dialogClass: "dialog",
+			title: probTitle,
+			width: 375
+        } );
     }
+
+
+	sendProblem = function() {
+		var msg = $("#prob-msg").val();
+
+		if (view.popup.viewModel.selectedFeature.geometry.type === "point") {
+
+		} else {
+			var featType = "field";
+			var featName = view.popup.viewModel.selectedFeature.attributes.FIELD_NAME;
+			var featId = view.popup.viewModel.selectedFeature.attributes.FIELD_KID;
+		}
+
+		$.ajax( {
+		  type: "post",
+		  url: "reportProblem.cfm",
+		  data: {
+			  "id": featId,
+			  "name": featName,
+			  "msg": msg,
+			  "type": featType
+		  }
+		} );
+		$("#prob-dia").dialog("close");
+	}
 
 
 	filterOG = function() {

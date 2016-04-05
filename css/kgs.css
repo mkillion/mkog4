@@ -133,16 +133,14 @@ input[type=checkbox] {
 	width: 400px !important;
 }
 
-.esri-icon-radio-checked,
-.esri-icon-documentation,
-.esri-icon-contact,
-.esri-icon-erase,
+.pu-icon,
 .esri-icon-zoom-in-magnifying-glass {
-	font-size: 24px;
+	font-size: 22px;
 }
 
 .esri-icon-erase {
 	float: right;
+	font-size: 22px;
 }
 
 .toc-icon {
@@ -190,9 +188,7 @@ input[type=checkbox] {
 		top: 102px;
 	}
 
-	.esri-icon-radio-checked,
-	.esri-icon-documentation,
-	.esri-icon-contact,
+	.pu-icon,
 	.esri-icon-zoom-in-magnifying-glass {
 		font-size: 20px;
 		padding-left: 5px;
