@@ -83,6 +83,7 @@ function(
 ) {
     var isMobile = WURFL.is_mobile;
 	var idDef = [];
+	wmSR = new SpatialReference(3857);
 
     // Set up basic frame:
     window.document.title = "FooBar";
@@ -110,7 +111,6 @@ function(
     } );
 
     createMenus();
-    createTools();
     popCountyDropdown();
     createDialogs();
 
@@ -265,13 +265,6 @@ function(
     urlZoom(location.search.substr(1));
 
     // Side-panel click handlers:
-    // TODO: following click function is only for testing opening a popup from a link; in future versions link would be a value in a table cell.
-    $("#junktest").click(function() {
-        var kid = $("#junktest").html();
-        findWell(kid);
-        // TODO: zoom to feature from side-panel link.
-    } );
-
     $(".find-header").click(function() {
         $("[id^=find]").fadeOut("medium");
         $(".find-header").removeClass("esri-icon-down-arrow");
@@ -282,6 +275,14 @@ function(
 
     $(".esri-icon-erase").click(function() {
         graphicsLayer.clear();
+    } );
+
+	$("#buff-tool").click(function() {
+        $("#buff-dia").dialog("open");
+    } );
+
+	$("#meas-tool").click(function() {
+        $("#meas-dia").dialog("open");
     } );
 
 
@@ -466,7 +467,7 @@ function(
         $("#buff-dia").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
-			title: "Buffer"
+			title: "Buffer and filter features"
         } );
 
 		// Report problem dialog:
@@ -827,16 +828,17 @@ function(
 
 	bufferFeature = function() {
 		var f = view.popup.viewModel.selectedFeature;
+
 		if (f.geometry.type === "point") {
 			var buffFeature = new Point( {
 			    x: f.geometry.x,
 			    y: f.geometry.y,
-			    spatialReference: new SpatialReference(3857)
+			    spatialReference: wmSR
 			 } );
 		} else {
 			var buffFeature = new Polygon( {
 			    rings: f.geometry.rings,
-			    spatialReference: new SpatialReference(3857)
+			    spatialReference: wmSR
 			 } );
 		}
 
@@ -931,7 +933,7 @@ function(
             case "point":
                 var x = f.geometry.x;
                 var y = f.geometry.y;
-                var point = new Point(x, y, new SpatialReference( { wkid: 3857 } ) );
+                var point = new Point(x, y, wmSR);
                 view.center = point;
                 view.scale = 24000;
                 //highlightFeature(feature);
@@ -951,7 +953,7 @@ function(
             case "point":
                 var x = f.geometry.x;
                 var y = f.geometry.y;
-                var point = new Point(x, y, new SpatialReference( { wkid: 3857 } ) );
+                var point = new Point(x, y, wmSR);
                 markerSymbol = new SimpleMarkerSymbol( {
                     color: [255, 255, 0, 0],
                     size: 20,
@@ -1185,7 +1187,23 @@ function(
         };
         drawerMenus.push(menuObj);
 
-        // Legend panel:
+        // Tools panel:
+        content = '';
+        content += '<div class="panel-container">';
+        content += '<div class="panel-header">Tools <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-padding">';
+        content += '<div class="find-header tools-icon esri-icon-radio-checked" id="buff-tool"><span class="find-hdr-txt tools-txt"> Buffer and Filter</span></div>';
+		content += '<div class="find-header tools-icon esri-icon-minus" id="meas-tool"><span class="find-hdr-txt tools-txt"> Measure Distance</span></div>';
+        content += '</div>';
+        content += '</div>';
+
+        menuObj = {
+            label: '<div class="icon-wrench"></div><div class="icon-text">Tools</div>',
+            content: content
+        };
+        drawerMenus.push(menuObj);
+
+		// Legend panel:
         content = '';
         content += '<div class="panel-container">';
         content += '<div class="panel-header">Legend <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
@@ -1196,21 +1214,6 @@ function(
 
         menuObj = {
             label: '<div class="icon-list"></div><div class="icon-text">Legend</div>',
-            content: content
-        };
-        drawerMenus.push(menuObj);
-
-        // Tools panel:
-        content = '';
-        content += '<div class="panel-container">';
-        content += '<div class="panel-header">Tools <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
-        content += '<div class="panel-padding">';
-        content += '<div id="tools-content"></div>';
-        content += '</div>';
-        content += '</div>';
-
-        menuObj = {
-            label: '<div class="icon-wrench"></div><div class="icon-text">Tools</div>',
             content: content
         };
         drawerMenus.push(menuObj);
@@ -1298,14 +1301,6 @@ function(
         var lyr = map.getLayer(id);
         var incr = (dir === "down") ? -0.2 : 0.2;
         lyr.opacity = lyr.opacity + incr;
-    }
-
-
-    function createTools() {
-        // TODO: below is just a test.
-        var content = "";
-        content += '<span id="junktest">1006116441</span>';
-        $("#tools-content").html(content);
     }
 
 

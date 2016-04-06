@@ -14,10 +14,21 @@
 }
 
 .toc-item:first-of-type,
-#address {
+#address,
+#buff-tool {
 	border-top-color: #777;
     border-top-style: solid;
     border-top-width: 1px;
+}
+
+.tools-icon {
+	font-size: 20px;
+}
+
+.tools-txt {
+	font-size: 16px;
+	padding-left: 5px;
+	vertical-align: text-bottom;
 }
 
 .toc-note {
