@@ -470,19 +470,17 @@ function(
         } );
 
 		// Report problem dialog:
-		var probDia = "<table><tr><td class='find-label'>Message:</td><td><textarea rows='4' cols='25' id='prob-msg' placeholder='Well info is automatically appended. Messages are anonymous unless you include your contact info.'></textarea></td></tr>";
+		var probDia = "<table><tr><td class='find-label'>Message:</td><td><textarea rows='4' cols='25' id='prob-msg' placeholder='Feature ID is automatically appended. Messages are anonymous unless contact info is included.'></textarea></td></tr>";
 		probDia += "<tr><td></td><td><button class='find-button' onclick='sendProblem()'>Send</button></td></tr>";
-		probDia += "<tr><td colspan='2'><span class='toc-note'>(report website problems to <a href='mailto:killion@kgs.ku.edu'>GIS Services)</a></span></td></tr></table>";
+		probDia += "<tr><td colspan='2'><span class='toc-note'>(report website problems <a href='mailto:killion@kgs.ku.edu'>here)</a></span></td></tr></table>";
 
 		var problemN = domConstruct.create("div", { id: "prob-dia", class: "filter-dialog", innerHTML: probDia } );
         $("body").append(problemN);
 
-		var probTitle = (isMobile) ? "Report an error" : "Report a location or data error";
-
         $("#prob-dia").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
-			title: probTitle,
+			title: "Report a location or data error",
 			width: 375
         } );
     }
@@ -512,8 +510,6 @@ function(
 			var otherId = "";
 		}
 
-		var msg = $("#prob-msg").val();
-
 		$.ajax( {
 		  type: "post",
 		  url: "reportProblem.cfm",
@@ -522,7 +518,7 @@ function(
 			  "name": fName,
 			  "type": fType,
 			  "otherId": otherId,
-			  "msg": msg
+			  "msg": $("#prob-msg").val()
 		  }
 		} );
 		$("#prob-dia").dialog("close");
