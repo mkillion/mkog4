@@ -1042,16 +1042,17 @@ function(
         }
         findTask.execute(findParams).then(function(response) {
             zoomToFeature(response[0].feature);
+
 			var selWellsChk = $("#sect-wells").is(":checked")
 			if (selWellsChk) {
-				var queryTask = new QueryTask({
+				var queryTask = new QueryTask( {
 		    		url: ogGeneralServiceURL + "/0"
-		  		} );
-		  		var query = new Query();
-		  		query.returnGeometry = true;
-		  		query.outFields = ["*"];
-		  		query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"' and section="+dom.byId('sec').value;
-
+				} );
+				var query = new Query();
+				query.returnGeometry = true;
+				query.outFields = ["*"];
+				query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"' and section="+dom.byId('sec').value;
+				// TODO: change to execute only and make a list of wells
 				queryTask.executeForCount(query).then(function(results){
 				    console.log(results);
 				} );
