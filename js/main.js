@@ -38,6 +38,8 @@ require([
 	"esri/geometry/geometryEngine",
 	"esri/symbols/SimpleFillSymbol",
 	"esri/geometry/Polygon",
+	"esri/tasks/QueryTask",
+	"esri/tasks/support/Query",
     "dojo/domReady!"
 ],
 function(
@@ -79,7 +81,9 @@ function(
     ArcGISImageLayer,
 	geometryEngine,
 	SimpleFillSymbol,
-	Polygon
+	Polygon,
+	QueryTask,
+	Query
 ) {
     var isMobile = WURFL.is_mobile;
 	var idDef = [];
@@ -467,7 +471,7 @@ function(
         $("#buff-dia").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
-			title: "Buffer and filter features"
+			title: "Buffer and select features"
         } );
 
 		// Report problem dialog:
@@ -1038,6 +1042,20 @@ function(
         }
         findTask.execute(findParams).then(function(response) {
             zoomToFeature(response[0].feature);
+			var selWellsChk = $("#sect-wells").is(":checked")
+			if (selWellsChk) {
+				var queryTask = new QueryTask({
+		    		url: ogGeneralServiceURL + "/0"
+		  		} );
+		  		var query = new Query();
+		  		query.returnGeometry = true;
+		  		query.outFields = ["*"];
+		  		query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"' and section="+dom.byId('sec').value;
+
+				queryTask.executeForCount(query).then(function(results){
+				    console.log(results);
+				} );
+			}
         } );
     }
 
@@ -1124,7 +1142,7 @@ function(
             content += '<option value="' + i + '"">' + i + '</option>';
         }
         content += '</select> South</td></tr>';
-        content += '<tr><td class="find-label">Range:</td><td><select id="rng"><option value=""></option>';
+        content += '<tr><td class="find-label">Range:</td><td style="white-space: nowrap"><select id="rng"><option value=""></option>';
         for (var i=1; i<44; i++) {
             content += '<option value="' + i + '"">' + i + '</option>';
         }
@@ -1134,6 +1152,7 @@ function(
             content += '<option value="' + i + '"">' + i + '</option>';
         }
         content += '</select></td></tr>';
+		content += '<tr><td colspan="2">List oil & gas wells in section: <input type="checkbox" id="sect-wells"></td></tr>';
         content += '<tr><td></td><td><button class=find-button onclick=findIt("plss")>Find</button></td></tr>';
         content += '</table></div>';
         // api:
@@ -1192,8 +1211,8 @@ function(
         content += '<div class="panel-container">';
         content += '<div class="panel-header">Tools <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
-        content += '<div class="find-header tools-icon esri-icon-radio-checked" id="buff-tool"><span class="find-hdr-txt tools-txt"> Buffer and Filter</span></div>';
-		content += '<div class="find-header tools-icon esri-icon-minus" id="meas-tool"><span class="find-hdr-txt tools-txt"> Measure Distance</span></div>';
+        content += '<div class="find-header tools-icon esri-icon-radio-checked" id="buff-tool"><span class="find-hdr-txt tools-txt"> Buffer and Select</span></div>';
+		//content += '<div class="find-header tools-icon esri-icon-minus" id="meas-tool"><span class="find-hdr-txt tools-txt"> Measure Distance</span></div>';
         content += '</div>';
         content += '</div>';
 
