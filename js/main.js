@@ -1053,16 +1053,18 @@ function(
 				query.outFields = ["LEASE_NAME","WELL_NAME","API_NUMBER"];
 				query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"' and section="+dom.byId('sec').value;
 				queryTask.execute(query).then(function(results){
-				    createWellsList(results);
+				    createWellsList(results, dom.byId('twn').value, dom.byId('rng').value, dir, dom.byId('sec').value);
 				} );
+			} else {
+				$("#wells-tbl").html("");
 			}
         } );
     }
 
 
-	function createWellsList(fSet) {
-		var f = fSet.features[1].attributes;
-		var wellsTbl = "<table><tr><th>Name</th><th>API</th></tr>";
+	function createWellsList(fSet, twn, rng, dir, sec) {
+		var wellsTbl = "<div class='toc-note'>Oil/Gas Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
+		wellsTbl += "<table class='striped-tbl'><tr><th>Name</th><th>API</th></tr>";
 		for (var i=0; i<fSet.features.length; i++) {
 			wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td></tr>";
 		}
@@ -1385,7 +1387,7 @@ function(
 
     function earthquakeContent(feature) {
         var date = feature.attributes.CENTRAL_STANDARD_TIME !== "Null" ? feature.attributes.CENTRAL_STANDARD_TIME : "";
-        var content = "<table cellpadding='4'><tr><td>Magnitude: </td><td>{MAG}</td></tr>";
+        var content = "<table><tr><td>Magnitude: </td><td>{MAG}</td></tr>";
         content += "<tr><td>Date/Time (CST): </td><td>" + date + "</td></tr>";
         content += "<tr><td>Latitude: </td><td>{LATITUDE}</td></tr>";
         content += "<tr><td>Longitude: </td><td>{LONGITUDE}</td></tr>";
@@ -1399,7 +1401,7 @@ function(
 
 
     function wwc5Content(feature) {
-        var content = "<table cellpadding='4'><tr><td>County:</td><td>{COUNTY}</td></tr>";
+        var content = "<table><tr><td>County:</td><td>{COUNTY}</td></tr>";
         content += "<tr><td>Section:</td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}</td></tr>";
         content += "<tr><td>Quarter Section:</td><td>{QUARTER_CALL_3}&nbsp;&nbsp;{QUARTER_CALL_2}&nbsp;&nbsp;{QUARTER_CALL_1_LARGEST}</td></tr>";
 		content += "<tr><td>Latitude, Longitude (NAD27):</td><td>{NAD27_LATITUDE},&nbsp;&nbsp;{NAD27_LONGITUDE}</td></tr>";
@@ -1433,7 +1435,7 @@ function(
             pf += frm[i] + "<br>";
         }
 
-        var content = "<table cellpadding='4'><tr><td>Type of Field:</td><td>{FIELD_TYPE}</td></tr>";
+        var content = "<table><tr><td>Type of Field:</td><td>{FIELD_TYPE}</td></tr>";
         content += "<tr><td>Status:</td><td>{STATUS}</td></tr>";
         content += "<tr><td>Produces Oil:</td><td>" + po + "</td></tr>";
         content += "<tr><td>Cumulative Oil (bbls):</td><td>" + co + "</td></tr>";
@@ -1452,7 +1454,7 @@ function(
         var dpth = f.ROTARY_TOTAL_DEPTH !== "Null" ? f.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
 
-        var content = "<table cellpadding='3'><tr><td>API:</td><td>{API_NUMBER}</td></tr>";
+        var content = "<table><tr><td>API:</td><td>{API_NUMBER}</td></tr>";
         content += "<tr><td>Current Operator:</td><td>{CURR_OPERATOR}</td></tr>";
         content += "<tr><td>Well Type:</td><td>{STATUS_TXT}</td></tr>";
         content += "<tr><td>Status:</td><td>{WELL_CLASS}</td></tr>";

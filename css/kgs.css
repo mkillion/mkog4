@@ -3,6 +3,14 @@
 	padding: 0px 0px 10px 0px;
 }
 
+.striped-tbl td {
+	border-bottom: 1px solid #ddd;
+}
+
+th, td {
+    padding: 3px;
+}
+
 .toc-item,
 .find-header {
 	background-color: #e4e6e4;
