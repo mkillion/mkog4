@@ -1043,22 +1043,32 @@ function(
         findTask.execute(findParams).then(function(response) {
             zoomToFeature(response[0].feature);
 
-			var selWellsChk = $("#sect-wells").is(":checked")
-			if (selWellsChk) {
+			var selectWellsChk = $("#sect-wells").is(":checked")
+			if (what === "plss" && selectWellsChk) {
 				var queryTask = new QueryTask( {
 		    		url: ogGeneralServiceURL + "/0"
 				} );
 				var query = new Query();
 				query.returnGeometry = true;
-				query.outFields = ["*"];
+				query.outFields = ["LEASE_NAME","WELL_NAME","API_NUMBER"];
 				query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"' and section="+dom.byId('sec').value;
-				// TODO: change to execute only and make a list of wells
-				queryTask.executeForCount(query).then(function(results){
-				    console.log(results);
+				queryTask.execute(query).then(function(results){
+				    createWellsList(results);
 				} );
 			}
         } );
     }
+
+
+	function createWellsList(fSet) {
+		var f = fSet.features[1].attributes;
+		var wellsTbl = "<table><tr><th>Name</th><th>API</th></tr>";
+		for (var i=0; i<fSet.features.length; i++) {
+			wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td></tr>";
+		}
+		wellsTbl += "</table>";
+		$("#wells-tbl").html(wellsTbl);
+	}
 
 
     zoomToLatLong = function() {
@@ -1214,7 +1224,8 @@ function(
         content += '<div class="panel-padding">';
         content += '<div class="find-header tools-icon esri-icon-radio-checked" id="buff-tool"><span class="find-hdr-txt tools-txt"> Buffer and Select</span></div>';
 		//content += '<div class="find-header tools-icon esri-icon-minus" id="meas-tool"><span class="find-hdr-txt tools-txt"> Measure Distance</span></div>';
-        content += '</div>';
+		content += '</div>';
+		content += '<div id="wells-tbl"></div>';
         content += '</div>';
 
         menuObj = {
