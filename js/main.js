@@ -1078,7 +1078,7 @@ function(
 		}
 		$("#wells-tbl").append(wellsTbl);
 
-		$(".esri-icon-download").click( {wells:fSet.features, welltype:"og"}, downloadList);
+		$(".esri-icon-download").click( {wells:fSet.features}, downloadList);
 
 		// Open tools drawer-menu:
 		$(".item").removeClass("item-selected");
@@ -1091,31 +1091,23 @@ function(
 	downloadList = function(evt) {
 		var a, filename;
 		var csv = "";
-		switch (evt.data.welltype) {
-			case "og":
-				for (var key in evt.data.wells[0].attributes) {
-					// headers.
-					csv += key + ",";
-				}
-				csv += "\n";
 
-				for (var i=0; i<evt.data.wells.length; i++) {
-					a = evt.data.wells[i].attributes;
-					for (val in a) {
-						// data.
-						csv += '"' + a[val] + '",';
-					}
-					csv += "\n";
-				}
-
-				filename = "og-wells-download.csv";
-				break;
-			case "wwc5":
-				console.log("download wwc5 list");
-				filename = "wwc5-wells-download.csv";
-				break;
+		for (var key in evt.data.wells[0].attributes) {
+			// headers.
+			csv += key + ",";
 		}
-		$(".esri-icon-download").attr( { "download": filename, "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
+		csv += "\n";
+
+		for (var i=0; i<evt.data.wells.length; i++) {
+			a = evt.data.wells[i].attributes;
+			for (val in a) {
+				// data.
+				csv += '"' + a[val] + '",';
+			}
+			csv += "\n";
+		}
+		
+		$(".esri-icon-download").attr( { "download": "kgs-download.csv", "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
 	}
 
 
@@ -1257,7 +1249,7 @@ function(
         // Layers panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Layers* <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-header">Layers*</div>';
         content += '<div id="lyrs-toc"></div>';
         content += '</div>';
 
@@ -1270,7 +1262,7 @@ function(
         // Tools panel:
         content = '';
         content += '<div class="panel-container" id="tools-panel">';
-        content += '<div class="panel-header">Tools <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-header">Tools</div>';
         content += '<div class="panel-padding">';
         content += '<div class="find-header tools-icon esri-icon-radio-checked" id="buff-tool"><span class="find-hdr-txt tools-txt"> Buffer and Select</span></div>';
 		//content += '<div class="find-header tools-icon esri-icon-minus" id="meas-tool"><span class="find-hdr-txt tools-txt"> Measure Distance</span></div>';
@@ -1287,7 +1279,7 @@ function(
 		// Legend panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Legend <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-header">Legend</div>';
         content += '<div class="panel-padding">';
         content += '<div id="legend-content"></div>';
         content += '</div>';
