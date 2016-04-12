@@ -1089,7 +1089,6 @@ function(
 
 
 	downloadList = function(evt) {
-		console.log(evt.data.wells[0].attributes);
 		var a, filename;
 		switch (evt.data.welltype) {
 			case "og":
@@ -1105,8 +1104,7 @@ function(
 				filename = "wwc5-wells-download.csv";
 				break;
 		}
-		$(".esri-icon-download").attr("href", "data:Application/octet-stream," + encodeURIComponent(csv));
-		$(".esri-icon-download").attr("download", filename);
+		$(".esri-icon-download").attr( { "download": filename, "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
 	}
 
 
