@@ -1078,7 +1078,7 @@ function(
 		}
 		$("#wells-tbl").append(wellsTbl);
 
-		$(".esri-icon-download").click({wells:fSet.features, welltype:"og"}, downloadList);
+		$(".esri-icon-download").click( {wells:fSet.features, welltype:"og"}, downloadList);
 
 		// Open tools drawer-menu:
 		$(".item").removeClass("item-selected");
@@ -1090,13 +1090,24 @@ function(
 
 	downloadList = function(evt) {
 		var a, filename;
+		var csv = "";
 		switch (evt.data.welltype) {
 			case "og":
-				var csv = "LEASE_NAME,WELL_NAME,API_NUMBER\n";
+				for (var key in evt.data.wells[0].attributes) {
+					// headers.
+					csv += key + ",";
+				}
+				csv += "\n";
+
 				for (var i=0; i<evt.data.wells.length; i++) {
 					a = evt.data.wells[i].attributes;
-					csv += a.LEASE_NAME + "," + a.WELL_NAME + "," + a.API_NUMBER + "\n";
+					for (val in a) {
+						// data.
+						csv += '"' + a[val] + '",';
+					}
+					csv += "\n";
 				}
+
 				filename = "og-wells-download.csv";
 				break;
 			case "wwc5":
