@@ -1050,7 +1050,7 @@ function(
 				} );
 				var query = new Query();
 				query.returnGeometry = true;
-				query.outFields = ["LEASE_NAME","WELL_NAME","API_NUMBER"];
+				query.outFields = ["*"];
 				query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"' and section="+dom.byId('sec').value;
 				queryTask.execute(query).then(function(results){
 				    createWellsList(results, dom.byId('twn').value, dom.byId('rng').value, dir, dom.byId('sec').value);
@@ -1066,7 +1066,7 @@ function(
 		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='toc-note'>Oil & Gas Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
 		$("#wells-tbl").html(wellsLst);
 		if (fSet.features.length > 0) {
-			var downloadIcon = "<span class='esri-icon-download' title='Download List to Text File'></span>";
+			var downloadIcon = "<a class='esri-icon-download' title='Download List to Text File'></a>";
 			$("#list-txt").append(downloadIcon);
 			var wellsTbl = "<table class='striped-tbl'><tr><th>Name</th><th>API</th></tr>";
 			for (var i=0; i<fSet.features.length; i++) {
@@ -1078,7 +1078,7 @@ function(
 		}
 		$("#wells-tbl").append(wellsTbl);
 
-		$(".esri-icon-download").click(fSet.features, downloadList);
+		$(".esri-icon-download").click({wells:fSet.features, welltype:"og"}, downloadList);
 
 		// Open tools drawer-menu:
 		$(".item").removeClass("item-selected");
@@ -1088,8 +1088,25 @@ function(
 	}
 
 
-	downloadList = function(event) {
-		console.log(event.data);
+	downloadList = function(evt) {
+		console.log(evt.data.wells[0].attributes);
+		var a, filename;
+		switch (evt.data.welltype) {
+			case "og":
+				var csv = "LEASE_NAME,WELL_NAME,API_NUMBER\n";
+				for (var i=0; i<evt.data.wells.length; i++) {
+					a = evt.data.wells[i].attributes;
+					csv += a.LEASE_NAME + "," + a.WELL_NAME + "," + a.API_NUMBER + "\n";
+				}
+				filename = "og-wells-download.csv";
+				break;
+			case "wwc5":
+				console.log("download wwc5 list");
+				filename = "wwc5-wells-download.csv";
+				break;
+		}
+		$(".esri-icon-download").attr("href", "data:Application/octet-stream," + encodeURIComponent(csv));
+		$(".esri-icon-download").attr("download", filename);
 	}
 
 
