@@ -4,7 +4,7 @@
 }
 
 .striped-tbl td {
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid #ccc;
 }
 
 .panel-sub-txt {
@@ -164,7 +164,9 @@ input[type=checkbox] {
 	font-size: 22px;
 }
 
-.esri-icon-erase {
+.esri-icon-erase,
+.esri-icon-download {
+	cursor: pointer;
 	float: right;
 	font-size: 22px;
 }

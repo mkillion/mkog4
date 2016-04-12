@@ -1063,23 +1063,33 @@ function(
 
 
 	function createWellsList(fSet, twn, rng, dir, sec) {
-		var wellsTbl = "<div class='panel-sub-txt'>List</div><div class='toc-note'>Oil/Gas Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
+		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='toc-note'>Oil & Gas Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
+		$("#wells-tbl").html(wellsLst);
 		if (fSet.features.length > 0) {
-			wellsTbl += "<table class='striped-tbl'><tr><th>Name</th><th>API</th></tr>";
+			var downloadIcon = "<span class='esri-icon-download' title='Download List to Text File'></span>";
+			$("#list-txt").append(downloadIcon);
+			var wellsTbl = "<table class='striped-tbl'><tr><th>Name</th><th>API</th></tr>";
 			for (var i=0; i<fSet.features.length; i++) {
 				wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td></tr>";
 			}
 			wellsTbl += "</table>";
 		} else {
-			wellsTbl += "<div class='toc-note'>No wells in this section</div>";
+			var wellsTbl = "<div class='toc-note'>No wells in this section</div>";
 		}
-		$("#wells-tbl").html(wellsTbl);
+		$("#wells-tbl").append(wellsTbl);
+
+		$(".esri-icon-download").click(fSet.features, downloadList);
 
 		// Open tools drawer-menu:
 		$(".item").removeClass("item-selected");
 		$(".panel").removeClass("panel-selected");
 		$(".icon-wrench").closest(".item").addClass("item-selected");
 		$("#tools-panel").closest(".panel").addClass("panel-selected");
+	}
+
+
+	downloadList = function(event) {
+		console.log(event.data);
 	}
 
 
@@ -1206,6 +1216,8 @@ function(
         content += '<div class="find-body hide" id="find-county">';
         content += '<table><tr><td class="find-label">County:</td><td><select id="lstCounty"></select></td><td><button class=find-button onclick=findIt("county")>Find</button></td></tr></table>';
         content += '</div>';
+		// bookmarks
+		content += '<div class="panel-sub-txt">Bookmarks</div>';
 
         content += '</div>';
         content += '</div>';
