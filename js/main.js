@@ -1063,13 +1063,23 @@ function(
 
 
 	function createWellsList(fSet, twn, rng, dir, sec) {
-		var wellsTbl = "<div class='toc-note'>Oil/Gas Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
-		wellsTbl += "<table class='striped-tbl'><tr><th>Name</th><th>API</th></tr>";
-		for (var i=0; i<fSet.features.length; i++) {
-			wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td></tr>";
+		var wellsTbl = "<div class='panel-sub-txt'>List</div><div class='toc-note'>Oil/Gas Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
+		if (fSet.features.length > 0) {
+			wellsTbl += "<table class='striped-tbl'><tr><th>Name</th><th>API</th></tr>";
+			for (var i=0; i<fSet.features.length; i++) {
+				wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td></tr>";
+			}
+			wellsTbl += "</table>";
+		} else {
+			wellsTbl += "<div class='toc-note'>No wells in this section</div>";
 		}
-		wellsTbl += "</table>";
 		$("#wells-tbl").html(wellsTbl);
+
+		// Open tools drawer-menu:
+		$(".item").removeClass("item-selected");
+		$(".panel").removeClass("panel-selected");
+		$(".icon-wrench").closest(".item").addClass("item-selected");
+		$("#tools-panel").closest(".panel").addClass("panel-selected");
 	}
 
 
@@ -1221,7 +1231,7 @@ function(
 
         // Tools panel:
         content = '';
-        content += '<div class="panel-container">';
+        content += '<div class="panel-container" id="tools-panel">';
         content += '<div class="panel-header">Tools <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         content += '<div class="find-header tools-icon esri-icon-radio-checked" id="buff-tool"><span class="find-hdr-txt tools-txt"> Buffer and Select</span></div>';
@@ -1231,7 +1241,7 @@ function(
         content += '</div>';
 
         menuObj = {
-            label: '<div class="icon-wrench"></div><div class="icon-text">Tools</div>',
+            label: '<div class="icon-wrench"></div><div class="icon-text">Tools & Lists</div>',
             content: content
         };
         drawerMenus.push(menuObj);
