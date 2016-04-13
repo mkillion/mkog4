@@ -1049,10 +1049,16 @@ function(
 				if (selectWellType === "Oil and Gas") {
 					var lyrID = "/0";
 					query.outFields = ["KID","API_NUMBER","LEASE_NAME","WELL_NAME","STATE_CODE","COUNTY","FIELD_NAME","FIELD_KID","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","SUBDIVISION_1_LARGEST","SUBDIVISION_2","SUBDIVISION_3","SUBDIVISION_4_SMALLEST","SPOT","FEET_NORTH_FROM_REFERENCE","FEET_EAST_FROM_REFERENCE","REFERENCE_CORNER","ROTARY_TOTAL_DEPTH","ELEVATION_KB","ELEVATION_GL","ELEVATION_DF","PRODUCING_FORMATION","NAD27_LATITUDE","NAD27_LONGITUDE","OPERATOR_NAME","CURR_OPERATOR","PERMIT_DATE_TXT","SPUD_DATE_TXT","COMPLETION_DATE_TXT","PLUG_DATE_TXT","STATUS_TXT"];
+
+					wellsLayer.visible = true;
+                    $("#Oil-and-Gas-Wells input").prop("checked", true);
 				} else {
 					// water.
 					var lyrID = "/8";
-					query.outFields = ["*"];
+					query.outFields = ["INPUT_SEQ_NUMBER","OWNER_NAME","USE_DESC","DWR_APPROPRIATION_NUMBER","MONITORING_NUMBER","COUNTY","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","QUARTER_CALL_1_LARGEST","QUARTER_CALL_2","QUARTER_CALL_3","NAD27_LATITUDE","NAD27_LONGITUDE","DEPTH_TXT","ELEV_TXT","STATIC_LEVEL_TXT","YIELD_TXT","STATUS","COMP_DATE_TXT","CONTRACTOR"];
+
+					wwc5Layer.visible = true;
+                    $("#WWC5-Water-Wells input").prop("checked", true);
 				}
 
 				query.returnGeometry = true;
@@ -1075,6 +1081,7 @@ function(
 	function createWellsList(fSet, wellType, twn, rng, dir, sec) {
 		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='toc-note'>" + wellType + " Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
 		$("#wells-tbl").html(wellsLst);
+
 		if (fSet.features.length > 0) {
 			var downloadIcon = "<a class='esri-icon-download' title='Download List to Text File'></a>";
 			$("#list-txt").append(downloadIcon);
@@ -1093,6 +1100,7 @@ function(
 		} else {
 			var wellsTbl = "<div class='toc-note'>No wells in this section</div>";
 		}
+
 		$("#wells-tbl").append(wellsTbl);
 
 		$(".esri-icon-download").click( {wells:fSet.features}, downloadList);
