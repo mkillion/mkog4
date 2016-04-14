@@ -1,0 +1,3 @@
+<cfoutput>
+	Hey sailor...
+</cfoutput>

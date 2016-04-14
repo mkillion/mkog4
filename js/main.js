@@ -1114,25 +1114,42 @@ function(
 
 
 	downloadList = function(evt) {
-		var a, filename;
-		var csv = "";
+		// Using two different methods here. The HTML5 download attribute for <a> isn't currently supported in IE or Safari.
+		// I'm keeping that method in hopes of it being supported one day because it's fast and because I'd like to eliminate
+		// the use of CF someday. The fallback is an ajax call to a CF page to create a server-side download file.
 
-		for (var key in evt.data.wells[0].attributes) {
-			// headers.
-			csv += key + ",";
-		}
-		csv += "\n";
+		if (Modernizr.adownload) {
+			// HTML5 download:
+			var a, filename;
+			var csv = "";
 
-		for (var i=0; i<evt.data.wells.length; i++) {
-			a = evt.data.wells[i].attributes;
-			for (val in a) {
-				// data.
-				csv += '"' + a[val] + '",';
+			for (var key in evt.data.wells[0].attributes) {
+				// headers.
+				csv += key + ",";
 			}
+			csv = csv.slice(0, -1);
 			csv += "\n";
+
+			for (var i=0; i<evt.data.wells.length; i++) {
+				a = evt.data.wells[i].attributes;
+				for (val in a) {
+					// data.
+					csv += '"' + a[val] + '",';
+				}
+				csv = csv.slice(0, -1);
+				csv += "\n";
+			}
+
+			$(".esri-icon-download").attr( { "download": "kgs-download.csv", "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
+		} else {
+			// Coldfusion download:
+			$.get( "wellsInSectionDownload.cfm", function(data) {
+				console.log(data);
+			} );
 		}
 
-		$(".esri-icon-download").attr( { "download": "kgs-download.csv", "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
+
+
 	}
 
 
