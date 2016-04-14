@@ -1079,7 +1079,7 @@ function(
 
 
 	function createWellsList(fSet, wellType, twn, rng, dir, sec) {
-		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='toc-note'>" + wellType + " Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
+		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>" + wellType + " Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
 		$("#wells-tbl").html(wellsLst);
 
 		if (fSet.features.length > 0) {
@@ -1103,7 +1103,8 @@ function(
 
 		$("#wells-tbl").append(wellsTbl);
 
-		$(".esri-icon-download").click( {wells:fSet.features}, downloadList);
+		var cfParams = { "twn": twn, "rng": rng, "dir": dir, "sec": sec, "type": wellType };
+		$(".esri-icon-download").click( {wells:fSet.features, cf:cfParams}, downloadList);
 
 		// Open tools drawer-menu:
 		$(".item").removeClass("item-selected");
@@ -1114,7 +1115,7 @@ function(
 
 
 	downloadList = function(evt) {
-		// Using two different methods here. The HTML5 download attribute for <a> isn't currently supported in IE or Safari.
+		// Using two different methods here. The HTML5 download attribute for <a> tags isn't currently supported in IE or Safari.
 		// I'm keeping that method in hopes of it being supported one day because it's fast and because I'd like to eliminate
 		// the use of CF someday. The fallback is an ajax call to a CF page to create a server-side download file.
 
@@ -1143,13 +1144,11 @@ function(
 			$(".esri-icon-download").attr( { "download": "kgs-download.csv", "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
 		} else {
 			// Coldfusion download:
-			$.get( "wellsInSectionDownload.cfm", function(data) {
-				console.log(data);
+			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&sec=" + evt.data.cf.sec + "&type=" + evt.data.cf.type;
+			$.get( "wellsInSectionDownload.cfm?" + plssStr, function(data) {
+				$(".download-link").html(data);
 			} );
 		}
-
-
-
 	}
 
 

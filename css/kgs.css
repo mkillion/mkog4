@@ -18,6 +18,10 @@ th, td {
     padding: 3px;
 }
 
+.download-link {
+	padding-left: 37px;
+}
+
 .toc-item,
 .find-header {
 	background-color: #e4e6e4;
