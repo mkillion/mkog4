@@ -1117,7 +1117,7 @@ function(
 	downloadList = function(evt) {
 		// Using two different methods here. The HTML5 download attribute for <a> tags isn't currently supported in IE or Safari.
 		// I'm keeping that method in hopes of it being supported one day because it's fast and because I'd like to eliminate
-		// the use of CF someday. The fallback is an ajax call to a CF page to create a server-side download file.
+		// the use of CF. The fallback is an ajax call to a CF page to create a server-side download file.
 
 		if (Modernizr.adownload) {
 			// HTML5 download:
@@ -1141,7 +1141,7 @@ function(
 				csv += "\n";
 			}
 
-			$(".esri-icon-download").attr( { "download": "kgs-download.csv", "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
+			$(".esri-icon-download").attr( { "download": "KGS-Download.csv", "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
 		} else {
 			// Coldfusion download:
 			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&sec=" + evt.data.cf.sec + "&type=" + evt.data.cf.type;

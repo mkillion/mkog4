@@ -26,8 +26,23 @@
 
 		<cffile action="append" file="#WellsOutputFile#" output="#Data#" addnewline="yes">
 	</cfloop>
-<cfelse>
 
+<cfelseif #url.type# eq "Water">
+	<cfset Headers = "INPUT_SEQ_NUMBER,OWNER_NAME,USE,DWR_APPROPRIATION_NUMBER,MONITORING_NUMBER,COUNTY,TONWSHIP,TOWNSHIP_DIRECTION,RANGE,RANGE_DIRECTION,SECTION,QUARTER_CALL_1_LARGEST,QUARTER_CALL_2,QUARTER_CALL_3,NAD27_LATITUDE,NAD27_LONGITUDE,DEPTH,ELEVATION,STATIC_LEVEL,YIELD,STATUS,COMPLETION_DATE,CONTRACTOR">
+
+	<cffile action="write" file="#WellsOutputFile#" output="#Headers#" addnewline="yes">
+
+	<cfquery name="qWellData" datasource="gis_webinfo">
+		select input_seq_number, owner_name, use_desc, dwr_appropriation_number, monitoring_number, county, township, township_direction, range, range_direction, section, quarter_call_1_largest, quarter_call_2, quarter_call_3, nad27_latitude, nad27_longitude, depth_txt, elev_txt, static_level_txt, yield_txt, status, comp_date_txt, contractor
+		from wwc5_wells
+		where township = #url.twn# and range = #url.rng# and range_direction = '#url.dir#' and section = #url.sec#
+	</cfquery>
+
+	<cfloop query="qWellData">
+		<cfset Data = '"#input_seq_number#","#owner_name#","#use_desc#","#dwr_appropriation_number#","#monitoring_number#","#county#","#township#","#township_direction#","#range#","#range_direction#","#section#","#quarter_call_1_largest#","#quarter_call_2#","#quarter_call_3#","#nad27_latitude#","#nad27_longitude#","#depth_txt#","#elev_txt#","#static_level_txt#","#yield_txt#","#status#","#comp_date_txt#","#contractor#"'>
+
+		<cffile action="append" file="#WellsOutputFile#" output="#Data#" addnewline="yes">
+	</cfloop>
 </cfif>
 
 <cfoutput>
