@@ -1121,7 +1121,7 @@ function(
 
 		if (Modernizr.adownload) {
 			// HTML5 download:
-			var a, filename;
+			var a;
 			var csv = "";
 
 			for (var key in evt.data.wells[0].attributes) {
@@ -1141,7 +1141,8 @@ function(
 				csv += "\n";
 			}
 
-			$(".esri-icon-download").attr( { "download": "KGS-Download.csv", "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
+			var filename = "KGS-" + evt.data.cf.type + "-Wells.csv";
+			$(".esri-icon-download").attr( { "download": filename, "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
 		} else {
 			// Coldfusion download:
 			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&sec=" + evt.data.cf.sec + "&type=" + evt.data.cf.type;

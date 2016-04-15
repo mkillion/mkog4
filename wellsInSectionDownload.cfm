@@ -7,7 +7,7 @@
 </head>
 <body>
 <cfset TimeStamp = "#hour(now())##minute(now())##second(now())#">
-<cfset WellsFileName = "KGS-Download-#TimeStamp#.csv">
+<cfset WellsFileName = "KGS-#url.type#-Wells-#TimeStamp#.csv">
 <cfset WellsOutputFile = "\\vmpyrite\d$\webware\Apache\Apache2\htdocs\kgsmaps\oilgas\output\#WellsFileName#">
 
 <cfif #url.type# eq "Oil and Gas">
@@ -46,7 +46,7 @@
 </cfif>
 
 <cfoutput>
-<div class="download-link"><a href="http://vmpyrite.kgs.ku.edu/KgsMaps/oilgas/output/KGS-Download-#TimeStamp#.csv">KGS-Download-#TimeStamp#.csv</a></div>
+<div class="download-link"><a href="http://vmpyrite.kgs.ku.edu/KgsMaps/oilgas/output/#WellsFileName#">#WellsFileName#</a></div>
 </cfoutput>
 
 </body>
