@@ -1117,7 +1117,7 @@ function(
 	downloadList = function(evt) {
 		// Using two different methods here. The HTML5 download attribute for <a> tags isn't currently supported in IE or Safari.
 		// I'm keeping that method in hopes of it being supported one day because it's fast and because I'd like to eliminate
-		// the use of CF. The fallback is an ajax call to a CF page to create a server-side download file.
+		// the use of CF. The fallback is to create a server-side download file using CF.
 
 		if (Modernizr.adownload) {
 			// HTML5 download:

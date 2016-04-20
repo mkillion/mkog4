@@ -22,6 +22,10 @@ th, td {
 	padding-left: 20px;
 }
 
+#wells-tbl {
+	font-size: 13px;
+}
+
 .toc-item,
 .find-header {
 	background-color: #e4e6e4;
