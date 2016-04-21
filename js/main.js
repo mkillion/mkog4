@@ -1086,12 +1086,12 @@ function(
 			var downloadIcon = "<a class='esri-icon-download' title='Download List to Text File'></a>";
 			$("#list-txt").append(downloadIcon);
 			if (wellType === "Oil and Gas") {
-				var wellsTbl = "<table class='striped-tbl'><tr><th>Name</th><th>API</th></tr>";
+				var wellsTbl = "<table class='striped-tbl' id='og-tbl'><tr><th>Name</th><th>API</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
 					wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td></tr>";
 				}
 			} else {
-				var wellsTbl = "<table class='striped-tbl'><tr><th>Owner</th><th>Use</th></tr>";
+				var wellsTbl = "<table class='striped-tbl' id='wwc5-tbl'><tr><th>Owner</th><th>Use</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
 					wellsTbl += "<tr><td>" + fSet.features[i].attributes.OWNER_NAME + "</td><td>" + fSet.features[i].attributes.USE_DESC + "</td></tr>";
 				}
@@ -1111,6 +1111,17 @@ function(
 		$(".panel").removeClass("panel-selected");
 		$(".icon-wrench").closest(".item").addClass("item-selected");
 		$("#tools-panel").closest(".panel").addClass("panel-selected");
+
+		// Select a well by clicking on table row:
+		// Return the value of a particular table cell (set by column index) when row is clicked:
+		$('.striped-tbl').find('tr').click(function() {
+			//highlight row
+			$(this).closest("tr").siblings().removeClass("highlighted");
+    		$(this).toggleClass("highlighted");
+			//get id for that well
+			console.log( $(this).find('td:eq(1)').text() );
+			//open popup
+		} );
 	}
 
 

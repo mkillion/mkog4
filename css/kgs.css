@@ -18,6 +18,12 @@ th, td {
     padding: 3px;
 }
 
+.highlighted {
+    color: #261F1D;
+    background-color: #c1cdc1;
+	/*background-color: #bebebe;*/
+}
+
 .download-link {
 	padding-left: 20px;
 }
