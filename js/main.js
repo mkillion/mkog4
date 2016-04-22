@@ -869,7 +869,7 @@ function(
 
     function openPopup(feature) {
         view.popup.viewModel.features = feature;
-        view.popup.viewModel.docked = true;
+        //view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
         dom.byId("mapDiv").style.cursor = "auto";
     }
@@ -1088,12 +1088,12 @@ function(
 			if (wellType === "Oil and Gas") {
 				var wellsTbl = "<table class='striped-tbl' id='og-tbl'><tr><th>Name</th><th>API</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
-					wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td></tr>";
+					wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td><td class='hide'>" + fSet.features[i].attributes.KID + "</td></tr>";
 				}
 			} else {
 				var wellsTbl = "<table class='striped-tbl' id='wwc5-tbl'><tr><th>Owner</th><th>Use</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
-					wellsTbl += "<tr><td>" + fSet.features[i].attributes.OWNER_NAME + "</td><td>" + fSet.features[i].attributes.USE_DESC + "</td></tr>";
+					wellsTbl += "<tr><td>" + fSet.features[i].attributes.OWNER_NAME + "</td><td>" + fSet.features[i].attributes.USE_DESC + "</td><td class='hide'>" + fSet.features[i].attributes.INPUT_SEQ_NUMBER + "</td></tr>";
 				}
 			}
 			wellsTbl += "</table>";
@@ -1113,13 +1113,11 @@ function(
 		$("#tools-panel").closest(".panel").addClass("panel-selected");
 
 		// Select a well by clicking on table row:
-		// Return the value of a particular table cell (set by column index) when row is clicked:
 		$('.striped-tbl').find('tr').click(function() {
-			//highlight row
 			$(this).closest("tr").siblings().removeClass("highlighted");
     		$(this).toggleClass("highlighted");
-			//get id for that well
-			console.log( $(this).find('td:eq(1)').text() );
+			// Get id for that well from the table cell (reference by column index, API and SEQ_NUM are in a hidden third column):
+			console.log( $(this).find('td:eq(2)').text() );
 			//open popup
 		} );
 	}
@@ -1338,11 +1336,12 @@ function(
         content += '<div class="panel-header">Legend</div>';
         content += '<div class="panel-padding">';
         content += '<div id="legend-content"></div>';
+		content += '<div class="panel-header">Links</div>';
         content += '</div>';
         content += '</div>';
 
         menuObj = {
-            label: '<div class="icon-list"></div><div class="icon-text">Legend</div>',
+            label: '<div class="icon-list"></div><div class="icon-text">Legend/Links</div>',
             content: content
         };
         drawerMenus.push(menuObj);
