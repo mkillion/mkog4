@@ -1449,6 +1449,7 @@ function(
                         content: wellContent(feature)
                     } );
                     feature.popupTemplate = ogWellsTemplate;
+					view.popup.viewModel.location = event.mapPoint;
                 }
                 else if (layerName === 'OG_FIELDS') {
                     var ogFieldsTemplate = new PopupTemplate( {
