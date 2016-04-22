@@ -173,6 +173,11 @@ input[type=checkbox] {
 	width: 400px !important;
 }
 
+.esri-popup-content {
+	height: 450px !important;
+	max-height: 450px !important;
+}
+
 .pu-icon,
 .esri-icon-zoom-in-magnifying-glass {
 	font-size: 22px;
