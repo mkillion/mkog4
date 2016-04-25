@@ -868,8 +868,6 @@ function(
 
 
     function openPopup(feature) {
-		//$(".esri-popup-content").css("height", "500px");
-
         view.popup.viewModel.features = feature;
         //view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
