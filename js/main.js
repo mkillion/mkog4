@@ -868,10 +868,11 @@ function(
 
 
     function openPopup(feature) {
+		//$(".esri-popup-content").css("height", "500px");
+
         view.popup.viewModel.features = feature;
         //view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
-        dom.byId("mapDiv").style.cursor = "auto";
     }
 
 
@@ -1474,9 +1475,12 @@ function(
                 return feature;
           } );
         } ).then(function(feature) {
-			view.popup.viewModel.location = event.mapPoint;
-            openPopup(feature);
-            //highlightFeature(feature);
+			dom.byId("mapDiv").style.cursor = "auto";
+			if (feature.length > 0) {
+				view.popup.viewModel.location = event.mapPoint;
+            	openPopup(feature);
+            	//highlightFeature(feature);
+			}
         } );
     }
 
