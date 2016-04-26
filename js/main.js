@@ -868,8 +868,8 @@ function(
 
 
     function openPopup(feature) {
-        view.popup.viewModel.features = feature;
-        //view.popup.viewModel.docked = true;
+		view.popup.viewModel.features = feature;
+        view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
     }
 
@@ -1047,15 +1047,14 @@ function(
 				var query = new Query();
 				if (selectWellType === "Oil and Gas") {
 					var lyrID = "/0";
+					// Attributes to be included in download file:
 					query.outFields = ["KID","API_NUMBER","LEASE_NAME","WELL_NAME","STATE_CODE","COUNTY","FIELD_NAME","FIELD_KID","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","SUBDIVISION_1_LARGEST","SUBDIVISION_2","SUBDIVISION_3","SUBDIVISION_4_SMALLEST","SPOT","FEET_NORTH_FROM_REFERENCE","FEET_EAST_FROM_REFERENCE","REFERENCE_CORNER","ROTARY_TOTAL_DEPTH","ELEVATION_KB","ELEVATION_GL","ELEVATION_DF","PRODUCING_FORMATION","NAD27_LATITUDE","NAD27_LONGITUDE","OPERATOR_NAME","CURR_OPERATOR","PERMIT_DATE_TXT","SPUD_DATE_TXT","COMPLETION_DATE_TXT","PLUG_DATE_TXT","STATUS_TXT"];
-
 					wellsLayer.visible = true;
                     $("#Oil-and-Gas-Wells input").prop("checked", true);
 				} else {
 					// water.
 					var lyrID = "/8";
 					query.outFields = ["INPUT_SEQ_NUMBER","OWNER_NAME","USE_DESC","DWR_APPROPRIATION_NUMBER","MONITORING_NUMBER","COUNTY","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","QUARTER_CALL_1_LARGEST","QUARTER_CALL_2","QUARTER_CALL_3","NAD27_LATITUDE","NAD27_LONGITUDE","DEPTH_TXT","ELEV_TXT","STATIC_LEVEL_TXT","YIELD_TXT","STATUS","COMP_DATE_TXT","CONTRACTOR"];
-
 					wwc5Layer.visible = true;
                     $("#WWC5-Water-Wells input").prop("checked", true);
 				}
@@ -1115,9 +1114,64 @@ function(
 		$('.striped-tbl').find('tr').click(function() {
 			$(this).closest("tr").siblings().removeClass("highlighted");
     		$(this).toggleClass("highlighted");
-			// Get id for that well from the table cell (reference by column index, API and SEQ_NUM are in a hidden third column):
-			console.log( $(this).find('td:eq(2)').text() );
-			//open popup
+
+			// Get id for that well from the table cell (KGS id numbers are in a hidden third column referenced by index = 2):
+			var kgsID =  $(this).find('td:eq(2)').text();
+
+			var selectWellType = $("input:radio[name=welltype]:checked").val();
+			if (selectWellType === "Oil and Gas") {
+				findParams.layerIds = [0];
+				findParams.searchFields = ["KID"];
+		        findParams.searchText = kgsID;
+			} else {
+				findParams.layerIds = [8];
+				findParams.searchFields = ["INPUT_SEQ_NUMBER"];
+		        findParams.searchText = kgsID;
+			}
+	        findParams.returnGeometry = true;
+
+			findTask.execute(findParams).then(function(response) {
+	            return arrayUtils.map(response, function(result) {
+	                var feature = result.feature;
+	                var layerName = result.layerName;
+
+	                if (layerName === 'OG_WELLS') {
+	                    var ogWellsTemplate = new PopupTemplate( {
+	                        title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>{API_NUMBER}</span>",
+	                        content: wellContent(feature)
+	                    } );
+	                    feature.popupTemplate = ogWellsTemplate;
+	                }
+	                else if (layerName === 'OG_FIELDS') {
+	                    var ogFieldsTemplate = new PopupTemplate( {
+	                        title: "Field: {FIELD_NAME}",
+	                        content: fieldContent(feature)
+	                        } );
+	                    feature.popupTemplate = ogFieldsTemplate;
+	                }
+	                else if (layerName === 'WWC5_WELLS') {
+	                    var wwc5Template = new PopupTemplate( {
+	                        title: "Water Well (WWC5): ",
+	                        content: wwc5Content(feature)
+	                    } );
+	                    feature.popupTemplate = wwc5Template;
+	                }
+	                else if (layerName === 'EARTHQUAKES') {
+	                    var earthquakeTemplate = new PopupTemplate( {
+	                        title: "Earthquake Event: ",
+	                        content: earthquakeContent(feature)
+	                    } );
+	                    feature.popupTemplate = earthquakeTemplate;
+	                }
+	                return feature;
+	          	} );
+	        } ).then(function(feature) {
+				dom.byId("mapDiv").style.cursor = "auto";
+				if (feature.length > 0) {
+	            	openPopup(feature);
+	            	//highlightFeature(feature);
+				}
+	        } );
 		} );
 	}
 
@@ -1354,20 +1408,16 @@ function(
 
     function showFullInfo() {
         var popupTitle = $(".esri-title").html();
-
         if (popupTitle.indexOf("Field:") > -1) {
-            var fieldKID = $("#field-kid").html();
-            var win = window.open("http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + fieldKID, "target='_blank'");
+			var url = "http://chasm.kgs.ku.edu/apex/oil.ogf4.IDProdQuery?FieldNumber=" + $("#field-kid").html();
         } else if (popupTitle.indexOf("Well:") > -1) {
-            var wellKID = $("#well-kid").html();
-            var win = window.open("http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + wellKID, "target='_blank'");
+            var url = "http://chasm.kgs.ku.edu/apex/qualified.well_page.DisplayWell?f_kid=" + $("#well-kid").html();
         } else if (popupTitle.indexOf("Earthquake") > -1) {
-            var usgsID = $("#usgs-id").html();
-            var win = window.open("http://earthquake.usgs.gov/earthquakes/eventpage/" + usgsID, "target='_blank'");
+            var url = "http://earthquake.usgs.gov/earthquakes/eventpage/" + $("#usgs-id").html();
         } else if (popupTitle.indexOf("(WWC5)") > -1) {
-            var wwc5ID = $("#seq-num").html();
-            var win = window.open("http://chasm.kgs.ku.edu/ords/wwc5.wwc5d2.well_details?well_id=" + wwc5ID, "target='_blank'");
+            var url = "http://chasm.kgs.ku.edu/ords/wwc5.wwc5d2.well_details?well_id=" + $("#seq-num").html();
         }
+		var win = window.open(url, "target='_blank'");
     }
 
 
@@ -1471,11 +1521,10 @@ function(
                     feature.popupTemplate = earthquakeTemplate;
                 }
                 return feature;
-          } );
+          	} );
         } ).then(function(feature) {
 			dom.byId("mapDiv").style.cursor = "auto";
 			if (feature.length > 0) {
-				view.popup.viewModel.location = event.mapPoint;
             	openPopup(feature);
             	//highlightFeature(feature);
 			}
@@ -1549,6 +1598,7 @@ function(
 
     function wellContent(feature) {
         var f = feature.attributes;
+
         var dpth = f.ROTARY_TOTAL_DEPTH !== "Null" ? f.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
 
