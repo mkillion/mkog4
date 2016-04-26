@@ -805,31 +805,6 @@ function(
     }
 
 
-    function findWell(kid) {
-        findParams.layerIds = [0];
-        findParams.searchFields = ["KID"];
-        findParams.searchText = kid;
-        findParams.returnGeometry = true;
-        findTask.execute(findParams)
-            .then(function(response) {
-                return arrayUtils.map(response, function(result) {
-                    var feature = result.feature;
-                        var t = new PopupTemplate( {
-                            title: "<span class='pu-title'>Well: " + feature.attributes.LEASE_NAME + " " + feature.attributes.WELL_NAME + "  </span><span class='pu-note'>(" + feature.attributes.API_NUMBER + ")</span>",
-                            content: wellContent(feature)
-                        } );
-                        feature.popupTemplate = t;
-
-                    return feature;
-              } );
-            } )
-            .then(function(feature) {
-                openPopup(feature);
-                zoomToFeature(feature);
-            } );
-    }
-
-
 	bufferFeature = function() {
 		var f = view.popup.viewModel.selectedFeature;
 
@@ -897,33 +872,14 @@ function(
             findParams.searchText = extValue;
             findTask.execute(findParams)
             .then(function(response) {
-                return arrayUtils.map(response, function(result) {
-                    var feature = result.feature;
-                    var layerName = result.layerName;
-
-                    if (layerName === 'OG_WELLS') {
-                        var ogWellsTemplate = new PopupTemplate( {
-                            title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>({API_NUMBER})</span>",
-                            content: wellContent(feature)
-                        } );
-                        feature.popupTemplate = ogWellsTemplate;
-                    }
-                    else if (layerName === 'OG_FIELDS') {
-                        var ogFieldsTemplate = new PopupTemplate( {
-                            title: "Field: {FIELD_NAME}",
-                            content: fieldContent(feature)
-                            } );
-                        feature.popupTemplate = ogFieldsTemplate;
-                    }
-
-                    return feature;
-              } );
+				return addPopupTemplate(response);
             } )
             .then(function(feature) {
-                openPopup(feature);
-                zoomToFeature(feature);
+				if (feature.length > 0) {
+					openPopup(feature);
+	                zoomToFeature(feature);
+				}
             } );
-
             // TODO: tie last location to the Home button?
         }
     }
@@ -1131,40 +1087,7 @@ function(
 	        findParams.returnGeometry = true;
 
 			findTask.execute(findParams).then(function(response) {
-	            return arrayUtils.map(response, function(result) {
-	                var feature = result.feature;
-	                var layerName = result.layerName;
-
-	                if (layerName === 'OG_WELLS') {
-	                    var ogWellsTemplate = new PopupTemplate( {
-	                        title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>{API_NUMBER}</span>",
-	                        content: wellContent(feature)
-	                    } );
-	                    feature.popupTemplate = ogWellsTemplate;
-	                }
-	                else if (layerName === 'OG_FIELDS') {
-	                    var ogFieldsTemplate = new PopupTemplate( {
-	                        title: "Field: {FIELD_NAME}",
-	                        content: fieldContent(feature)
-	                        } );
-	                    feature.popupTemplate = ogFieldsTemplate;
-	                }
-	                else if (layerName === 'WWC5_WELLS') {
-	                    var wwc5Template = new PopupTemplate( {
-	                        title: "Water Well (WWC5): ",
-	                        content: wwc5Content(feature)
-	                    } );
-	                    feature.popupTemplate = wwc5Template;
-	                }
-	                else if (layerName === 'EARTHQUAKES') {
-	                    var earthquakeTemplate = new PopupTemplate( {
-	                        title: "Earthquake Event: ",
-	                        content: earthquakeContent(feature)
-	                    } );
-	                    feature.popupTemplate = earthquakeTemplate;
-	                }
-	                return feature;
-	          	} );
+				return addPopupTemplate(response);
 	        } ).then(function(feature) {
 				dom.byId("mapDiv").style.cursor = "auto";
 				if (feature.length > 0) {
@@ -1488,40 +1411,7 @@ function(
         dom.byId("mapDiv").style.cursor = "wait";
 
         identifyTask.execute(identifyParams).then(function(response) {
-            return arrayUtils.map(response, function(result) {
-                var feature = result.feature;
-                var layerName = result.layerName;
-
-                if (layerName === 'OG_WELLS') {
-                    var ogWellsTemplate = new PopupTemplate( {
-                        title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>{API_NUMBER}</span>",
-                        content: wellContent(feature)
-                    } );
-                    feature.popupTemplate = ogWellsTemplate;
-                }
-                else if (layerName === 'OG_FIELDS') {
-                    var ogFieldsTemplate = new PopupTemplate( {
-                        title: "Field: {FIELD_NAME}",
-                        content: fieldContent(feature)
-                        } );
-                    feature.popupTemplate = ogFieldsTemplate;
-                }
-                else if (layerName === 'WWC5_WELLS') {
-                    var wwc5Template = new PopupTemplate( {
-                        title: "Water Well (WWC5): ",
-                        content: wwc5Content(feature)
-                    } );
-                    feature.popupTemplate = wwc5Template;
-                }
-                else if (layerName === 'EARTHQUAKES') {
-                    var earthquakeTemplate = new PopupTemplate( {
-                        title: "Earthquake Event: ",
-                        content: earthquakeContent(feature)
-                    } );
-                    feature.popupTemplate = earthquakeTemplate;
-                }
-                return feature;
-          	} );
+			return addPopupTemplate(response);
         } ).then(function(feature) {
 			dom.byId("mapDiv").style.cursor = "auto";
 			if (feature.length > 0) {
@@ -1530,6 +1420,44 @@ function(
 			}
         } );
     }
+
+
+	function addPopupTemplate(response) {
+		return arrayUtils.map(response, function(result) {
+			var feature = result.feature;
+			var layerName = result.layerName;
+
+			if (layerName === 'OG_WELLS') {
+				var ogWellsTemplate = new PopupTemplate( {
+					title: "<span class='pu-title'>Well: {WELL_LABEL} </span><span class='pu-note'>{API_NUMBER}</span>",
+					content: wellContent(feature)
+				} );
+				feature.popupTemplate = ogWellsTemplate;
+			}
+			else if (layerName === 'OG_FIELDS') {
+				var ogFieldsTemplate = new PopupTemplate( {
+					title: "Field: {FIELD_NAME}",
+					content: fieldContent(feature)
+					} );
+				feature.popupTemplate = ogFieldsTemplate;
+			}
+			else if (layerName === 'WWC5_WELLS') {
+				var wwc5Template = new PopupTemplate( {
+					title: "Water Well (WWC5): ",
+					content: wwc5Content(feature)
+				} );
+				feature.popupTemplate = wwc5Template;
+			}
+			else if (layerName === 'EARTHQUAKES') {
+				var earthquakeTemplate = new PopupTemplate( {
+					title: "Earthquake Event: ",
+					content: earthquakeContent(feature)
+				} );
+				feature.popupTemplate = earthquakeTemplate;
+			}
+			return feature;
+		} );
+	}
 
 
     function earthquakeContent(feature) {
