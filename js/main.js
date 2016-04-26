@@ -1040,12 +1040,12 @@ function(
 			var downloadIcon = "<a class='esri-icon-download' title='Download List to Text File'></a>";
 			$("#list-txt").append(downloadIcon);
 			if (wellType === "Oil and Gas") {
-				var wellsTbl = "<table class='striped-tbl' id='og-tbl'><tr><th>Name</th><th>API</th></tr>";
+				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='og-tbl'><tr><th>Name</th><th>API</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
 					wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td><td class='hide'>" + fSet.features[i].attributes.KID + "</td></tr>";
 				}
 			} else {
-				var wellsTbl = "<table class='striped-tbl' id='wwc5-tbl'><tr><th>Owner</th><th>Use</th></tr>";
+				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='wwc5-tbl'><tr><th>Owner</th><th>Use</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
 					wellsTbl += "<tr><td>" + fSet.features[i].attributes.OWNER_NAME + "</td><td>" + fSet.features[i].attributes.USE_DESC + "</td><td class='hide'>" + fSet.features[i].attributes.INPUT_SEQ_NUMBER + "</td></tr>";
 				}
@@ -1416,6 +1416,17 @@ function(
 			dom.byId("mapDiv").style.cursor = "auto";
 			if (feature.length > 0) {
             	openPopup(feature);
+
+				// Highlight row in wells list table:
+				var fAtts = feature[0].attributes;
+				if (fAtts.hasOwnProperty('INPUT_SEQ_NUMBER')) {
+					var ptID = fAtts.INPUT_SEQ_NUMBER;
+				} else if (fAtts.hasOwnProperty('KID')) {
+					var ptID = fAtts.KID;
+				}
+				$(".well-list-tbl tr").removeClass("highlighted");
+				$(".well-list-tbl tr:contains(" + ptID + ")").toggleClass("highlighted");
+
             	//highlightFeature(feature);
 			}
         } );
