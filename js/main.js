@@ -890,20 +890,19 @@ function(
 
     function zoomToFeature(features) {
         var f = features[0] ? features[0] : features;
-        switch (f.geometry.type) {
-            case "point":
-                var x = f.geometry.x;
-                var y = f.geometry.y;
-                var point = new Point(x, y, wmSR);
-                view.center = point;
-                view.scale = 24000;
-                break;
-            case "polygon":
-                var ext = f.geometry.extent;
-                view.extent = ext;
-                break;
-        }
-		highlightFeature(f);
+		var opts = { duration: 900	};
+		if (f.geometry.type === "point") {
+			var z = 16;
+		} else {
+			var z;
+		}
+
+		view.animateTo( {
+			target: f.geometry,
+			zoom: z
+		}, opts).then(function() {
+			highlightFeature(f);
+		} );
     }
 
 
@@ -1096,8 +1095,8 @@ function(
 				return addPopupTemplate(response);
 	        } ).then(function(feature) {
 				if (feature.length > 0) {
+					zoomToFeature(feature);
 	            	openPopup(feature);
-	            	//highlightFeature(feature);
 				}
 	        } );
 		} );
@@ -1432,6 +1431,8 @@ function(
 				$(".well-list-tbl tr:contains(" + ptID + ")").toggleClass("highlighted");
 
             	highlightFeature(feature);
+			} else {
+				dom.byId("mapDiv").style.cursor = "auto";
 			}
         } );
     }
