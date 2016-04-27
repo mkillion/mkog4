@@ -843,6 +843,7 @@ function(
 
 
     function openPopup(feature) {
+		dom.byId("mapDiv").style.cursor = "auto";
 		view.popup.viewModel.features = feature;
         view.popup.viewModel.docked = true;
         view.popup.viewModel.visible = true;
@@ -866,6 +867,8 @@ function(
                 case "field":
                     findParams.layerIds = [1];
                     findParams.searchFields = ["field_kid"];
+					fieldsLayer.visible = true;
+	                $("#Oil-and-Gas-Fields input").prop("checked", true);
                     break;
             }
 
@@ -887,7 +890,6 @@ function(
 
     function zoomToFeature(features) {
         var f = features[0] ? features[0] : features;
-
         switch (f.geometry.type) {
             case "point":
                 var x = f.geometry.x;
@@ -895,45 +897,51 @@ function(
                 var point = new Point(x, y, wmSR);
                 view.center = point;
                 view.scale = 24000;
-                //highlightFeature(feature);
                 break;
             case "polygon":
                 var ext = f.geometry.extent;
                 view.extent = ext;
                 break;
         }
+		highlightFeature(f);
     }
 
 
     function highlightFeature(features) {
+		graphicsLayer.clear();
         var f = features[0] ? features[0] : features;
-
         switch (f.geometry.type) {
             case "point":
-                var x = f.geometry.x;
-                var y = f.geometry.y;
-                var point = new Point(x, y, wmSR);
-                markerSymbol = new SimpleMarkerSymbol( {
+                var marker = new SimpleMarkerSymbol( {
                     color: [255, 255, 0, 0],
                     size: 20,
                     outline: new SimpleLineSymbol( {
                         color: "yellow",
-                        width: 8
+                        width: 7
                     } )
-                  } );
-
-                var pointGraphic = new Graphic( {
-                    geometry: point,
-                    symbol: markerSymbol
                 } );
 
-                graphicsLayer.add(pointGraphic);
+                var g = new Graphic( {
+                    geometry: f.geometry,
+                    symbol: marker
+                } );
                 break;
             case "polygon":
-                var ext = features[0].geometry.extent;
-                view.extent = ext;
+				var fillSym = new SimpleFillSymbol( {
+					style: "none",
+					outline: new SimpleLineSymbol( {
+                        color: "yellow",
+                        width: 5
+                    } )
+				} );
+
+				var g = new Graphic( {
+                    geometry: f.geometry,
+                    symbol: fillSym
+                } );
                 break;
         }
+		graphicsLayer.add(g);
     }
 
 
@@ -990,10 +998,8 @@ function(
                 findParams.searchFields = ["field_name"];
                 findParams.contains = false;
                 findParams.searchText = dom.byId("field-select").value;
-                if (!fieldsLayer.visible) {
-                    fieldsLayer.visible = true;
-                    $("#Oil-and-Gas-Fields input").prop("checked", true);
-                }
+                fieldsLayer.visible = true;
+                $("#Oil-and-Gas-Fields input").prop("checked", true);
         }
         findTask.execute(findParams).then(function(response) {
             zoomToFeature(response[0].feature);
@@ -1089,7 +1095,6 @@ function(
 			findTask.execute(findParams).then(function(response) {
 				return addPopupTemplate(response);
 	        } ).then(function(feature) {
-				dom.byId("mapDiv").style.cursor = "auto";
 				if (feature.length > 0) {
 	            	openPopup(feature);
 	            	//highlightFeature(feature);
@@ -1413,7 +1418,6 @@ function(
         identifyTask.execute(identifyParams).then(function(response) {
 			return addPopupTemplate(response);
         } ).then(function(feature) {
-			dom.byId("mapDiv").style.cursor = "auto";
 			if (feature.length > 0) {
             	openPopup(feature);
 
@@ -1427,7 +1431,7 @@ function(
 				$(".well-list-tbl tr").removeClass("highlighted");
 				$(".well-list-tbl tr:contains(" + ptID + ")").toggleClass("highlighted");
 
-            	//highlightFeature(feature);
+            	highlightFeature(feature);
 			}
         } );
     }
