@@ -981,6 +981,7 @@ function(
                 findParams.layerIds = [0];
                 findParams.searchFields = ["api_number"];
                 findParams.searchText = apiText;
+				findParams.contains = false;
                 break;
             case "county":
                 findParams.layerIds = [2];
