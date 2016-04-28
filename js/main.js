@@ -268,7 +268,7 @@ function(
 
     urlZoom(location.search.substr(1));
 
-    // Side-panel click handlers:
+    // Miscellaneous click handlers:
     $(".find-header").click(function() {
         $("[id^=find]").fadeOut("fast");
         $(".find-header").removeClass("esri-icon-down-arrow");
@@ -285,9 +285,9 @@ function(
         $("#buff-dia").dialog("open");
     } );
 
-	$("#meas-tool").click(function() {
-        $("#meas-dia").dialog("open");
-    } );
+	// $("#meas-tool").click(function() {
+    //     $("#meas-dia").dialog("open");
+    // } );
 
 
     function popCountyDropdown() {
