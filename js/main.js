@@ -890,7 +890,6 @@ function(
 
     function zoomToFeature(features) {
         var f = features[0] ? features[0] : features;
-		var opts = { duration: 900	};
 		if (f.geometry.type === "point") {
 			var z = 16;
 		} else {
@@ -900,7 +899,7 @@ function(
 		view.animateTo( {
 			target: f.geometry,
 			zoom: z
-		}, opts).then(function() {
+		}, {duration: 1000} ).then(function() {
 			highlightFeature(f);
 		} );
     }
@@ -919,27 +918,23 @@ function(
                         width: 7
                     } )
                 } );
-
-                var g = new Graphic( {
-                    geometry: f.geometry,
-                    symbol: marker
-                } );
+				var sym = marker;
                 break;
             case "polygon":
-				var fillSym = new SimpleFillSymbol( {
+				var fill = new SimpleFillSymbol( {
 					style: "none",
 					outline: new SimpleLineSymbol( {
                         color: "yellow",
                         width: 5
                     } )
 				} );
-
-				var g = new Graphic( {
-                    geometry: f.geometry,
-                    symbol: fillSym
-                } );
+				var sym = fill;
                 break;
         }
+		var g = new Graphic( {
+			geometry: f.geometry,
+			symbol: sym
+		} );
 		graphicsLayer.add(g);
     }
 
@@ -1175,9 +1170,6 @@ function(
             var pt84 = new Point(features[0].x, features[0].y, wgs84Sr);
             var wmPt = webMercatorUtils.geographicToWebMercator(pt84);
 
-            view.center = wmPt;
-            view.zoom = 16;
-
             var ptSymbol = new SimpleMarkerSymbol( {
                 style: "x",
                 size: 22,
@@ -1192,12 +1184,13 @@ function(
                 symbol: ptSymbol
             } );
 
+			view.animateTo( {
+				target: wmPt,
+				zoom: 16
+			}, {duration: 1000} );
+
             graphicsLayer.clear();
             graphicsLayer.add(pointGraphic);
-            // FIXME: Possible api bug here. Point graphic appears huge on the map at first but displays correctly after the map extent changes in some way.
-            // It works corrrectly on subsequent passes (after extent has been changed).
-            // Adding a new graphics layer every time makes it work correctly, but the layers pile up. either wait on 4.0 final release and test, or
-            // test for existence of second graphics layer and remove it.
         } );
     }
 
