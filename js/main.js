@@ -836,8 +836,10 @@ function(
 
 		graphicsLayer.clear();
 		graphicsLayer.add(polygonGraphic);
+
 		// var ext = buffPoly.extent;
 		// view.extent = ext;
+
 		$("#buff-dia").dialog("close");
 	}
 
@@ -891,17 +893,14 @@ function(
     function zoomToFeature(features) {
         var f = features[0] ? features[0] : features;
 		if (f.geometry.type === "point") {
-			var z = 16;
+			var point = new Point(f.geometry.x, f.geometry.y, wmSR);
+            view.center = point;
+            view.scale = 24000;
 		} else {
-			var z;
+			var ext = f.geometry.extent;
+            view.extent = ext;
 		}
-
-		view.animateTo( {
-			target: f.geometry,
-			zoom: z
-		}, {duration: 1000} ).then(function() {
-			highlightFeature(f);
-		} );
+		highlightFeature(f);
     }
 
 
@@ -1091,7 +1090,11 @@ function(
 				return addPopupTemplate(response);
 	        } ).then(function(feature) {
 				if (feature.length > 0) {
-					zoomToFeature(feature);
+					view.animateTo( {
+						target: feature[0].geometry,
+						zoom: 16
+					}, {duration: 900} );
+					highlightFeature(feature[0]);
 	            	openPopup(feature);
 				}
 	        } );
@@ -1188,7 +1191,7 @@ function(
 			view.animateTo( {
 				target: wmPt,
 				zoom: 16
-			}, {duration: 1000} );
+			}, {duration: 100} );
 
             graphicsLayer.clear();
             graphicsLayer.add(pointGraphic);
