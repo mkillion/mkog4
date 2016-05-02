@@ -1028,7 +1028,13 @@ function(
 			} else {
 				$("#wells-tbl").html("");
 			}
-        } );
+			return addPopupTemplate(response);
+        } ).then(function(feature) {
+			if (what === "api" || what === "field") {
+				openPopup(feature);
+			}
+		} );
+		;
     }
 
 
