@@ -11,10 +11,10 @@ require([
     "application/DrawerMenu",
     "esri/Map",
     "esri/views/MapView",
-    "esri/layers/ArcGISTiledLayer",
-    "esri/layers/ArcGISDynamicLayer",
+    "esri/layers/TileLayer",
+    "esri/layers/MapImageLayer",
     "esri/widgets/Search",
-    "esri/widgets/Search/SearchViewModel",
+    //"esri/widgets/Search/SearchViewModel",
     "esri/widgets/Home",
     "esri/widgets/Home/HomeViewModel",
     "esri/widgets/Locate",
@@ -34,7 +34,7 @@ require([
     "esri/tasks/GeometryService",
     "esri/tasks/support/ProjectParameters",
     "esri/geometry/support/webMercatorUtils",
-    "esri/layers/ArcGISImageLayer",
+    "esri/layers/ImageryLayer",
 	"esri/geometry/geometryEngine",
 	"esri/symbols/SimpleFillSymbol",
 	"esri/geometry/Polygon",
@@ -55,10 +55,10 @@ function(
 	DrawerMenu,
     Map,
     MapView,
-    ArcGISTiledLayer,
-    ArcGISDynamicLayer,
+    TileLayer,
+    MapImageLayer,
     Search,
-    SearchVM,
+    //SearchVM,
     Home,
     HomeVM,
     Locate,
@@ -78,7 +78,7 @@ function(
     GeometryService,
     ProjectParameters,
     webMercatorUtils,
-    ArcGISImageLayer,
+    ImageryLayer,
 	geometryEngine,
 	SimpleFillSymbol,
 	Polygon,
@@ -152,24 +152,23 @@ function(
     var findTask = new FindTask(ogGeneralServiceURL);
     var findParams = new FindParameters();
 
-    var basemapLayer = new ArcGISTiledLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
-    var fieldsLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
-    var wellsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[0], id:"Oil and Gas Wells"} );
-    var plssLayer = new ArcGISTiledLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
-    var wwc5Layer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", visibleLayers:[8], id:"WWC5 Water Wells", visible:false} );
-    var usgsEventsLayer = new ArcGISDynamicLayer( {url:ogGeneralServiceURL, visibleLayers:[13], id:"Earthquakes", visible:false} );
-    var lepcLayer = new ArcGISDynamicLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
-    var topoLayer = new ArcGISDynamicLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", visibleLayers:[11], id:"Topography", visible:false } );
-    var naip2014Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/FSA_NAIP_2014_Color/ImageServer", id:"2014 Aerials", visible:false} );
-    var doqq2002Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_2002/ImageServer", id:"2002 Aerials", visible:false} );
-    var doqq1991Layer = new ArcGISImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_1991/ImageServer", id:"1991 Aerials", visible:false} );
+    var basemapLayer = new TileLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
+    var fieldsLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
+    var wellsLayer = new MapImageLayer( {url:ogGeneralServiceURL, sublayers:[{id:0}], id:"Oil and Gas Wells"} );
+    var plssLayer = new TileLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
+    var wwc5Layer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", sublayers:[{id:8}], id:"WWC5 Water Wells", visible:false} );
+    var usgsEventsLayer = new MapImageLayer( {url:ogGeneralServiceURL, sublayers:[{id:13}], id:"Earthquakes", visible:false} );
+    var lepcLayer = new MapImageLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
+    var topoLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", sublayers:[{id:11}], id:"Topography", visible:false } );
+    var naip2014Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/FSA_NAIP_2014_Color/ImageServer", id:"2014 Aerials", visible:false} );
+    var doqq2002Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_2002/ImageServer", id:"2002 Aerials", visible:false} );
+    var doqq1991Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_1991/ImageServer", id:"1991 Aerials", visible:false} );
 
     var map = new Map( {
         // Not defining basemap here for TOC toggle reasons.
         //basemap: "topo",
         layers: [basemapLayer, doqq1991Layer, doqq2002Layer, naip2014Layer, topoLayer, lepcLayer, fieldsLayer, plssLayer, usgsEventsLayer, wwc5Layer, wellsLayer]
     } );
-    map.then(createTOC, mapErr);
 
     var graphicsLayer = new GraphicsLayer();
     map.add(graphicsLayer);
@@ -183,6 +182,8 @@ function(
     } );
 
     view.then(function() {
+		createTOC();
+
         on(view, "click", executeIdTask);
 
         identifyTask = new IdentifyTask(ogGeneralServiceURL);
@@ -227,42 +228,27 @@ function(
         } );
     } );
 
-
-    function mapErr(err) {
-        console.log("Map Error: " + err);
-    }
-
-    var searchWidget = new Search( {
-        //Setting widget properties via viewModel is subject to
-        //change for the 4.0 final release
-        viewModel: new SearchVM( {
-          view: view
-        } )
-    }, "srch");
-    searchWidget.startup();
+    // var searchWidget = new Search( {
+	// 	view: view
+    // }, "srch");
+	// searchWidget.startup();
 
     /*$("#mobileGeocoderIconContainer").click(function() {
         $("#lb").toggleClass("small-search");
     } );*/
 
-    var homeBtn = new Home( {
-        //Setting widget properties via viewModel is subject to
-        //change for the 4.0 final release
-        viewModel: new HomeVM( {
-            view: view
-        } )
-    }, "HomeButton");
-    homeBtn.startup();
-
-    var locateBtn = new Locate({
-        //Setting widget properties via viewModel is subject to
-        //change for the 4.0 final release
-        viewModel: new LocateVM({
-            view: view,
-            scale: 4000
-        } )
-    }, "LocateButton");
-    locateBtn.startup();
+    // var homeBtn = new Home( {
+    //     view: view
+    // }, "HomeButton");
+    // homeBtn.startup();
+	//
+    // var locateBtn = new Locate({
+    //     viewModel: new LocateVM({
+    //         view: view,
+    //         scale: 4000
+    //     } )
+    // }, "LocateButton");
+    // locateBtn.startup();
 
     // End map and map widgets.
 
@@ -1034,7 +1020,6 @@ function(
 				openPopup(feature);
 			}
 		} );
-		;
     }
 
 
@@ -1358,7 +1343,7 @@ function(
 
         for (var j=lyrs.length - 1; j>-1; j--) {
             var layerID = lyrs._items[j].id;
-            chkd = map.getLayer(layerID).visible ? "checked" : "";
+            chkd = map.findLayerById(layerID).visible ? "checked" : "";
             if (layerID.indexOf("-layer-") === -1) {
                 // ^ Excludes default graphics layer from the TOC.
                 var htmlID = layerID.replace(/ /g, "-");
@@ -1405,7 +1390,7 @@ function(
 
 
     changeOpacity = function(id, dir) {
-        var lyr = map.getLayer(id);
+        var lyr = map.findLayerById(id);
         var incr = (dir === "down") ? -0.2 : 0.2;
         lyr.opacity = lyr.opacity + incr;
     }
@@ -1573,7 +1558,7 @@ function(
 
 
     toggleLayer = function(j) {
-        var l = map.getLayer(map.layers._items[j].id);
+        var l = map.findLayerById(map.layers._items[j].id);
         l.visible = $("#tcb-" + j).is(":checked") ? true : false;
     }
 
