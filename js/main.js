@@ -1403,7 +1403,7 @@ function(
         dom.byId("mapDiv").style.cursor = "wait";
 
         identifyTask.execute(identifyParams).then(function(response) {
-			return addPopupTemplate(response);
+			return addPopupTemplate(response.results);
         } ).then(function(feature) {
 			if (feature.length > 0) {
             	openPopup(feature);
