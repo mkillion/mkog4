@@ -159,8 +159,9 @@ function(
     var wwc5Layer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", sublayers:[{id:8}], id:"WWC5 Water Wells", visible:false} );
     var usgsEventsLayer = new MapImageLayer( {url:ogGeneralServiceURL, sublayers:[{id:13}], id:"Earthquakes", visible:false} );
     var lepcLayer = new MapImageLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
-    var topoLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", sublayers:[{id:11}], id:"Topography", visible:false } );
-    var naip2014Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/FSA_NAIP_2014_Color/ImageServer", id:"2014 Aerials", visible:false} );
+    //var topoLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", sublayers:[{id:11}], id:"Topography", visible:false } );
+	var topoLayer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/USGS_Topo/USGStopo_DRG/ImageServer", id:"Topography", visible:false} );
+	var naip2014Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/FSA_NAIP_2014_Color/ImageServer", id:"2014 Aerials", visible:false} );
     var doqq2002Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_2002/ImageServer", id:"2002 Aerials", visible:false} );
     var doqq1991Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_1991/ImageServer", id:"1991 Aerials", visible:false} );
 
@@ -178,7 +179,8 @@ function(
         container: "mapDiv",
         center: [-98, 38],
         zoom: 7,
-        ui: { components: ["zoom"] }
+        ui: { components: ["zoom"] },
+		constraints: { rotationEnabled: false }
     } );
 
     view.then(function() {
@@ -264,7 +266,7 @@ function(
     } );
 
     $(".esri-icon-erase").click(function() {
-        graphicsLayer.clear();
+        graphicsLayer.removeAll();
     } );
 
 	$("#buff-tool").click(function() {
@@ -820,7 +822,7 @@ function(
 			symbol: fillSymbol
 		} );
 
-		graphicsLayer.clear();
+		graphicsLayer.removeAll();
 		graphicsLayer.add(polygonGraphic);
 
 		// var ext = buffPoly.extent;
@@ -863,7 +865,7 @@ function(
             findParams.searchText = extValue;
             findTask.execute(findParams)
             .then(function(response) {
-				return addPopupTemplate(response);
+				return addPopupTemplate(response.results);
             } )
             .then(function(feature) {
 				if (feature.length > 0) {
@@ -879,19 +881,17 @@ function(
     function zoomToFeature(features) {
         var f = features[0] ? features[0] : features;
 		if (f.geometry.type === "point") {
-			var point = new Point(f.geometry.x, f.geometry.y, wmSR);
-            view.center = point;
+            view.center = new Point(f.geometry.x, f.geometry.y, wmSR);;
             view.scale = 24000;
 		} else {
-			var ext = f.geometry.extent;
-            view.extent = ext;
+			view.extent = f.geometry.extent;
 		}
 		highlightFeature(f);
     }
 
 
     function highlightFeature(features) {
-		graphicsLayer.clear();
+		graphicsLayer.removeAll();
         var f = features[0] ? features[0] : features;
         switch (f.geometry.type) {
             case "point":
@@ -1184,7 +1184,7 @@ function(
 				zoom: 16
 			}, {duration: 100} );
 
-            graphicsLayer.clear();
+            graphicsLayer.removeAll();
             graphicsLayer.add(pointGraphic);
         } );
     }
