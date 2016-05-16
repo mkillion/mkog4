@@ -230,10 +230,9 @@ function(
         } );
     } );
 
-    // var searchWidget = new Search( {
-	// 	view: view
-    // }, "srch");
-	// searchWidget.startup();
+	var searchWidget = new Search({
+		view: view
+	}, "srch" );
 
     /*$("#mobileGeocoderIconContainer").click(function() {
         $("#lb").toggleClass("small-search");
@@ -982,7 +981,7 @@ function(
                 $("#Oil-and-Gas-Fields input").prop("checked", true);
         }
         findTask.execute(findParams).then(function(response) {
-            zoomToFeature(response[0].feature);
+            zoomToFeature(response.results[0].feature);
 
 			var selectWellType = $("input:radio[name=welltype]:checked").val();
 			if (what === "plss" && selectWellType !== "none") {
