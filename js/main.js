@@ -147,16 +147,16 @@ function(
     // End framework.
 
     // Create map and map widgets:
-    var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
+    var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis8/rest/services/oilgas/oilgas_general/MapServer";
     var identifyTask, identifyParams;
     var findTask = new FindTask(ogGeneralServiceURL);
     var findParams = new FindParameters();
 
     var basemapLayer = new TileLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
-    var fieldsLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
+    var fieldsLayer = new TileLayer( {url:"http://services.kgs.ku.edu/arcgis8/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
     var wellsLayer = new MapImageLayer( {url:ogGeneralServiceURL, sublayers:[{id:0}], id:"Oil and Gas Wells"} );
-    var plssLayer = new TileLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
-    var wwc5Layer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", sublayers:[{id:8}], id:"WWC5 Water Wells", visible:false} );
+    var plssLayer = new TileLayer( {url:"http://services.kgs.ku.edu/arcgis8/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
+    var wwc5Layer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis8/rest/services/wwc5/wwc5_general/MapServer", sublayers:[{id:8}], id:"WWC5 Water Wells", visible:false} );
     var usgsEventsLayer = new MapImageLayer( {url:ogGeneralServiceURL, sublayers:[{id:13}], id:"Earthquakes", visible:false} );
     var lepcLayer = new MapImageLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
     //var topoLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", sublayers:[{id:11}], id:"Topography", visible:false } );
@@ -833,9 +833,13 @@ function(
 
     function openPopup(feature) {
 		dom.byId("mapDiv").style.cursor = "auto";
-		view.popup.viewModel.features = feature;
-        view.popup.viewModel.docked = true;
-        view.popup.viewModel.visible = true;
+		view.popup.features = feature;
+		view.popup.dockEnabled = true;
+		view.popup.dockOptions = {
+			buttonEnabled: false,
+			position: "bottom-right"
+		};
+		view.popup.visible = true;
     }
 
 
@@ -1013,7 +1017,7 @@ function(
 			} else {
 				$("#wells-tbl").html("");
 			}
-			return addPopupTemplate(response);
+			return addPopupTemplate(response.results);
         } ).then(function(feature) {
 			if (what === "api" || what === "field") {
 				openPopup(feature);
@@ -1077,7 +1081,7 @@ function(
 	        findParams.returnGeometry = true;
 
 			findTask.execute(findParams).then(function(response) {
-				return addPopupTemplate(response);
+				return addPopupTemplate(response.results);
 	        } ).then(function(feature) {
 				if (feature.length > 0) {
 					view.animateTo( {
@@ -1136,7 +1140,7 @@ function(
         var lon = dom.byId("lon").value;
         var datum = dom.byId("datum").value;
 
-        var gsvc = new GeometryService("http://services.kgs.ku.edu/arcgis2/rest/services/Utilities/Geometry/GeometryServer");
+        var gsvc = new GeometryService("http://services.kgs.ku.edu/arcgis8/rest/services/Utilities/Geometry/GeometryServer");
         var params = new ProjectParameters();
         var wgs84Sr = new SpatialReference( { wkid: 4326 } );
 
