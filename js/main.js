@@ -1085,12 +1085,13 @@ function(
 				return addPopupTemplate(response.results);
 	        } ).then(function(feature) {
 				if (feature.length > 0) {
-					view.animateTo( {
+					view.goTo( {
 						target: feature[0].geometry,
 						zoom: 16
-					}, {duration: 900} );
-					highlightFeature(feature[0]);
-	            	openPopup(feature);
+					}, {duration: 750} ).then(function() {
+						highlightFeature(feature[0]);
+			            openPopup(feature);
+					} );
 				}
 	        } );
 		} );
@@ -1183,13 +1184,13 @@ function(
                 symbol: ptSymbol
             } );
 
-			view.animateTo( {
+			view.goTo( {
 				target: wmPt,
 				zoom: 16
-			}, {duration: 100} );
-
-            graphicsLayer.removeAll();
-            graphicsLayer.add(pointGraphic);
+			}, {duration: 750} ).then(function() {
+				graphicsLayer.removeAll();
+	            graphicsLayer.add(pointGraphic);
+			} );
         } );
     }
 
