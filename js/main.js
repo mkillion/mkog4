@@ -16,9 +16,9 @@ require([
     "esri/widgets/Search",
     //"esri/widgets/Search/SearchViewModel",
     "esri/widgets/Home",
-    "esri/widgets/Home/HomeViewModel",
+    //"esri/widgets/Home/HomeViewModel",
     "esri/widgets/Locate",
-    "esri/widgets/Locate/LocateViewModel",
+    //"esri/widgets/Locate/LocateViewModel",
     "esri/PopupTemplate",
     "esri/widgets/Popup",
     "esri/tasks/IdentifyTask",
@@ -60,9 +60,9 @@ function(
     Search,
     //SearchVM,
     Home,
-    HomeVM,
+    //HomeVM,
     Locate,
-    LocateVM,
+    //LocateVM,
     PopupTemplate,
     Popup,
     IdentifyTask,
@@ -238,18 +238,23 @@ function(
         $("#lb").toggleClass("small-search");
     } );*/
 
-    // var homeBtn = new Home( {
-    //     view: view
-    // }, "HomeButton");
-    // homeBtn.startup();
-	//
-    // var locateBtn = new Locate({
-    //     viewModel: new LocateVM({
-    //         view: view,
-    //         scale: 4000
-    //     } )
-    // }, "LocateButton");
-    // locateBtn.startup();
+	var homeBtn = new Home({
+        view: view
+	} );
+    homeBtn.startup();
+	view.ui.add(homeBtn, {
+    	position: "top-left",
+        index: 1
+     } );
+
+	var locateBtn = new Locate( {
+        view: view
+	}, "LocateButton" );
+    locateBtn.startup();
+	view.ui.add(locateBtn, {
+    	position: "top-left",
+        index: 2
+     } );
 
     // End map and map widgets.
 

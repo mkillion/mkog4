@@ -151,18 +151,6 @@ input[type=checkbox] {
 	top: 44px;
 }
 
-#HomeButton {
-	left: -5px;
-	position: absolute;
-	top: -4px;
-}
-
-#LocateButton {
-	left: -5px;
-	position: absolute;
-	top: 36px;
-}
-
 .pu-title .pu-note {
 	font: normal normal 14px arial;
 }
@@ -232,18 +220,6 @@ input[type=checkbox] {
 }
 
 @media screen and (max-width: 568px) {
-	#HomeButton {
-		left: -5px;
-		position: absolute;
-		top: 64px;
-	}
-
-	#LocateButton {
-		left: -5px;
-		position: absolute;
-		top: 102px;
-	}
-
 	.pu-icon,
 	.esri-icon-zoom-in-magnifying-glass {
 		font-size: 20px;
