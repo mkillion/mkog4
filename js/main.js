@@ -147,16 +147,16 @@ function(
     // End framework.
 
     // Create map and map widgets:
-    var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis8/rest/services/oilgas/oilgas_general/MapServer";
+    var ogGeneralServiceURL = "http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_general/MapServer";
     var identifyTask, identifyParams;
     var findTask = new FindTask(ogGeneralServiceURL);
     var findParams = new FindParameters();
 
     var basemapLayer = new TileLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
-    var fieldsLayer = new TileLayer( {url:"http://services.kgs.ku.edu/arcgis8/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
+    var fieldsLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
     var wellsLayer = new MapImageLayer( {url:ogGeneralServiceURL, sublayers:[{id:0}], id:"Oil and Gas Wells"} );
-    var plssLayer = new TileLayer( {url:"http://services.kgs.ku.edu/arcgis8/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
-    var wwc5Layer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis8/rest/services/wwc5/wwc5_general/MapServer", sublayers:[{id:8}], id:"WWC5 Water Wells", visible:false} );
+    var plssLayer = new TileLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/plss/plss/MapServer", id:"Section-Township-Range"} );
+    var wwc5Layer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis2/rest/services/wwc5/wwc5_general/MapServer", sublayers:[{id:8}], id:"WWC5 Water Wells", visible:false} );
     var usgsEventsLayer = new MapImageLayer( {url:ogGeneralServiceURL, sublayers:[{id:13}], id:"Earthquakes", visible:false} );
     var lepcLayer = new MapImageLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
     //var topoLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", sublayers:[{id:11}], id:"Topography", visible:false } );
@@ -203,23 +203,23 @@ function(
             id: "full-report",
             className: "esri-icon-documentation pu-icon"
         };
-        view.popup.viewModel.actions.push(fullInfoAction);
+        view.popup.actions.push(fullInfoAction);
 
         var bufferFeatureAction = {
             title: "Buffer Feature",
             id: "buffer-feature",
             className: "esri-icon-radio-checked pu-icon"
         };
-        view.popup.viewModel.actions.push(bufferFeatureAction);
+        view.popup.actions.push(bufferFeatureAction);
 
         var reportErrorAction = {
             title: "Report a Location or Data Problem",
             id: "report-error",
             className: "esri-icon-contact pu-icon"
         };
-        view.popup.viewModel.actions.push(reportErrorAction);
+        view.popup.actions.push(reportErrorAction);
 
-        view.popup.viewModel.on("action-click", function(evt){
+        view.popup.on("trigger-action", function(evt) {
             if(evt.action.id === "full-report") {
                 showFullInfo();
             } else if (evt.action.id === "buffer-feature") {
@@ -642,7 +642,7 @@ function(
 
 		def[0] = theWhere;
 		idDef[0] = def[0];
-		wellsLayer.layerDefinitions = def;
+		wellsLayer.sublayers[0].definitionExpression = def[0];
 	}
 
 
@@ -652,7 +652,7 @@ function(
 		$('input[name="og-has"]').removeAttr("checked");
 		$('select.og-select option').removeAttr("selected");
 		dom.byId("hrz").checked = false;
-		wellsLayer.layerDefinitions = [];
+		wellsLayer.sublayers[0].definitionExpression = null;
 		idDef[0] = "";
 	}
 
@@ -703,7 +703,8 @@ function(
 
 		def[8] = theWhere;
 		idDef[8] = def[8];
-		wwc5Layer.layerDefinitions = def;
+		console.log(def[8]);
+		wwc5Layer.sublayers[8].definitionExpression = def[8];
 	}
 
 
@@ -712,7 +713,7 @@ function(
         dom.byId("wwc5-to-date").value = "";
 		$('input[name="const-status"]').removeAttr("checked");
 		$('select#well-use option').removeAttr("selected");
-		wwc5Layer.layerDefinitions = [];
+		wwc5Layer.sublayers[8].definitionExpression = null;
 		idDef[8] = "";
 	}
 
@@ -769,12 +770,12 @@ function(
             }
         }
 		idDef[13] = def[13];
-        usgsEventsLayer.layerDefinitions = def;
+		usgsEventsLayer.sublayers[13].definitionExpression = def[13];
     }
 
 
     clearQuakeFilter = function() {
-        usgsEventsLayer.layerDefinitions = [];
+        usgsEventsLayer.sublayers[13].definitionExpression = null;
         dom.byId("year").options[0].selected="selected";
         dom.byId("year-mag").options[0].selected="selected";
         dom.byId("day-mag").options[0].selected="selected";
@@ -788,7 +789,7 @@ function(
         var def = [];
         def[13] = "state = 'KS' and net in ('us', ' ', 'US') and the_date = (select max(the_date) from earthquakes where state = 'KS' and net in ('us', ' ', 'US'))";
 		idDef[13] = def[13];
-		usgsEventsLayer.layerDefinitions = def;
+		usgsEventsLayer.sublayers[13].definitionExpression = def[13];
     }
 
 
@@ -1140,7 +1141,7 @@ function(
         var lon = dom.byId("lon").value;
         var datum = dom.byId("datum").value;
 
-        var gsvc = new GeometryService("http://services.kgs.ku.edu/arcgis8/rest/services/Utilities/Geometry/GeometryServer");
+        var gsvc = new GeometryService("http://services.kgs.ku.edu/arcgis2/rest/services/Utilities/Geometry/GeometryServer");
         var params = new ProjectParameters();
         var wgs84Sr = new SpatialReference( { wkid: 4326 } );
 
@@ -1469,7 +1470,7 @@ function(
 
     function earthquakeContent(feature) {
         var date = feature.attributes.CENTRAL_STANDARD_TIME !== "Null" ? feature.attributes.CENTRAL_STANDARD_TIME : "";
-        var content = "<table><tr><td>Magnitude: </td><td>{MAG}</td></tr>";
+        var content = "<table id='popup-tbl'><tr><td>Magnitude: </td><td>{MAG}</td></tr>";
         content += "<tr><td>Date/Time (CST): </td><td>" + date + "</td></tr>";
         content += "<tr><td>Latitude: </td><td>{LATITUDE}</td></tr>";
         content += "<tr><td>Longitude: </td><td>{LONGITUDE}</td></tr>";
@@ -1483,7 +1484,7 @@ function(
 
 
     function wwc5Content(feature) {
-        var content = "<table><tr><td>County:</td><td>{COUNTY}</td></tr>";
+        var content = "<table id='popup-tbl'><tr><td>County:</td><td>{COUNTY}</td></tr>";
         content += "<tr><td>Section:</td><td>T{TOWNSHIP}S&nbsp;&nbsp;R{RANGE}{RANGE_DIRECTION}&nbsp;&nbsp;Sec {SECTION}</td></tr>";
         content += "<tr><td>Quarter Section:</td><td>{QUARTER_CALL_3}&nbsp;&nbsp;{QUARTER_CALL_2}&nbsp;&nbsp;{QUARTER_CALL_1_LARGEST}</td></tr>";
 		content += "<tr><td>Latitude, Longitude (NAD27):</td><td>{NAD27_LATITUDE},&nbsp;&nbsp;{NAD27_LONGITUDE}</td></tr>";
@@ -1517,7 +1518,7 @@ function(
             pf += frm[i] + "<br>";
         }
 
-        var content = "<table><tr><td>Type of Field:</td><td>{FIELD_TYPE}</td></tr>";
+        var content = "<table id='popup-tbl'><tr><td>Type of Field:</td><td>{FIELD_TYPE}</td></tr>";
         content += "<tr><td>Status:</td><td>{STATUS}</td></tr>";
         content += "<tr><td>Produces Oil:</td><td>" + po + "</td></tr>";
         content += "<tr><td>Cumulative Oil (bbls):</td><td>" + co + "</td></tr>";
@@ -1537,7 +1538,7 @@ function(
         var dpth = f.ROTARY_TOTAL_DEPTH !== "Null" ? f.ROTARY_TOTAL_DEPTH.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
         var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
 
-        var content = "<table><tr><td>API:</td><td>{API_NUMBER}</td></tr>";
+        var content = "<table id='popup-tbl'><tr><td>API:</td><td>{API_NUMBER}</td></tr>";
         content += "<tr><td>Current Operator:</td><td>{CURR_OPERATOR}</td></tr>";
         content += "<tr><td>Well Type:</td><td>{STATUS_TXT}</td></tr>";
         content += "<tr><td>Status:</td><td>{WELL_CLASS}</td></tr>";

@@ -32,6 +32,14 @@ th, td {
 	font-size: 13px;
 }
 
+#popup-tbl td {
+	font-size: 14px;
+}
+
+#popup-tbl td:first-of-type {
+	font-weight: bold;
+}
+
 .toc-item,
 .find-header {
 	background-color: #e4e6e4;
