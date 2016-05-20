@@ -231,7 +231,8 @@ function(
     } );
 
 	var searchWidget = new Search({
-		view: view
+		view: view,
+		popupEnabled: false
 	}, "srch" );
 
     /*$("#mobileGeocoderIconContainer").click(function() {
@@ -941,8 +942,8 @@ function(
 
 
     findIt = function(what) {
+		searchWidget.clear();
         findParams.returnGeometry = true;
-
         switch (what) {
             case "plss":
                 var plssText;
