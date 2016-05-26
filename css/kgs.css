@@ -23,6 +23,13 @@ th, td {
 	position: relative;
 }
 
+#add-bookmark {
+	font-size: 22px;
+	left: 147px;
+	position: relative;
+	top: 5px;
+}
+
 .highlighted {
     color: #261F1D;
     /*background-color: #c1cdc1;*/

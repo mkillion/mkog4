@@ -87,7 +87,9 @@ function(
 ) {
     var isMobile = WURFL.is_mobile;
 	var idDef = [];
-	wmSR = new SpatialReference(3857);
+	var wmSR = new SpatialReference(3857);
+	var urlParams;
+
 
     // Set up basic frame:
     window.document.title = "FooBar";
@@ -259,7 +261,8 @@ function(
 
     // End map and map widgets.
 
-    urlZoom(location.search.substr(1));
+	urlParams = location.search.substr(1);
+    urlZoom(urlParams);
 
     // Miscellaneous click handlers:
     $(".find-header").click(function() {
@@ -1210,6 +1213,16 @@ function(
 	}
 
 
+	originalLocation = function() {
+		urlZoom(urlParams);
+	}
+
+
+	addBookmark = function() {
+		console.log("add bookmark");
+	}
+
+
     function createMenus() {
     	var drawerMenus = [];
         var content, menuObj;
@@ -1277,8 +1290,8 @@ function(
         content += '<table><tr><td class="find-label">County:</td><td><select id="lstCounty"></select></td><td><button class=find-button onclick=findIt("county")>Find</button></td></tr></table>';
         content += '</div>';
 		// bookmarks
-		content += '<div class="panel-sub-txt">Bookmarks</div>';
-
+		content += '<div class="panel-sub-txt">Bookmarks <span class="esri-icon-plus-circled" id="add-bookmark" title="Add Bookmark" onclick="addBookmark()"></span></div>';
+		content += '<div class="bookmark-link"><span onclick="originalLocation()">Original Location</div>';
         content += '</div>';
         content += '</div>';
 
