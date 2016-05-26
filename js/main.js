@@ -431,8 +431,8 @@ function(
 		ogF += "<td><select id='inj' class='og-select'><option value=''></option><option value='inj-1'>Class I</option><option value='inj-2'>Class II</option></select></td></tr>";
 		ogF += "<tr><td class='filter-hdr'style='padding-left:0'>Horizontal Wells:</td><td><input type='checkbox' id='hrz'></td></tr></table>";
 		ogF += "<span class='filter-hdr'>Total Depth (ft):</span><br>";
-		ogF += "<table><tr><td>Greater Than or Equal To:</td><td><input type='text' size='4' id='og-gt-depth' class='og-input'></td></tr>";
-        ogF += "<tr><td>Less Than or Equal To:</td><td><input type='text' size='4' id='og-lt-depth' class='og-input'></td></tr></table>";
+		ogF += "<table><tr><td>Greater Than or Equal:</td><td><input type='text' size='4' id='og-gt-depth' class='og-input'></td></tr>";
+        ogF += "<tr><td>Less Than or Equal:</td><td><input type='text' size='4' id='og-lt-depth' class='og-input'></td></tr></table>";
 		ogF += "<hr><button class='find-button' id='wwc5-go-btn' onclick='filterOG();'>Apply Filter</button>&nbsp;&nbsp;&nbsp;";
 		ogF += "<button class='find-button' onclick='clearOgFilter();' autofocus>Clear Filter</button>";
 
@@ -1201,6 +1201,15 @@ function(
     }
 
 
+	resetFinds = function() {
+		searchWidget.clear();
+		$("#twn, #rng, #sec, #datum, #lstCounty").prop("selectedIndex", 0);
+		$("#rngdir-w").prop("checked", "checked");
+		$("[name=welltype]").filter("[value='none']").prop("checked",true);
+		$("#api_state, #api_county, #api_number, #api_extension, #lat, #lon, #field-select").val("");
+	}
+
+
     function createMenus() {
     	var drawerMenus = [];
         var content, menuObj;
@@ -1208,7 +1217,7 @@ function(
         // Find panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Find <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
+        content += '<div class="panel-header">Find <span id="reset-finds"><button onclick="resetFinds()">Reset</button></span><span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         // address:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="address"><span class="find-hdr-txt"> Address or Place<span></div>';
@@ -1243,9 +1252,9 @@ function(
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="api"><span class="find-hdr-txt"> Well API</span></div>';
         content += '<div class="find-body hide" id="find-api">';
         content += 'API Number (extension optional):<br>';
-        content += '<input type="text" id="api_state" size="2" onKeyUp="jumpFocus(api_county, 2, this.id)"/> - ';
-        content += '<input type="text" id="api_county" size="3" onKeyUp="jumpFocus(api_number, 3, this.id)"/> - ';
-        content += '<input type="text" id="api_number" size="5" onKeyUp="jumpFocus(api_extension, 5, this.id)"/> - ';
+        content += '<input type="text" id="api_state" size="2" onKeyUp="jumpFocus(api_county, 2, this.id)"/>-';
+        content += '<input type="text" id="api_county" size="3" onKeyUp="jumpFocus(api_number, 3, this.id)"/>-';
+        content += '<input type="text" id="api_number" size="5" onKeyUp="jumpFocus(api_extension, 5, this.id)"/>-';
         content += '<input type="text" id="api_extension" size="4"/>';
         content += '<button class=find-button onclick=findIt("api")>Find</button>';
         content += '</div>';
@@ -1282,7 +1291,7 @@ function(
         // Layers panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Layers*</div>';
+        content += '<div class="panel-header">Layers* <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div id="lyrs-toc"></div>';
         content += '</div>';
 
@@ -1295,7 +1304,7 @@ function(
         // Tools panel:
         content = '';
         content += '<div class="panel-container" id="tools-panel">';
-        content += '<div class="panel-header">Tools</div>';
+        content += '<div class="panel-header">Tools <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         content += '<div class="find-header tools-icon esri-icon-radio-checked" id="buff-tool"><span class="find-hdr-txt tools-txt"> Buffer and Select</span></div>';
 		//content += '<div class="find-header tools-icon esri-icon-minus" id="meas-tool"><span class="find-hdr-txt tools-txt"> Measure Distance</span></div>';
@@ -1312,7 +1321,7 @@ function(
 		// Legend panel:
         content = '';
         content += '<div class="panel-container">';
-        content += '<div class="panel-header">Legend</div>';
+        content += '<div class="panel-header">Legend <span class="esri-icon-erase" title="Clear Graphics & Highlights"></span></div>';
         content += '<div class="panel-padding">';
         content += '<div id="legend-content"></div>';
 		content += '<div class="panel-header">Links</div>';

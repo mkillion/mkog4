@@ -18,6 +18,11 @@ th, td {
     padding: 3px;
 }
 
+#reset-finds {
+	left: 75px;
+	position: relative;
+}
+
 .highlighted {
     color: #261F1D;
     /*background-color: #c1cdc1;*/
