@@ -21,6 +21,7 @@ th, td {
 #reset-finds {
 	left: 75px;
 	position: relative;
+	top: -3px;
 }
 
 #add-bookmark {
@@ -28,6 +29,10 @@ th, td {
 	left: 147px;
 	position: relative;
 	top: 5px;
+}
+
+.bookmark-link {
+	margin-left: 15px;
 }
 
 .highlighted {
@@ -182,7 +187,8 @@ input[type=checkbox] {
 }
 
 .esri-popup-content {
-	max-height: 450px !important;
+	/*max-height: 450px !important;*/
+	max-height: 200px !important;
 }
 
 .pu-icon,
