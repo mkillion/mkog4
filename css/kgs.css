@@ -181,13 +181,12 @@ input[type=checkbox] {
 	white-space: nowrap;
 }
 
+/* popup width */
 .esri-has-popup-renderer {
-	/* popup width */
 	width: 400px !important;
 }
 
 .esri-popup-content {
-	/*max-height: 450px !important;*/
 	max-height: 200px !important;
 }
 
@@ -229,57 +228,31 @@ input[type=checkbox] {
 	display: block;
 }
 
-@media screen and (max-width: 768px) {
-	.toc-icon {
-	font-size: 20px;
-	padding-left: 3px;
-	padding-right: 8px;
-}
+@media screen and (min-width: 1025px) {
+	.esri-popup-content {
+		max-height: 600px !important;
+	}
 }
 
-@media screen and (max-width: 568px) {
+@media screen and (max-width: 768px) {
+	.toc-icon {
+		font-size: 20px;
+		padding-left: 3px;
+		padding-right: 8px;
+	}
+}
+
+@media screen and (max-width: 667px) {
 	.pu-icon,
 	.esri-icon-zoom-in-magnifying-glass {
 		font-size: 20px;
 		padding-left: 5px;
 	}
 
-	/*.small-search {
-    	display: block!important;
-    	right: 38px;
-		position: absolute;
-		top: 53px;
-		width: 78%;
-    }
-
-    .icon-search-1 {
-		color: #FFF;
-	}*/
+	.esri-popup-content {
+		max-height: 60px !important;
+	}
 }
-
-/*@media screen and (max-width: 480px) {
-	.icon-search-1 {
-		color: #FFF;
-	}
-
-    .small-search {
-    	display: block!important;
-    	right: 38px;
-		position: absolute;
-		top: 53px;
-		width: 78%;
-    }
-}*/
-
-/*@media screen and (max-width: 319px) {
-    .small-search {
-        display: none!important;
-    }
-
-    .icon-search-1 {
-		display: none!important;
-	}
-}*/
 
 .drawer-menu-buttons {
 	/*background-color: #b0c4de;*/
