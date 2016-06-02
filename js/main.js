@@ -275,6 +275,10 @@ function(
         $("#buff-dia").dialog("open");
     } );
 
+	$("#buff-opts-btn").click(function() {
+		$("#buff-opts").toggleClass("show");
+	} );
+
 	// $("#meas-tool").click(function() {
     //     $("#meas-dia").dialog("open");
     // } );
@@ -453,7 +457,13 @@ function(
 		for (var j = 0; j < units.length; j++) {
 			buffDia += "<option value='" + units[j] + "'>" + units[j] + "</option>";
 		}
-		buffDia += "</select></td></tr><tr><td></td><td><button class='find-button' onclick='bufferFeature()'>Create Buffer</button></td></tr></table>";
+		buffDia += "</select></td></tr>";
+		buffDia += "<tr><td></td><td><button class='find-button' onclick='bufferFeature()'>Create Buffer</button></td></tr>";
+		buffDia += "<tr><td></td><td><button id='buff-opts-btn' class='find-button'>Advanced Options</button></td></tr></table>";
+		buffDia += "<table id='buff-opts' class='hide'>";
+		buffDia += "<tr><td colspan='2'>List Wells Within Buffer:</td><td></td></tr>";
+		buffDia += "<tr><td><input type='radio' name='buffwelltype' value='Oil and Gas'> Oil and Gas</td><td><input type='radio' name='buffwelltype' value='water'> Water</td></tr>";
+		buffDia += "</table>";
 
 		var buffN = domConstruct.create("div", { id: "buff-dia", class: "filter-dialog", innerHTML: buffDia } );
         $("body").append(buffN);
@@ -461,7 +471,7 @@ function(
         $("#buff-dia").dialog( {
             autoOpen: false,
             dialogClass: "dialog",
-			title: "Buffer and select features"
+			title: "Buffer Features"
         } );
 
 		// Report problem dialog:
@@ -482,7 +492,7 @@ function(
 
 
 	sendProblem = function() {
-		var sfa = view.popup.viewModel.selectedFeature.attributes;
+		var sfa = view.popup.selectedFeature.attributes;
 		if (sfa.hasOwnProperty('INPUT_SEQ_NUMBER')) {
 			var fId = sfa.INPUT_SEQ_NUMBER;
 			var fName = sfa.OWNER_NAME;
@@ -797,7 +807,7 @@ function(
 
 
 	bufferFeature = function() {
-		var f = view.popup.viewModel.selectedFeature;
+		var f = view.popup.selectedFeature;
 
 		if (f.geometry.type === "point") {
 			var buffFeature = new Point( {
@@ -828,10 +838,13 @@ function(
 		graphicsLayer.removeAll();
 		graphicsLayer.add(polygonGraphic);
 
-		// var ext = buffPoly.extent;
-		// view.extent = ext;
-
 		$("#buff-dia").dialog("close");
+
+		// List wells w/in buffer:
+		var selectBuffWellType = $("input:radio[name=buffwelltype]:checked").val();
+		if (selectBuffWellType) {
+			console.log("foo bar");
+		}
 	}
 
 
