@@ -215,13 +215,6 @@ function(
         };
         view.popup.actions.push(reportErrorAction);
 
-		var closeAction = {
-            title: "Close",
-            id: "bottom-close",
-            className: "esri-icon-close"
-        };
-        view.popup.actions.push(closeAction);
-
         view.popup.on("trigger-action", function(evt) {
             if(evt.action.id === "full-report") {
                 showFullInfo();
@@ -229,9 +222,7 @@ function(
 				$("#buff-dia").dialog("open");
             } else if (evt.action.id === "report-error") {
                 $("#prob-dia").dialog("open");
-            } else if (evt.action.id === "bottom-close") {
-				view.popup.close();
-			}
+            }
         } );
     } );
 
