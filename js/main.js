@@ -82,7 +82,7 @@ function(
     var isMobile = WURFL.is_mobile;
 	var idDef = [];
 	var wmSR = new SpatialReference(3857);
-	var urlParams;
+	var urlParams, listCount;
 
 
     // Set up basic frame:
@@ -155,8 +155,7 @@ function(
     var wwc5Layer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis8/rest/services/wwc5/wwc5_general/MapServer", sublayers:[{id:8}], id:"WWC5 Water Wells", visible:false} );
     var usgsEventsLayer = new MapImageLayer( {url:ogGeneralServiceURL, sublayers:[{id:13}], id:"Earthquakes", visible:false} );
     var lepcLayer = new MapImageLayer( {url:"http://kars.ku.edu/arcgis/rest/services/Sgpchat2013/SouthernGreatPlainsCrucialHabitatAssessmentTool2LEPCCrucialHabitat/MapServer", id:"LEPC Crucial Habitat", visible: false} );
-    //var topoLayer = new MapImageLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/Elevation/USGS_Digital_Topo/MapServer", sublayers:[{id:11}], id:"Topography", visible:false } );
-	var topoLayer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/USGS_Topo/USGStopo_DRG/ImageServer", id:"Topography", visible:false} );
+    var topoLayer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/USGS_Topo/USGStopo_DRG/ImageServer", id:"Topography", visible:false} );
 	var naip2014Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/FSA_NAIP_2014_Color/ImageServer", id:"2014 Aerials", visible:false} );
     var doqq2002Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_2002/ImageServer", id:"2002 Aerials", visible:false} );
     var doqq1991Layer = new ImageryLayer( {url:"http://services.kgs.ku.edu/arcgis7/rest/services/IMAGERY_STATEWIDE/Kansas_DOQQ_1991/ImageServer", id:"1991 Aerials", visible:false} );
@@ -716,7 +715,6 @@ function(
 
 		def[8] = theWhere;
 		idDef[8] = def[8];
-		console.log(def[8]);
 		wwc5Layer.sublayers[8].definitionExpression = def[8];
 	}
 
@@ -1022,14 +1020,21 @@ function(
 				}
 
 				query.returnGeometry = true;
-				query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"' and section="+dom.byId('sec').value;
+				query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"'";
+				if (dom.byId('sec').value !== "") {
+					query.where += " and section="+dom.byId('sec').value;
+				}
 
 				var queryTask = new QueryTask( {
 		    		url: ogGeneralServiceURL + lyrID
 				} );
 
+				queryTask.executeForCount(query).then(function(count) {
+					listCount = count;
+				} );
+
 				queryTask.execute(query).then(function(results){
-				    createWellsList(results, selectWellType, dom.byId('twn').value, dom.byId('rng').value, dir, dom.byId('sec').value);
+				    createWellsList(results, selectWellType, dom.byId('twn').value, dom.byId('rng').value, dir, dom.byId('sec').value, listCount);
 				} );
 			} else {
 				$("#wells-tbl").html("");
@@ -1043,12 +1048,20 @@ function(
     }
 
 
-	function createWellsList(fSet, wellType, twn, rng, dir, sec) {
-		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>" + wellType + " Wells in S" + sec + " - T" + twn + "S - R" + rng + dir + "</div>";
+	function createWellsList(fSet, wellType, twn, rng, dir, sec, count) {
+		if (sec) {
+			var plssString = "S" + sec + " - T" + twn + "S - R" + rng + dir;
+		} else {
+			var plssString = "T" + twn + "S - R" + rng + dir;
+		}
+		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>" + wellType + " Wells in " + plssString + "</div>";
 		$("#wells-tbl").html(wellsLst);
+		if (count > 1000) {
+			$("#wells-tbl").append("&nbsp;&nbsp;&nbsp;(listing 1000 of " + count + " records)");
+		}
 
 		if (fSet.features.length > 0) {
-			var downloadIcon = "<a class='esri-icon-download' title='Download List to Text File'></a>";
+			var downloadIcon = "<img id='downloading' class='hide' src='images/ajax-loader.gif'><a class='esri-icon-download' title='Download List to Text File'></a>";
 			$("#list-txt").append(downloadIcon);
 			if (wellType === "Oil and Gas") {
 				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='og-tbl'><tr><th>Name</th><th>API</th></tr>";
@@ -1115,41 +1128,17 @@ function(
 
 
 	downloadList = function(evt) {
-		// Using two different methods here. The HTML5 download attribute for <a> tags isn't currently supported in IE or Safari.
-		// I'm keeping that method in hopes of it being supported one day because it's fast and because I'd like to eliminate
-		// the use of CF. The fallback is to create a server-side download file using CF.
-
-		if (Modernizr.adownload) {
-			// HTML5 download:
-			var a;
-			var csv = "";
-
-			for (var key in evt.data.wells[0].attributes) {
-				// headers.
-				csv += key + ",";
-			}
-			csv = csv.slice(0, -1);
-			csv += "\n";
-
-			for (var i=0; i<evt.data.wells.length; i++) {
-				a = evt.data.wells[i].attributes;
-				for (val in a) {
-					// data.
-					csv += '"' + a[val] + '",';
-				}
-				csv = csv.slice(0, -1);
-				csv += "\n";
-			}
-
-			var filename = "KGS-" + evt.data.cf.type + "-Wells.csv";
-			$(".esri-icon-download").attr( { "download": filename, "href": "data:Application/octet-stream," + encodeURIComponent(csv) } );
-		} else {
-			// Coldfusion download:
+		$("#downloading").show();
+		if (evt.data.cf.sec) {
 			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&sec=" + evt.data.cf.sec + "&type=" + evt.data.cf.type;
-			$.get( "wellsInSectionDownload.cfm?" + plssStr, function(data) {
-				$(".download-link").html(data);
-			} );
+		} else {
+			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&type=" + evt.data.cf.type;
 		}
+
+		$.get( "wellsInSectionDownload.cfm?" + plssStr, function(data) {
+			$(".download-link").html(data);
+			$("#downloading").hide();
+		} );
 	}
 
 
@@ -1575,6 +1564,7 @@ function(
         var elev = f.ELEVATION_KB !== "Null" ? f.ELEVATION_KB.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
 
         var content = "<table id='popup-tbl'><tr><td>API:</td><td>{API_NUMBER}</td></tr>";
+		content += "<tr><td>Original Operator:</td><td>{OPERATOR_NAME}</td></tr>";
         content += "<tr><td>Current Operator:</td><td>{CURR_OPERATOR}</td></tr>";
         content += "<tr><td>Well Type:</td><td>{STATUS_TXT}</td></tr>";
         content += "<tr><td>Status:</td><td>{WELL_CLASS}</td></tr>";

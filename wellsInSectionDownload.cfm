@@ -18,7 +18,10 @@
 	<cfquery name="qWellData" datasource="plss">
 		select kid, api_number, lease_name, well_name, operator_name, curr_operator, field_name, township, township_direction, range, range_direction, section, spot, subdivision_4_smallest, subdivision_3, subdivision_2, subdivision_1_largest, feet_north_from_reference, feet_east_from_reference, reference_corner, nad27_longitude, nad27_latitude, county, permit_date_txt, spud_date_txt, completion_date_txt, plug_date_txt, status_txt, well_class, rotary_total_depth, elevation_kb, elevation_gl, elevation_df, producing_formation
 		from oilgas_wells
-		where township = #url.twn# and range = #url.rng# and range_direction = '#url.dir#' and section = #url.sec#
+		where township = #url.twn# and range = #url.rng# and range_direction = '#url.dir#'
+		<cfif isDefined("url.sec")>
+			 and section = #url.sec#
+		</cfif>
 	</cfquery>
 
 	<cfloop query="qWellData">
@@ -35,7 +38,10 @@
 	<cfquery name="qWellData" datasource="gis_webinfo">
 		select input_seq_number, owner_name, use_desc, dwr_appropriation_number, monitoring_number, county, township, township_direction, range, range_direction, section, quarter_call_1_largest, quarter_call_2, quarter_call_3, nad27_latitude, nad27_longitude, depth_txt, elev_txt, static_level_txt, yield_txt, status, comp_date_txt, contractor
 		from wwc5_wells
-		where township = #url.twn# and range = #url.rng# and range_direction = '#url.dir#' and section = #url.sec#
+		where township = #url.twn# and range = #url.rng# and range_direction = '#url.dir#'
+		<cfif isDefined("url.sec")>
+			 and section = #url.sec#
+		</cfif>
 	</cfquery>
 
 	<cfloop query="qWellData">
