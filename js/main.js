@@ -1066,8 +1066,8 @@ function(
 		}
 		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>" + wellType + " Wells in " + plssString + "</div>";
 		$("#wells-tbl").html(wellsLst);
-		if (count > 1000) {
-			$("#wells-tbl").append("&nbsp;&nbsp;&nbsp;(listing 1000 of " + count + " records)");
+		if (count > 2000) {
+			$("#wells-tbl").append("&nbsp;&nbsp;&nbsp;(listing 2000 of " + count + " records)");
 		}
 
 		if (fSet.features.length > 0) {
@@ -1078,7 +1078,7 @@ function(
 			if (wellType === "Oil and Gas") {
 				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='og-tbl'><tr><th>Name</th><th>API</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
-					wellsTbl += "<tr><td>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td>" + fSet.features[i].attributes.API_NUMBER + "</td><td class='hide'>" + fSet.features[i].attributes.KID + "</td></tr>";
+					wellsTbl += "<tr><td style='width:48%'>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td style='width:52%'>" + fSet.features[i].attributes.API_NUMBER + "</td><td class='hide'>" + fSet.features[i].attributes.KID + "</td></tr>";
 				}
 			} else {
 				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='wwc5-tbl'><tr><th>Owner</th><th>Use</th></tr>";

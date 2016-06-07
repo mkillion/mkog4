@@ -228,7 +228,7 @@ input[type=checkbox] {
 	display: block;
 }
 
-#downloading {
+#loader {
 	left: 100px;
 	position: relative;
 }
