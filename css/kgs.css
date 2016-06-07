@@ -233,7 +233,7 @@ input[type=checkbox] {
 	position: relative;
 }
 
-@media screen and (min-width: 1025px) {
+@media screen and (min-width: 1281px) {
 	.esri-popup-content {
 		max-height: 615px !important;
 	}
