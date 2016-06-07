@@ -1048,6 +1048,16 @@ function(
     }
 
 
+	function sortList(a, b) {
+		var att =  (a.attributes.API_NUMBER) ? "API_NUMBER" : "OWNER_NAME";
+        var numA = a.attributes[att];
+        var numB = b.attributes[att];
+        if (numA < numB) { return -1 }
+        if (numA > numB) { return 1 }
+        return 0;
+    }
+
+
 	function createWellsList(fSet, wellType, twn, rng, dir, sec, count) {
 		if (sec) {
 			var plssString = "S" + sec + " - T" + twn + "S - R" + rng + dir;
@@ -1061,7 +1071,9 @@ function(
 		}
 
 		if (fSet.features.length > 0) {
-			var downloadIcon = "<img id='downloading' class='hide' src='images/ajax-loader.gif'><a class='esri-icon-download' title='Download List to Text File'></a>";
+			fSet.features.sort(sortList);
+
+			var downloadIcon = "<img id='loader' class='hide' src='images/ajax-loader.gif'><a class='esri-icon-download' title='Download List to Text File'></a>";
 			$("#list-txt").append(downloadIcon);
 			if (wellType === "Oil and Gas") {
 				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='og-tbl'><tr><th>Name</th><th>API</th></tr>";
@@ -1128,7 +1140,7 @@ function(
 
 
 	downloadList = function(evt) {
-		$("#downloading").show();
+		$("#loader").show();
 		if (evt.data.cf.sec) {
 			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&sec=" + evt.data.cf.sec + "&type=" + evt.data.cf.type;
 		} else {
@@ -1137,7 +1149,7 @@ function(
 
 		$.get( "wellsInSectionDownload.cfm?" + plssStr, function(data) {
 			$(".download-link").html(data);
-			$("#downloading").hide();
+			$("#loader").hide();
 		} );
 	}
 
