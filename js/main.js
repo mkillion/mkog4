@@ -1002,43 +1002,54 @@ function(
         findTask.execute(findParams).then(function(response) {
             zoomToFeature(response.results[0].feature);
 
+			var query = new Query();
+			query.returnGeometry = true;
 			var selectWellType = $("input:radio[name=welltype]:checked").val();
-			if (what === "plss" && selectWellType !== "none") {
-				var query = new Query();
-				if (selectWellType === "Oil and Gas") {
-					var lyrID = "/0";
-					// Attributes to be included in download file:
-					query.outFields = ["KID","API_NUMBER","LEASE_NAME","WELL_NAME","STATE_CODE","COUNTY","FIELD_NAME","FIELD_KID","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","SUBDIVISION_1_LARGEST","SUBDIVISION_2","SUBDIVISION_3","SUBDIVISION_4_SMALLEST","SPOT","FEET_NORTH_FROM_REFERENCE","FEET_EAST_FROM_REFERENCE","REFERENCE_CORNER","ROTARY_TOTAL_DEPTH","ELEVATION_KB","ELEVATION_GL","ELEVATION_DF","PRODUCING_FORMATION","NAD27_LATITUDE","NAD27_LONGITUDE","OPERATOR_NAME","CURR_OPERATOR","PERMIT_DATE_TXT","SPUD_DATE_TXT","COMPLETION_DATE_TXT","PLUG_DATE_TXT","STATUS_TXT"];
-					wellsLayer.visible = true;
-                    $("#Oil-and-Gas-Wells input").prop("checked", true);
+
+			if (what === "plss") {
+				if (selectWellType !== "none") {
+					if (selectWellType === "Oil and Gas") {
+						var lyrID = "/0";
+						// Attributes to be included in download file:
+						query.outFields = ["KID","API_NUMBER","LEASE_NAME","WELL_NAME","STATE_CODE","COUNTY","FIELD_NAME","FIELD_KID","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","SUBDIVISION_1_LARGEST","SUBDIVISION_2","SUBDIVISION_3","SUBDIVISION_4_SMALLEST","SPOT","FEET_NORTH_FROM_REFERENCE","FEET_EAST_FROM_REFERENCE","REFERENCE_CORNER","ROTARY_TOTAL_DEPTH","ELEVATION_KB","ELEVATION_GL","ELEVATION_DF","PRODUCING_FORMATION","NAD27_LATITUDE","NAD27_LONGITUDE","OPERATOR_NAME","CURR_OPERATOR","PERMIT_DATE_TXT","SPUD_DATE_TXT","COMPLETION_DATE_TXT","PLUG_DATE_TXT","STATUS_TXT"];
+						wellsLayer.visible = true;
+	                    $("#Oil-and-Gas-Wells input").prop("checked", true);
+					} else {
+						// water.
+						var lyrID = "/8";
+						query.outFields = ["INPUT_SEQ_NUMBER","OWNER_NAME","USE_DESC","DWR_APPROPRIATION_NUMBER","MONITORING_NUMBER","COUNTY","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","QUARTER_CALL_1_LARGEST","QUARTER_CALL_2","QUARTER_CALL_3","NAD27_LATITUDE","NAD27_LONGITUDE","DEPTH_TXT","ELEV_TXT","STATIC_LEVEL_TXT","YIELD_TXT","STATUS","COMP_DATE_TXT","CONTRACTOR"];
+						wwc5Layer.visible = true;
+	                    $("#WWC5-Water-Wells input").prop("checked", true);
+					}
+
+					query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"'";
+					if (dom.byId('sec').value !== "") {
+						query.where += " and section="+dom.byId('sec').value;
+					}
 				} else {
-					// water.
-					var lyrID = "/8";
-					query.outFields = ["INPUT_SEQ_NUMBER","OWNER_NAME","USE_DESC","DWR_APPROPRIATION_NUMBER","MONITORING_NUMBER","COUNTY","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","QUARTER_CALL_1_LARGEST","QUARTER_CALL_2","QUARTER_CALL_3","NAD27_LATITUDE","NAD27_LONGITUDE","DEPTH_TXT","ELEV_TXT","STATIC_LEVEL_TXT","YIELD_TXT","STATUS","COMP_DATE_TXT","CONTRACTOR"];
-					wwc5Layer.visible = true;
-                    $("#WWC5-Water-Wells input").prop("checked", true);
+					$("#wells-tbl").html("");
 				}
-
-				query.returnGeometry = true;
-				query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"'";
-				if (dom.byId('sec').value !== "") {
-					query.where += " and section="+dom.byId('sec').value;
+			} else if (what === "field") {
+				if ( $("#field-list-wells").prop("checked") ) {
+					query.where = "FIELD_KID = " + response.results[0].feature.attributes.FIELD_KID;
+					query.outFields = ["KID","API_NUMBER","LEASE_NAME","WELL_NAME","STATE_CODE","COUNTY","FIELD_NAME","FIELD_KID","TOWNSHIP","TOWNSHIP_DIRECTION","RANGE","RANGE_DIRECTION","SECTION","SUBDIVISION_1_LARGEST","SUBDIVISION_2","SUBDIVISION_3","SUBDIVISION_4_SMALLEST","SPOT","FEET_NORTH_FROM_REFERENCE","FEET_EAST_FROM_REFERENCE","REFERENCE_CORNER","ROTARY_TOTAL_DEPTH","ELEVATION_KB","ELEVATION_GL","ELEVATION_DF","PRODUCING_FORMATION","NAD27_LATITUDE","NAD27_LONGITUDE","OPERATOR_NAME","CURR_OPERATOR","PERMIT_DATE_TXT","SPUD_DATE_TXT","COMPLETION_DATE_TXT","PLUG_DATE_TXT","STATUS_TXT"];
+					var lyrID = "/0";
+					selectWellType = "Oil and Gas";
 				}
-
-				var queryTask = new QueryTask( {
-		    		url: ogGeneralServiceURL + lyrID
-				} );
-
-				queryTask.executeForCount(query).then(function(count) {
-					listCount = count;
-				} );
-
-				queryTask.execute(query).then(function(results){
-				    createWellsList(results, selectWellType, dom.byId('twn').value, dom.byId('rng').value, dir, dom.byId('sec').value, listCount);
-				} );
-			} else {
-				$("#wells-tbl").html("");
 			}
+
+			var queryTask = new QueryTask( {
+				url: ogGeneralServiceURL + lyrID
+			} );
+
+			queryTask.executeForCount(query).then(function(count) {
+				listCount = count;
+			} );
+
+			queryTask.execute(query).then(function(results) {
+				createWellsList(results, selectWellType, dom.byId('twn').value, dom.byId('rng').value, dir, dom.byId('sec').value, listCount, what);
+			} );
+
 			return addPopupTemplate(response.results);
         } ).then(function(feature) {
 			if (what === "api" || what === "field") {
@@ -1058,13 +1069,19 @@ function(
     }
 
 
-	function createWellsList(fSet, wellType, twn, rng, dir, sec, count) {
+	function createWellsList(fSet, wellType, twn, rng, dir, sec, count, what) {
 		if (sec) {
 			var plssString = "S" + sec + " - T" + twn + "S - R" + rng + dir;
 		} else {
 			var plssString = "T" + twn + "S - R" + rng + dir;
 		}
-		var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>" + wellType + " Wells in " + plssString + "</div>";
+
+		if (what === "field") {
+			var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>Oil and Gas Wells assigned to " + fSet.features[0].attributes.FIELD_NAME + "</div>";
+		} else {
+			var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>" + wellType + " Wells in " + plssString + "</div>";
+		}
+
 		$("#wells-tbl").html(wellsLst);
 		if (count > 2000) {
 			$("#wells-tbl").append("&nbsp;&nbsp;&nbsp;(listing 2000 of " + count + " records)");
@@ -1262,12 +1279,13 @@ function(
         for (var i=1; i<37; i++) {
             content += '<option value="' + i + '"">' + i + '</option>';
         }
-        content += '</select></td></tr>';
-		content += '<tr><td colspan="2">List wells in this section<span class="toc-note">(optional):</span></td></tr>';
-		content += '<tr><td></td><td><input type="radio" name="welltype" value="Oil and Gas"> Oil and Gas</td></tr>';
-		content += '<tr><td></td><td><input type="radio" name="welltype" value="Water"> Water (WWC5)</td></tr>';
-		content += '<tr><td></td><td><input type="radio" name="welltype" value="none" checked> Don&#39;t List</td></tr>';
-        content += '<tr><td></td><td><button class=find-button onclick=findIt("plss")>Find</button></td></tr>';
+        content += '</select><span class="toc-note">(optional)</td></tr>';
+		content += '<tr><td></td><td><button class="find-button" onclick=$(".list-opts").toggleClass("hide")>Options</button>';
+		content += '<tr class="list-opts hide"><td colspan="2">List wells in this section:</td></tr>';
+		content += '<tr class="list-opts hide"><td></td><td><input type="radio" name="welltype" value="Oil and Gas"> Oil and Gas</td></tr>';
+		content += '<tr class="list-opts hide"><td></td><td><input type="radio" name="welltype" value="Water"> Water (WWC5)</td></tr>';
+		content += '<tr class="list-opts hide"><td></td><td><input type="radio" name="welltype" value="none" checked> Don&#39;t List</td></tr>';
+        content += '<tr><td></td><td><button class="find-button" onclick=findIt("plss")>Find</button></td></tr>';
         content += '</table></div>';
         // api:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="api"><span class="find-hdr-txt"> Well API</span></div>';
@@ -1290,7 +1308,9 @@ function(
         // field:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="field"><span class="find-hdr-txt"> Field</span></div>';
         content += '<div class="find-body hide" id="find-field">';
-        content += '<table><tr><td class="find-label">Name:</td><td><input id="field-select"></td><td><button class=find-button onclick=findIt("field")>Find</button></td></tr></table>';
+        content += '<table><tr><td class="find-label">Name:</td><td><input id="field-select"></td></tr>';
+		content += '<tr><td colspan="2"><input type="checkbox" id="field-list-wells">List wells assigned to this field</td></tr>';
+		content += '<tr><td></td><td><button class=find-button onclick=findIt("field")>Find</button></td></tr></table>';
         content += '</div>';
         // county:
         content += '<div class="find-header esri-icon-right-triangle-arrow" id="county"><span class="find-hdr-txt"> County</span></div>';
