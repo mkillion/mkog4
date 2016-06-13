@@ -147,6 +147,7 @@ function(
     var identifyTask, identifyParams;
     var findTask = new FindTask(ogGeneralServiceURL);
     var findParams = new FindParameters();
+	findParams.returnGeometry = true;
 
     var basemapLayer = new TileLayer( {url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer", id:"Base Map"} );
     var fieldsLayer = new TileLayer( {url:"http://services.kgs.ku.edu/arcgis8/rest/services/oilgas/oilgas_fields/MapServer", id:"Oil and Gas Fields", visible:false} );
@@ -451,18 +452,18 @@ function(
 
 		// Buffer dialog:
 		var units = ["feet","yards","meters","kilometers","miles"];
-		var buffDia = "<table><tr><td class='find-label'>Distance:</td><td><input type='text' size='4' id='buff-dist'></td></tr>";
-		buffDia += "<tr><td class='find-label'>Units:</td><td><select id='buff-units'>";
+		var buffDia = '<table><tr><td class="find-label">Distance:</td><td><input type="text" size="4" id="buff-dist"></td></tr>';
+		buffDia += '<tr><td class="find-label">Units:</td><td><select id="buff-units">';
 		for (var j = 0; j < units.length; j++) {
 			buffDia += "<option value='" + units[j] + "'>" + units[j] + "</option>";
 		}
-		buffDia += "</select></td></tr>";
-		buffDia += "<tr><td></td><td><button class='find-button' onclick='bufferFeature()'>Create Buffer</button></td></tr>";
-		buffDia += "<tr><td></td><td><button id='buff-opts-btn' class='find-button'>Advanced Options</button></td></tr></table>";
-		buffDia += "<table id='buff-opts' class='hide'>";
-		buffDia += "<tr><td colspan='2'>List Wells Within Buffer:</td><td></td></tr>";
-		buffDia += "<tr><td><input type='radio' name='buffwelltype' value='Oil and Gas'> Oil and Gas</td><td><input type='radio' name='buffwelltype' value='water'> Water</td></tr>";
-		buffDia += "</table>";
+		buffDia += '</select></td></tr>';
+		buffDia += '<tr><td></td><td><button id="buff-opts-btn" class="find-button" onclick=$(".buff-opts").toggleClass("hide")>Options</button></td></tr>';
+		buffDia += '<tr class="buff-opts hide"><td colspan="2">List Wells Within Buffer:</td><td></td></tr>';
+		buffDia += '<tr class="buff-opts hide"><td></td><td><input type="radio" name="buffwelltype" value="Oil and Gas"> Oil and Gas</td></tr>';
+		buffDia += '<tr class="buff-opts hide"><td></td><td><input type="radio" name="buffwelltype" value="Water"> Water (WWC5)</td></tr>';
+		buffDia += '<tr class="buff-opts hide"><td></td><td><input type="radio" name="buffwelltype" value="none" checked> Don&#39;t List</td></tr>';
+		buffDia += '<tr><td></td><td><button class="find-button" onclick="bufferFeature()">Create Buffer</button></td></tr></table>';
 
 		var buffN = domConstruct.create("div", { id: "buff-dia", class: "filter-dialog", innerHTML: buffDia } );
         $("body").append(buffN);
@@ -840,8 +841,19 @@ function(
 
 		// List wells w/in buffer:
 		var selectBuffWellType = $("input:radio[name=buffwelltype]:checked").val();
-		if (selectBuffWellType) {
-			console.log("foo bar");
+		if (selectBuffWellType !== "none") {
+			var idTask = new IdentifyTask(ogGeneralServiceURL);
+	        var idParams = new IdentifyParameters();
+			idParams.geometry = buffPoly;
+			idParams.layerIds = (selectBuffWellType === "Oil and Gas") ? 0 : 8;
+			idParams.returnGeometry = true;
+			idParams.tolerance = 0;
+			idParams.mapExtent = view.extent;
+			idTask.execute(idParams).then(function(response) {
+				for (var i=0; i<response.results.length; i++) {
+					console.log(response.results[i].feature.attributes);
+				}
+			} );
 		}
 	}
 
@@ -864,7 +876,6 @@ function(
             var extType = items[0].substring(11);
             var extValue = items[1].substring(12);
 
-            findParams.returnGeometry = true;
             findParams.contains = false;
 
             switch (extType) {
@@ -951,7 +962,7 @@ function(
 
     findIt = function(what) {
 		searchWidget.clear();
-        findParams.returnGeometry = true;
+
         switch (what) {
             case "plss":
                 var plssText;
@@ -1137,7 +1148,6 @@ function(
 				findParams.searchFields = ["INPUT_SEQ_NUMBER"];
 		        findParams.searchText = kgsID;
 			}
-	        findParams.returnGeometry = true;
 
 			findTask.execute(findParams).then(function(response) {
 				return addPopupTemplate(response.results);
