@@ -1024,7 +1024,7 @@ function(
 
 					query.where = "township="+dom.byId('twn').value+" and township_direction='S' and range="+dom.byId('rng').value+" and range_direction='"+dir+"'";
 					if (dom.byId('sec').value !== "") {
-						query.where += " and section="+dom.byId('sec').value;
+						query.where += " and section=" + dom.byId('sec').value;
 					}
 				} else {
 					$("#wells-tbl").html("");
@@ -1128,7 +1128,7 @@ function(
 			var kgsID =  $(this).find('td:eq(2)').text();
 
 			var selectWellType = $("input:radio[name=welltype]:checked").val();
-			if (selectWellType === "Oil and Gas") {
+			if (selectWellType === "Oil and Gas" || what === "field") {
 				findParams.layerIds = [0];
 				findParams.searchFields = ["KID"];
 		        findParams.searchText = kgsID;
