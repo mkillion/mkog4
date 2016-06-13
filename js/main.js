@@ -268,7 +268,7 @@ function(
     } );
 
     $(".esri-icon-erase").click(function() {
-        graphicsLayer.removeAll();
+		graphicsLayer.removeAll();
     } );
 
 	$("#buff-tool").click(function() {
@@ -834,7 +834,6 @@ function(
 			symbol: fillSymbol
 		} );
 
-		graphicsLayer.removeAll();
 		graphicsLayer.add(polygonGraphic);
 
 		$("#buff-dia").dialog("close");
@@ -844,15 +843,21 @@ function(
 		if (selectBuffWellType !== "none") {
 			var idTask = new IdentifyTask(ogGeneralServiceURL);
 	        var idParams = new IdentifyParameters();
+			var arrFeatures = [];
+			var twn, rng, dir, sec, count, what;
 			idParams.geometry = buffPoly;
-			idParams.layerIds = (selectBuffWellType === "Oil and Gas") ? 0 : 8;
+			idParams.layerIds = (selectBuffWellType === "Oil and Gas") ? [0] : [8];
 			idParams.returnGeometry = true;
 			idParams.tolerance = 0;
 			idParams.mapExtent = view.extent;
 			idTask.execute(idParams).then(function(response) {
 				for (var i=0; i<response.results.length; i++) {
-					console.log(response.results[i].feature.attributes);
+					arrFeatures.push(response.results[i].feature);
 				}
+				var objFeatures = {
+						features: arrFeatures
+				};
+				createWellsList(objFeatures, selectBuffWellType, twn, rng, dir, sec, count, what)
 			} );
 		}
 	}
@@ -1082,15 +1087,17 @@ function(
 
 	function createWellsList(fSet, wellType, twn, rng, dir, sec, count, what) {
 		if (sec) {
-			var plssString = "S" + sec + " - T" + twn + "S - R" + rng + dir;
+			var locationString = "S" + sec + " - T" + twn + "S - R" + rng + dir;
+		} else if (twn) {
+			var locationString = "T" + twn + "S - R" + rng + dir;
 		} else {
-			var plssString = "T" + twn + "S - R" + rng + dir;
+			var locationString = "buffer";
 		}
 
 		if (what === "field") {
 			var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>Oil and Gas Wells assigned to " + fSet.features[0].attributes.FIELD_NAME + "</div>";
 		} else {
-			var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>" + wellType + " Wells in " + plssString + "</div>";
+			var wellsLst = "<div class='panel-sub-txt' id='list-txt'>List</div><div class='download-link'></div><div class='toc-note' id='sect-desc'>" + wellType + " Wells in " + locationString + "</div>";
 		}
 
 		$("#wells-tbl").html(wellsLst);
@@ -1138,8 +1145,9 @@ function(
 			// Get id for that well from the table cell (KGS id numbers are in a hidden third column referenced by index = 2):
 			var kgsID =  $(this).find('td:eq(2)').text();
 
-			var selectWellType = $("input:radio[name=welltype]:checked").val();
-			if (selectWellType === "Oil and Gas" || what === "field") {
+			///var selectWellType = $("input:radio[name=welltype]:checked").val();
+			///if (selectWellType === "Oil and Gas" || what === "field") {
+			if (wellType === "Oil and Gas" || what === "field") {
 				findParams.layerIds = [0];
 				findParams.searchFields = ["KID"];
 		        findParams.searchText = kgsID;
@@ -1232,7 +1240,6 @@ function(
 				target: wmPt,
 				zoom: 16
 			}, {duration: 750} ).then(function() {
-				graphicsLayer.removeAll();
 	            graphicsLayer.add(pointGraphic);
 			} );
         } );
