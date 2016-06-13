@@ -82,7 +82,7 @@ function(
     var isMobile = WURFL.is_mobile;
 	var idDef = [];
 	var wmSR = new SpatialReference(3857);
-	var urlParams, listCount;
+	var urlParams, listCount, g, bufferGraphic;
 
 
     // Set up basic frame:
@@ -806,6 +806,8 @@ function(
 
 
 	bufferFeature = function() {
+		graphicsLayer.remove(bufferGraphic);
+
 		var f = view.popup.selectedFeature;
 
 		if (f.geometry.type === "point") {
@@ -829,12 +831,12 @@ function(
 			  	width: 1
 			} )
 		} );
-		var polygonGraphic = new Graphic( {
+		bufferGraphic = new Graphic( {
 			geometry: buffPoly,
 			symbol: fillSymbol
 		} );
 
-		graphicsLayer.add(polygonGraphic);
+		graphicsLayer.add(bufferGraphic);
 
 		$("#buff-dia").dialog("close");
 
@@ -925,7 +927,8 @@ function(
 
 
     function highlightFeature(features) {
-		graphicsLayer.removeAll();
+		///graphicsLayer.removeAll();
+		graphicsLayer.remove(g);
         var f = features[0] ? features[0] : features;
         switch (f.geometry.type) {
             case "point":
@@ -950,7 +953,7 @@ function(
 				var sym = fill;
                 break;
         }
-		var g = new Graphic( {
+		g = new Graphic( {
 			geometry: f.geometry,
 			symbol: sym
 		} );
@@ -967,7 +970,8 @@ function(
 
     findIt = function(what) {
 		searchWidget.clear();
-
+		graphicsLayer.removeAll();
+		
         switch (what) {
             case "plss":
                 var plssText;
