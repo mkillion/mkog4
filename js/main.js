@@ -971,7 +971,7 @@ function(
     findIt = function(what) {
 		searchWidget.clear();
 		graphicsLayer.removeAll();
-		
+
         switch (what) {
             case "plss":
                 var plssText;
@@ -1127,13 +1127,13 @@ function(
 			}
 			wellsTbl += "</table>";
 		} else {
-			var wellsTbl = "<div class='toc-note'>No wells in this section</div>";
+			var wellsTbl = "<div class='toc-note'>No wells found</div>";
 		}
 
 		$("#wells-tbl").append(wellsTbl);
 
 		var cfParams = { "twn": twn, "rng": rng, "dir": dir, "sec": sec, "type": wellType };
-		$(".esri-icon-download").click( {wells:fSet.features, cf:cfParams}, downloadList);
+		$(".esri-icon-download").click( {cf:cfParams}, downloadList);
 
 		// Open tools drawer-menu:
 		$(".item").removeClass("item-selected");
@@ -1149,8 +1149,6 @@ function(
 			// Get id for that well from the table cell (KGS id numbers are in a hidden third column referenced by index = 2):
 			var kgsID =  $(this).find('td:eq(2)').text();
 
-			///var selectWellType = $("input:radio[name=welltype]:checked").val();
-			///if (selectWellType === "Oil and Gas" || what === "field") {
 			if (wellType === "Oil and Gas" || what === "field") {
 				findParams.layerIds = [0];
 				findParams.searchFields = ["KID"];
@@ -1182,8 +1180,11 @@ function(
 		$("#loader").show();
 		if (evt.data.cf.sec) {
 			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&sec=" + evt.data.cf.sec + "&type=" + evt.data.cf.type;
-		} else {
+		} else if (evt.data.cf.twn) {
 			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&type=" + evt.data.cf.type;
+		} else {
+			// download from buffer.
+			console.log("buff me");
 		}
 
 		$.get( "wellsInSectionDownload.cfm?" + plssStr, function(data) {
