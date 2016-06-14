@@ -82,7 +82,7 @@ function(
     var isMobile = WURFL.is_mobile;
 	var idDef = [];
 	var wmSR = new SpatialReference(3857);
-	var urlParams, listCount, g, bufferGraphic;
+	var urlParams, listCount, hilite, bufferGraphic;
 
 
     // Set up basic frame:
@@ -928,7 +928,7 @@ function(
 
     function highlightFeature(features) {
 		///graphicsLayer.removeAll();
-		graphicsLayer.remove(g);
+		graphicsLayer.remove(hilite);
         var f = features[0] ? features[0] : features;
         switch (f.geometry.type) {
             case "point":
@@ -953,11 +953,11 @@ function(
 				var sym = fill;
                 break;
         }
-		g = new Graphic( {
+		hilite = new Graphic( {
 			geometry: f.geometry,
 			symbol: sym
 		} );
-		graphicsLayer.add(g);
+		graphicsLayer.add(hilite);
     }
 
 
@@ -1109,6 +1109,8 @@ function(
 			$("#wells-tbl").append("&nbsp;&nbsp;&nbsp;(listing 2000 of " + count + " records)");
 		}
 
+		var apiNums = [];
+
 		if (fSet.features.length > 0) {
 			fSet.features.sort(sortList);
 
@@ -1118,6 +1120,7 @@ function(
 				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='og-tbl'><tr><th>Name</th><th>API</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
 					wellsTbl += "<tr><td style='width:48%'>" + fSet.features[i].attributes.LEASE_NAME + " " + fSet.features[i].attributes.WELL_NAME + "</td><td style='width:52%'>" + fSet.features[i].attributes.API_NUMBER + "</td><td class='hide'>" + fSet.features[i].attributes.KID + "</td></tr>";
+					apiNums.push(fSet.features[i].attributes.API_NUMBER);
 				}
 			} else {
 				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='wwc5-tbl'><tr><th>Owner</th><th>Use</th></tr>";
@@ -1132,7 +1135,8 @@ function(
 
 		$("#wells-tbl").append(wellsTbl);
 
-		var cfParams = { "twn": twn, "rng": rng, "dir": dir, "sec": sec, "type": wellType };
+		apis = apiNums.join(",");
+		var cfParams = { "twn": twn, "rng": rng, "dir": dir, "sec": sec, "type": wellType, "apis": apis };
 		$(".esri-icon-download").click( {cf:cfParams}, downloadList);
 
 		// Open tools drawer-menu:
@@ -1178,17 +1182,21 @@ function(
 
 	downloadList = function(evt) {
 		$("#loader").show();
+
+		var plssStr = "";
+		var data = {};
+
 		if (evt.data.cf.sec) {
-			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&sec=" + evt.data.cf.sec + "&type=" + evt.data.cf.type;
+			plssStr += "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&sec=" + evt.data.cf.sec + "&type=" + evt.data.cf.type;
 		} else if (evt.data.cf.twn) {
-			var plssStr = "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&type=" + evt.data.cf.type;
+			plssStr += "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&type=" + evt.data.cf.type;
 		} else {
-			// download from buffer.
-			console.log("buff me");
+			// Download from buffer.
+			data = {"type": evt.data.cf.type, "apis": evt.data.cf.apis};
 		}
 
-		$.get( "wellsInSectionDownload.cfm?" + plssStr, function(data) {
-			$(".download-link").html(data);
+		$.post( "downloadWellsInPoly.cfm?" + plssStr, data, function(response) {
+			$(".download-link").html(response);
 			$("#loader").hide();
 		} );
 	}
