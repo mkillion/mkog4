@@ -112,7 +112,6 @@ function(
 
     createMenus();
     popCountyDropdown();
-    createDialogs();
 
     // Combo boxes:
     var autocomplete =  (isMobile) ? false : true; // auto-complete doesn't work properly on mobile (gets stuck on a name and won't allow further typing), so turn it off.
@@ -181,6 +180,7 @@ function(
 
     view.then(function() {
 		createTOC();
+		createDialogs();
 
         on(view, "click", executeIdTask);
 
@@ -806,6 +806,11 @@ function(
 
 
 	bufferFeature = function() {
+		// var listOption = $("input:radio[name=buffwelltype]:checked").val();
+		// if (view.zoom <= 13 && listOption !== 'none') {
+		// 	alert("Must zoom-in at least one level to list wells within buffer.")
+		// }
+
 		graphicsLayer.remove(bufferGraphic);
 
 		var f = view.popup.selectedFeature;
@@ -1135,7 +1140,11 @@ function(
 			}
 			wellsTbl += "</table>";
 		} else {
-			var wellsTbl = "<div class='toc-note'>No wells found</div>";
+			if (view.zoom <= 13) {
+				var wellsTbl = "<div class='toc-note'>Zoom in and re-run buffer to list wells</div>";
+			} else {
+				var wellsTbl = "<div class='toc-note'>No wells found</div>";
+			}
 		}
 
 		$("#wells-tbl").append(wellsTbl);
