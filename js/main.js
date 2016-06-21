@@ -1110,6 +1110,8 @@ function(
 		}
 
 		var apiNums = [];
+		var seqNums = [];
+		var apis,seqs;
 
 		if (fSet.features.length > 0) {
 			fSet.features.sort(sortList);
@@ -1126,7 +1128,10 @@ function(
 				var wellsTbl = "<table class='striped-tbl well-list-tbl' id='wwc5-tbl'><tr><th>Owner</th><th>Use</th></tr>";
 				for (var i=0; i<fSet.features.length; i++) {
 					wellsTbl += "<tr><td>" + fSet.features[i].attributes.OWNER_NAME + "</td><td>" + fSet.features[i].attributes.USE_DESC + "</td><td class='hide'>" + fSet.features[i].attributes.INPUT_SEQ_NUMBER + "</td></tr>";
+					seqNums.push(fSet.features[i].attributes.INPUT_SEQ_NUMBER);
 				}
+				wwc5Layer.visible = true;
+				$("#WWC5-Water-Wells input").prop("checked", true);
 			}
 			wellsTbl += "</table>";
 		} else {
@@ -1135,8 +1140,14 @@ function(
 
 		$("#wells-tbl").append(wellsTbl);
 
-		apis = apiNums.join(",");
-		var cfParams = { "twn": twn, "rng": rng, "dir": dir, "sec": sec, "type": wellType, "apis": apis };
+		if (apiNums.length > 0) {
+			apis = apiNums.join(",");
+		}
+		if (seqNums.length > 0) {
+			seqs = seqNums.join(",");
+		}
+
+		var cfParams = { "twn": twn, "rng": rng, "dir": dir, "sec": sec, "type": wellType, "apis": apis, "seqs": seqs };
 		$(".esri-icon-download").click( {cf:cfParams}, downloadList);
 
 		// Open tools drawer-menu:
@@ -1192,10 +1203,10 @@ function(
 			plssStr += "twn=" + evt.data.cf.twn + "&rng=" + evt.data.cf.rng + "&dir=" + evt.data.cf.dir + "&type=" + evt.data.cf.type;
 		} else {
 			// Download from buffer.
-			data = {"type": evt.data.cf.type, "apis": evt.data.cf.apis};
+			data = {"type": evt.data.cf.type, "apis": evt.data.cf.apis, "seqs": evt.data.cf.seqs};
 		}
 
-		$.post( "downloadWellsInPoly.cfm?" + plssStr, data, function(response) {
+		$.post( "downloadPointsInPoly.cfm?" + plssStr, data, function(response) {
 			$(".download-link").html(response);
 			$("#loader").hide();
 		} );

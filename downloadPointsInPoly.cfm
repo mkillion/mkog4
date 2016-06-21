@@ -68,14 +68,37 @@
 
 	<cffile action="write" file="#WellsOutputFile#" output="#Headers#" addnewline="yes">
 
-	<cfquery name="qWellData" datasource="gis_webinfo">
-		select input_seq_number, owner_name, use_desc, dwr_appropriation_number, monitoring_number, county, township, township_direction, range, range_direction, section, quarter_call_1_largest, quarter_call_2, quarter_call_3, nad27_latitude, nad27_longitude, depth_txt, elev_txt, static_level_txt, yield_txt, status, comp_date_txt, contractor
-		from wwc5_wells
-		where township = #url.twn# and range = #url.rng# and range_direction = '#url.dir#'
-		<cfif isDefined("url.sec")>
-			 and section = #url.sec#
-		</cfif>
-	</cfquery>
+	<cfif isdefined("form.seqs")>
+		<!--- download w/in buffer: --->
+		<cfset Uid = right(CreateUUID(),16)>
+        <cfset tempTable = "tmp_seq_#Uid#">
+		<cfquery name="qCreate" datasource="gis_webinfo">
+			create table #tempTable#(seq_num varchar2(20))
+		</cfquery>
+		<cfloop index="i" list="#form.seqs#">
+			<cfquery name="qInsert" datasource="gis_webinfo">
+				insert into #tempTable# values('#i#')
+			</cfquery>
+		</cfloop>
+		<cfquery name="qWellData" datasource="gis_webinfo">
+			select input_seq_number, owner_name, use_desc, dwr_appropriation_number, monitoring_number, county, township, township_direction, range, range_direction, section, quarter_call_1_largest, quarter_call_2, quarter_call_3, nad27_latitude, nad27_longitude, depth_txt, elev_txt, static_level_txt, yield_txt, status, comp_date_txt, contractor
+			from wwc5_wells
+			where input_seq_number in (select seq_num from #tempTable#)
+		</cfquery>
+		<cfquery name="qDrop" datasource="gis_webinfo">
+			drop table #tempTable#
+		</cfquery>
+	<cfelse>
+		<!--- download w/in plss: --->
+		<cfquery name="qWellData" datasource="gis_webinfo">
+			select input_seq_number, owner_name, use_desc, dwr_appropriation_number, monitoring_number, county, township, township_direction, range, range_direction, section, quarter_call_1_largest, quarter_call_2, quarter_call_3, nad27_latitude, nad27_longitude, depth_txt, elev_txt, static_level_txt, yield_txt, status, comp_date_txt, contractor
+			from wwc5_wells
+			where township = #url.twn# and range = #url.rng# and range_direction = '#url.dir#'
+			<cfif isDefined("url.sec")>
+				 and section = #url.sec#
+			</cfif>
+		</cfquery>
+	</cfif>
 
 	<cfloop query="qWellData">
 		<cfset Data = '"#input_seq_number#","#owner_name#","#use_desc#","#dwr_appropriation_number#","#monitoring_number#","#county#","#township#","#township_direction#","#range#","#range_direction#","#section#","#quarter_call_1_largest#","#quarter_call_2#","#quarter_call_3#","#nad27_latitude#","#nad27_longitude#","#depth_txt#","#elev_txt#","#static_level_txt#","#yield_txt#","#status#","#comp_date_txt#","#contractor#"'>
