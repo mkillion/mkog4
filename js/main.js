@@ -864,7 +864,7 @@ function(
 				var objFeatures = {
 						features: arrFeatures
 				};
-				createWellsList(objFeatures, selectBuffWellType, twn, rng, dir, sec, count, what)
+				createWellsList(objFeatures, selectBuffWellType, twn, rng, dir, sec, count, what);
 			} );
 		}
 	}
@@ -914,7 +914,6 @@ function(
 	                zoomToFeature(feature);
 				}
             } );
-            // TODO: tie last location to the Home button?
         }
     }
 
@@ -1223,6 +1222,8 @@ function(
 
 
     zoomToLatLong = function() {
+		graphicsLayer.removeAll();
+
         var lat = dom.byId("lat").value;
         var lon = dom.byId("lon").value;
         var datum = dom.byId("datum").value;
@@ -1496,7 +1497,6 @@ function(
 
     labelWells = function(type) {
         // TODO:
-        console.log("label wells function");
     }
 
 
